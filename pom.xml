@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.springframework.samples</groupId>
+	<artifactId>spring-petclinic</artifactId>
+	<version>2.2.0.BUILD-SNAPSHOT</version>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.5.16</version>
+	</parent>
+	<name>PetClinic React</name>
+
+	<properties>
+
+		<!-- Generic properties -->
+		<java.version>21</java.version>
+		<!-- release keeps Java 21 APIs and bytecode even when Maven runs on JDK 25. -->
+		<maven.compiler.release>${java.version}</maven.compiler.release>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<lombok.version>1.18.48</lombok.version>
+		<mapstruct.version>1.6.3</mapstruct.version>
+		<jjwt.version>0.13.0</jjwt.version>
+
+        <jacoco.version>0.8.15</jacoco.version>
+		<allure.version>2.35.4</allure.version>
+        <aspectj.version>1.9.25</aspectj.version>
+		<spring-format.version>0.0.19</spring-format.version>
+
+		<frontend-maven-plugin.version>2.0.2</frontend-maven-plugin.version>
+		<node.version>v24.16.0</node.version>
+		<npm.version>12.0.2</npm.version>
+		<frontend-src-dir>${project.basedir}/frontend</frontend-src-dir>
+
+	</properties>
+
+	<developers>
+		<developer>
+			<name>JAParejo</name>
+			<email>japarejo@us.es</email>
+			<url>https://github.com/japarejo</url>
+		</developer>
+	</developers>
+
+	<dependencies>
+
+		<!-- Spring and Spring Boot dependencies -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<!-- Databases - Use H2 by default -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+		</dependency>
+		<!--dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>XXXX</version>
+			<scope>runtime</scope>
+		</dependency-->
+		<!-- caching -->
+		<dependency>
+			<groupId>javax.cache</groupId>
+			<artifactId>cache-api</artifactId>
+		</dependency>
+
+		<!-- Testing -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+			<artifactId>allure-jupiter</artifactId>
+            <scope>test</scope>
+          </dependency>
+		<!-- Development tools -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+		</dependency>
+		<!-- JSON WEB TOKEN -->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>${jjwt.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>${jjwt.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>${jjwt.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- Swagger -->
+		<dependency>
+    		<groupId>org.springdoc</groupId>
+    		<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.8.17</version>
+		</dependency>
+		<dependency>
+  			<groupId>org.apache.maven</groupId>
+  			<artifactId>maven-model</artifactId>
+			<version>3.9.16</version>
+		</dependency>
+
+ </dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<!-- Spring Boot Actuator displays build-related information if a META-INF/build-info.properties
+                        file is present -->
+						<goals>
+							<goal>build-info</goal>
+						</goals>
+
+						<configuration>
+							<additionalProperties>
+								<encoding.source>${project.build.sourceEncoding}</encoding.source>
+								<encoding.reporting>${project.reporting.outputEncoding}</encoding.reporting>
+								<java.release>${maven.compiler.release}</java.release>
+							</additionalProperties>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+            <!-- Automated generation of basic tests traceability matrix -->
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+				<version>3.0.3</version>
+                <configuration>
+                    <singleFile>true</singleFile>
+                    <reportDirectory>${project.build.directory}/site/test-status</reportDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>allure-report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+			<!-- Jacoco plugin for code coverage calculation -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Copy generated test reports to the deliverables directory -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>test-coverage-move</id>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<phase>prepare-package</phase>
+						<configuration>
+							<outputDirectory>${project.basedir}/docs/deliverables/D3/coverage</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.build.directory}/site/jacoco</directory>
+									<filtering>false</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>test-status-move</id>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<phase>verify</phase>
+						<configuration>
+							<outputDirectory>${project.basedir}/docs/deliverables/D3/status</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.build.directory}/site/test-status</directory>
+									<filtering>false</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Spring Boot Actuator displays build-related information if a git.properties
+            file is present at the classpath -->
+			<plugin>
+				<groupId>io.github.git-commit-id</groupId>
+				<artifactId>git-commit-id-maven-plugin</artifactId>
+				<version>10.0.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>revision</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<verbose>true</verbose>
+					<dateFormat>yyyy-MM-dd'T'HH:mm:ssZ</dateFormat>
+					<generateGitPropertiesFile>true</generateGitPropertiesFile>
+					<generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
+                    </generateGitPropertiesFilename>
+					<failOnNoGitDirectory>false</failOnNoGitDirectory>
+				</configuration>
+			</plugin>
+
+
+			<plugin>
+            	<groupId>org.apache.maven.plugins</groupId>
+            	<artifactId>maven-compiler-plugin</artifactId>
+            	<configuration>
+                	<annotationProcessorPaths>
+                    	<path>
+                        	<groupId>org.mapstruct</groupId>
+                        	<artifactId>mapstruct-processor</artifactId>
+                        	<version>${mapstruct.version}</version>
+                    	</path>
+                    	<path>
+                        	<groupId>org.projectlombok</groupId>
+                        	<artifactId>lombok</artifactId>
+                        	<version>${lombok.version}</version>
+                    	</path>
+                    	<path>
+                        	<groupId>org.projectlombok</groupId>
+                        	<artifactId>lombok-mapstruct-binding</artifactId>
+                        	<version>0.2.0</version>
+                    	</path>
+                	</annotationProcessorPaths>
+            	</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.6.0</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.6.2</version>
+				<executions>
+					<execution>
+						<id>enforce-toolchain</id>
+						<goals><goal>enforce</goal></goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion><version>[3.9.0,)</version></requireMavenVersion>
+								<requireJavaVersion><version>[21,26)</version></requireJavaVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+    <!-- Add allure-bom to dependency management to ensure correct versions of all the dependencies are used -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-bom</artifactId>
+                <version>${allure.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+	<profiles>
+		<!-- Frontend work is opt-in so backend-only Maven commands remain fast. -->
+		<profile>
+			<id>frontend</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.github.eirslett</groupId>
+						<artifactId>frontend-maven-plugin</artifactId>
+						<version>${frontend-maven-plugin.version}</version>
+						<configuration>
+							<nodeVersion>${node.version}</nodeVersion>
+							<npmVersion>${npm.version}</npmVersion>
+							<workingDirectory>${frontend-src-dir}</workingDirectory>
+							<installDirectory>${project.build.directory}</installDirectory>
+						</configuration>
+						<executions>
+							<execution>
+								<id>install-frontend-tools</id>
+								<goals><goal>install-node-and-npm</goal></goals>
+							</execution>
+							<execution>
+								<id>npm-install</id>
+								<goals><goal>npm</goal></goals>
+								<configuration><arguments>ci</arguments></configuration>
+							</execution>
+							<execution>
+								<id>test-frontend</id>
+								<phase>test</phase>
+								<goals><goal>npm</goal></goals>
+								<configuration><arguments>test</arguments></configuration>
+							</execution>
+							<execution>
+								<id>build-frontend</id>
+								<phase>prepare-package</phase>
+								<goals><goal>npm</goal></goals>
+								<configuration><arguments>run build</arguments></configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<artifactId>maven-resources-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>position-react-build</id>
+								<phase>prepare-package</phase>
+								<goals><goal>copy-resources</goal></goals>
+								<configuration>
+									<outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
+									<resources>
+										<resource>
+											<directory>${frontend-src-dir}/dist</directory>
+											<filtering>false</filtering>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+
+	<!-- Apache 2 license -->
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
+
+
+</project>

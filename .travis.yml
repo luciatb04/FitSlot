@@ -1,0 +1,4 @@
+dist: noble
+language: java
+jdk: temurin21
+script: ./mvnw verify -Pfrontend
