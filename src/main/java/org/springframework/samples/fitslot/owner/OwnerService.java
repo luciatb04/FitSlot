@@ -116,15 +116,7 @@ public class OwnerService {
 	}
 
 	private Map<String, Integer> getOwnersVisits() {
-		Map<String, Integer> unsortedOwnersVisits = new HashMap<>();
-		this.ownerRepository.getOwnersWithMostVisits().forEach(m -> {
-			String key = findOwnerById(m.get("userId")).getUser().getUsername();
-			Integer value = m.get("visits");
-			unsortedOwnersVisits.put(key, value);
-		});
-		return unsortedOwnersVisits.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
-						LinkedHashMap::new));
+		return new LinkedHashMap<>();
 	}
 
 }

@@ -10,7 +10,6 @@ import {
 } from "reactstrap";
 import FormGenerator from "../../../components/formGenerator/formGenerator";
 import { classEditFormInputs } from "./form/classEditFormInputs";
-import "../../../static/css/owner/editClasses.css";
 import "../../../static/css/auth/authButton.css"
 import useFetchState from "../../../util/useFetchState";
 

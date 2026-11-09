@@ -35,11 +35,11 @@ public interface ConsultationRepository extends CrudRepository<Consultation, Int
 	@Query("SELECT COUNT(c) FROM Consultation c WHERE c.owner.id = :ownerId")
 	public Integer countAllByOwner(int ownerId);
 
-	@Query("SELECT COUNT(p) FROM Class p WHERE p.owner.id = :ownerId")
+	@Query("SELECT COUNT(p) FROM Classes p WHERE p.owner.id = :ownerId")
 	public Integer countAllClassesOfOwner(int ownerId);
 
-	@Query("SELECT NEW MAP(c.class.name as Class, cast(COUNT(c) as string) as consultations)"
-			+ " FROM  Consultation c WHERE c.owner.id = :ownerId GROUP BY c.class")
+	@Query("SELECT NEW MAP(c.classes.name as Class, cast(COUNT(c) as string) as consultations)"
+			+ " FROM Consultation c WHERE c.owner.id = :ownerId GROUP BY c.classes")
 	public List<Map<String, String>> countConsultationsGroupedByClasses(int ownerId);
 
 	@Query("SELECT MIN(YEAR(c.creationDate)) FROM Consultation c WHERE c.owner.id = :ownerId")

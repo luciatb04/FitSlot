@@ -173,15 +173,7 @@ public class InstructorService {
 	}
 
 	private Map<String, Integer> getVisitsByInstructor() {
-		Map<String, Integer> unsortedVisitsByInstructor = new HashMap<>();
-		this.instructorRepository.countVisitsGroupedByInstructor().forEach(m -> {
-			String key = m.get("firstName") + " " + m.get("lastName");
-			Integer value = Integer.parseInt(m.get("visits"));
-			unsortedVisitsByInstructor.put(key, value);
-		});
-		return unsortedVisitsByInstructor.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
-						LinkedHashMap::new));
+		return new LinkedHashMap<>();
 	}
 
 	private Map<String, Integer> getInstructorsByCity() {

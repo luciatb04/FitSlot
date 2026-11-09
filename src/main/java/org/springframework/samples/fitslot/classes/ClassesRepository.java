@@ -36,9 +36,7 @@ public interface ClassesRepository extends CrudRepository<Classes, Integer> {
 	@Query(("SELECT p FROM Classes p WHERE p.owner.id = :id"))
 	List<Classes> findAllClassesByOwnerId(int id) throws DataAccessException;
 
-	@Modifying
-	@Query("DELETE FROM Visit v WHERE v.classes.id = :classesId")
-	public void deleteVisitsByClass(@Param("classesId") int classesId);
+
 
 	@Query(("SELECT COUNT(c) FROM Classes c WHERE c.owner.id = :id"))
 	public Integer countClassesByOwner(int id);

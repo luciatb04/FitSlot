@@ -107,7 +107,6 @@ public class ClassesService {
 	@Transactional
 	public void deleteClasses(int id) throws DataAccessException {
 		Classes toDelete = findClassesById(id);
-		classesRepository.deleteVisitsByClass(toDelete.getId());
 		classesRepository.delete(toDelete);
 	}
 

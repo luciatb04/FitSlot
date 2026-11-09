@@ -35,8 +35,4 @@ public interface InstructorRepository extends CrudRepository<Instructor, Integer
 	@Query("SELECT NEW MAP(v.city as city, cast(COUNT(v) as string) as instructors)" + " FROM Instructor v GROUP BY v.city")
 	public List<Map<String, String>> countInstructorsGroupedByCity();
 
-	@Query("SELECT NEW MAP(v.instructor.firstName as firstName, v.instructor.lastName as lastName, cast(COUNT(v) as string) as visits)"
-			+ " FROM Visit v GROUP BY v.instructor")
-	public List<Map<String, String>> countVisitsGroupedByInstructor();
-
 }
