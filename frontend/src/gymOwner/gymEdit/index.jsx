@@ -4,7 +4,7 @@ import tokenService from "../../services/token.service";
 import getIdFromUrl from "../../util/getIdFromUrl";
 import getErrorModal from "../../util/getErrorModal";
 import useFetchState from "../../util/useFetchState";
-import { clinicEditInputs } from "./form/clinicEditInputs";
+import { gymEditInputs } from "./form/gymEditInputs";
 import FormGenerator from "../../components/formGenerator/formGenerator";
 import { useState, useEffect, useRef } from "react";
 import {useNavigate} from "react-router-dom";
@@ -12,7 +12,7 @@ import {useNavigate} from "react-router-dom";
 const user = tokenService.getUser();
 const jwt = tokenService.getLocalAccessToken();
 
-export default function EditClinic() {
+export default function EditGym() {
   const id = getIdFromUrl(2);
   const navigator = useNavigate();
 
@@ -25,9 +25,9 @@ export default function EditClinic() {
   };
   const [message, setMessage] = useState(null);
   const [visible, setVisible] = useState(false);
-  const [clinic, setClinic] = useFetchState(
+  const [gym, setGym] = useFetchState(
     emptyItem,
-    `/api/v1/clinics/${id}`,
+    `/api/v1/gyms/${id}`,
     jwt,
     setMessage,
     setVisible,
@@ -35,13 +35,13 @@ export default function EditClinic() {
   );
   const [dataLoaded, setDataLoaded] = useState(false);
 
-  const editClinicFormRef = useRef(null);
+  const editGymFormRef = useRef(null);
 
   function handleSubmit({ values }) {
-    if (!editClinicFormRef.current.validate()) return;
+    if (!editGymFormRef.current.validate()) return;
 
     if (id !== "new") {
-      fetch(`/api/v1/clinics/${id}`, {
+      fetch(`/api/v1/gyms/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -51,14 +51,14 @@ export default function EditClinic() {
       })
       .then((res) => {
         if (res.status === 200) {
-          navigator("/clinics");
+          navigator("/gyms");
         }
       })
       .catch((err) => {
         setMessage(err.message);
       });;
     } else {
-      fetch(`/api/v1/clinics`, {
+      fetch(`/api/v1/gyms`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -68,7 +68,7 @@ export default function EditClinic() {
       })
       .then((res) => {
         if (res.status === 201) {
-          navigator("/clinics");
+          navigator("/gyms");
         }
       })
       .catch((err) => {
@@ -78,37 +78,37 @@ export default function EditClinic() {
   }
 
   useEffect(() => {
-    if (clinic.id !== "") {
-      clinicEditInputs.forEach((input) => {
-        input.defaultValue = clinic[input.name];
+    if (gym.id !== "") {
+      gymEditInputs.forEach((input) => {
+        input.defaultValue = gym[input.name];
         setDataLoaded(true);
       });
     } else {
-      clinicEditInputs.forEach((input) => {
+      gymEditInputs.forEach((input) => {
         input.defaultValue = "";
       });
     }
-  }, [clinic]);
+  }, [gym]);
 
   const modal = getErrorModal(setVisible, visible, message);
 
   return (
     <div className="auth-page-container">
-      {<h2>{id !== "new" ? "Edit Clinic" : "Add Clinic"}</h2>}
+      {<h2>{id !== "new" ? "Edit Gym" : "Add Gym"}</h2>}
       {modal}
       <div className="auth-form-container">
         {dataLoaded ? (
           <FormGenerator
-            ref={editClinicFormRef}
-            inputs={clinicEditInputs}
+            ref={editGymFormRef}
+            inputs={gymEditInputs}
             onSubmit={handleSubmit}
             buttonText="Edit"
             buttonClassName="auth-button"
           />
         ) : (
           <FormGenerator
-            ref={editClinicFormRef}
-            inputs={clinicEditInputs}
+            ref={editGymFormRef}
+            inputs={gymEditInputs}
             onSubmit={handleSubmit}
             buttonText="Add"
             buttonClassName="auth-button"

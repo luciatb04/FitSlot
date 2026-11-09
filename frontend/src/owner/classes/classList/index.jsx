@@ -1,4 +1,4 @@
-import "../../../static/css/owner/petList.css";
+import "../../../static/css/owner/classList.css";
 import "../../../static/css/auth/authButton.css";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { Link } from "react-router-dom";
@@ -7,16 +7,16 @@ import { Splide, SplideSlide } from "@splidejs/react-splide";
 import moment from "moment";
 import { useState, useEffect } from "react";
 
-export default function OwnerPetList() {
-  let [pets, setPets] = useState([]);
+export default function OwnerClassesList() {
+  const [classes, setClasses] = useState([]);
   let [message, setMessage] = useState(null);
   let [modalShow, setModalShow] = useState(false);
 
   const user = tokenService.getUser();
   const jwt = tokenService.getLocalAccessToken();
 
-  function removePet(id) {
-    fetch(`/api/v1/pets/${id}`, {
+  function removeClass(id) {
+    fetch(`/api/v1/classes/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${jwt}`,
@@ -26,8 +26,8 @@ export default function OwnerPetList() {
     })
       .then((response) => {
         if (response.status === 200) {
-          let updatedPets = [...pets].filter((i) => i.id !== id);
-          setPets(updatedPets);
+          const updatedClasses = classes.filter((classEntity) => classEntity.id !== id);
+          setClasses(updatedClasses);
         }
         return response.json();
       })
@@ -37,9 +37,9 @@ export default function OwnerPetList() {
       });
   }
 
-  async function removeVisit(petId, visitId) {
+  async function removeVisit(classId, visitId) {
     let status = "";
-    await fetch(`/api/v1/pets/${petId}/visits/${visitId}`, {
+    await fetch(`/api/v1/classes/${classId}/visits/${visitId}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${jwt}`,
@@ -57,15 +57,13 @@ export default function OwnerPetList() {
       });
 
     if (status === "200") {
-      let petsAux = pets;
-      const index = petsAux.findIndex((i) => i.id === petId);
-      let pet = [...petsAux].filter((i) => i.id === petId);
-      let updatedVisits = pet[0].visits.filter((i) => i.id !== visitId);
-      if (updatedVisits.length > 0) pet[0].visits = updatedVisits;
-      else pet[0].visits = [];
-      petsAux[index] = pet[0];
+      const classesCopy = [...classes];
+      const index = classesCopy.findIndex((classEntity) => classEntity.id === classId);
+      const classEntity = classesCopy[index];
+      const updatedVisits = classEntity.visits.filter((visit) => visit.id !== visitId);
+      classEntity.visits = updatedVisits;
 
-      setPets(petsAux);
+      setClasses(classesCopy);
     }
   }
 
@@ -74,20 +72,20 @@ export default function OwnerPetList() {
   }
 
   async function setUp() {
-    let pets = await (
-      await fetch(`/api/v1/pets?userId=${user.id}`, {
+    const fetchedClasses = await (
+      await fetch(`/api/v1/classes?userId=${user.id}`, {
         headers: {
           Authorization: `Bearer ${jwt}`,
           "Content-Type": "application/json",
         },
       })
     ).json();
-    if (pets.message) setMessage(pets.message);
+    if (fetchedClasses.message) setMessage(fetchedClasses.message);
     else {
-      for (let pet of pets) {
-        let index = pets.findIndex((obj) => obj.id === pet.id);
+      for (const classEntity of fetchedClasses) {
+        const index = fetchedClasses.findIndex((obj) => obj.id === classEntity.id);
         const visits = await (
-          await fetch(`/api/v1/pets/${pet.id}/visits`, {
+          await fetch(`/api/v1/classes/${classEntity.id}/visits`, {
             headers: {
               Authorization: `Bearer ${jwt}`,
               "Content-Type": "application/json",
@@ -95,9 +93,9 @@ export default function OwnerPetList() {
           })
         ).json();
         if (visits.message) setMessage(visits.message);
-        else pets[index]["visits"] = visits;
+        else fetchedClasses[index].visits = visits;
       }
-      setPets(pets);
+      setClasses(fetchedClasses);
     }
   }
 
@@ -108,52 +106,52 @@ export default function OwnerPetList() {
   return (
     <div>
       {/* <AppNavbar /> */}
-      <div className="pet-list-page-container">
+      <div className="class-list-page-container">
         <div className="title-and-add">
-          <h1 className="pet-list-title">Pets</h1>
+          <h1 className="class-list-title">Classes</h1>
           <Link
-            to="/myPets/new"
+            to="/myClasses/new"
             className="auth-button"
             style={{ textDecoration: "none", marginBottom: "2rem" }}
           >
-            Add Pet
+            Add Class
           </Link>
         </div>
-        {pets.length > 0 ? (
-          pets.map((pet) => {
+        {classes.length > 0 ? (
+          classes.map((classEntity) => {
             return (
-              <div key={pet.id} className="pet-row">
-                <div className="pet-data">
-                  <h4 className="pet-name">{pet.name}</h4>
+              <div key={classEntity.id} className="class-row">
+                <div className="class-data">
+                  <h4 className="class-name">{classEntity.name}</h4>
                   <span>
-                    <strong>Date of birth:</strong> {pet.birthDate}
+                    <strong>Date of birth:</strong> {classEntity.birthDate}
                   </span>
                   <span>
-                    <strong>Type:</strong> {pet.type.name}
+                    <strong>Type:</strong> {classEntity.type?.name}
                   </span>
                 </div>
-                <div className="pet-options">
+                <div className="class-options">
                   <Link
-                    to={"/myPets/" + pet.id}
+                    to={"/myClasses/" + classEntity.id}
                     className="auth-button blue"
                     style={{ textDecoration: "none" }}
                   >
                     Edit
                   </Link>
                   <button
-                    onClick={() => removePet(pet.id)}
+                    onClick={() => removeClass(classEntity.id)}
                     className="auth-button danger"
                   >
                     Delete
                   </button>
                 </div>
-                <div className="pet-visits">
-                  {pet.visits && pet.visits.length > 0 ? (
+                <div className="class-visits">
+                  {classEntity.visits && classEntity.visits.length > 0 ? (
                     <Splide
                       aria-label="My Favorite Images"
                       className="visits-carousel"
                     >
-                      {pet.visits.map((visit, index) => {
+                      {classEntity.visits.map((visit, index) => {
                         return (
                           <SplideSlide className="carousel-slide" key={index}>
                             <span>
@@ -163,20 +161,20 @@ export default function OwnerPetList() {
                               )}
                             </span>
                             <span>
-                              <strong>Vet:</strong> {visit.vet.firstName}{" "}
-                              {visit.vet.lastName}
+                              <strong>Instructor:</strong> {visit.instructor.firstName}{" "}
+                              {visit.instructor.lastName}
                             </span>
                             <div className="options-row">
                               {new Date(visit.datetime) > Date.now() && (
                                 <button
                                   className="cancel-visit-button"
-                                  onClick={() => removeVisit(pet.id, visit.id)}
+                                  onClick={() => removeVisit(classEntity.id, visit.id)}
                                 >
                                   Cancel
                                 </button>
                               )}
                               <Link
-                                to={`/myPets/${pet.id}/visits/${visit.id}`}
+                                to={`/myClasses/${classEntity.id}/visits/${visit.id}`}
                                 className="edit-visit-button"
                                 style={{ textDecoration: "none" }}
                               >
@@ -191,7 +189,7 @@ export default function OwnerPetList() {
                     <></>
                   )}
                   <Link
-                    to={`/myPets/${pet.id}/visits/new`}
+                    to={`/myClasses/${classEntity.id}/visits/new`}
                     className="auth-button blue"
                     style={{ textDecoration: "none", marginTop: "20px" }}
                   >

@@ -8,7 +8,7 @@ import useFetchState from "../../util/useFetchState";
 
 const jwt = tokenService.getLocalAccessToken();
 
-export default function ClinicEditAdmin() {
+export default function GymEditAdmin() {
   const emptyItem = {
     id: "",
     name: "",
@@ -18,18 +18,18 @@ export default function ClinicEditAdmin() {
   const id = getIdFromUrl(2);
   const [message, setMessage] = useState(null);
   const [visible, setVisible] = useState(false);
-  const [clinic, setClinic] = useFetchState(
+  const [gym, setGym] = useFetchState(
     emptyItem,
-    `/api/v1/clinics/${id}`,
+    `/api/v1/gyms/${id}`,
     jwt,
     setMessage,
     setVisible,
     id
   );
 
-  const [clinicOwners, setClinicOwners] = useFetchState(
+  const [gymOwners, setGymOwners] = useFetchState(
     [],
-    `/api/v1/clinicOwners/all`,
+    `/api/v1/gymOwners/all`,
     jwt,
     setMessage,
     setVisible
@@ -39,31 +39,31 @@ export default function ClinicEditAdmin() {
     const target = event.target;
     const value = target.value;
     const name = target.name;
-    setClinic({ ...clinic, [name]: value });
+    setGym({ ...gym, [name]: value });
   }
 
   function handleSubmit(event) {
     event.preventDefault();
 
-    clinic.clinicOwner = clinicOwners.filter((clinicOwner) => clinicOwner.id === parseInt(clinic.clinicOwner))[0];
+    gym.gymOwner = gymOwners.filter((gymOwner) => gymOwner.id === parseInt(gym.gymOwner))[0];
 
-    console.log(clinic);
+    console.log(gym);
 
-    fetch("/api/v1/clinics" + (clinic.id ? "/" + clinic.id : ""), {
-      method: clinic.id ? "PUT" : "POST",
+    fetch("/api/v1/gyms" + (gym.id ? "/" + gym.id : ""), {
+      method: gym.id ? "PUT" : "POST",
       headers: {
         Authorization: `Bearer ${jwt}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(clinic),
+      body: JSON.stringify(gym),
     })
       .then((response) => response.json())
       .then((json) => {
         if (json.message) {
           setMessage(json.message);
           setVisible(true);
-        } else window.location.href = "/clinics";
+        } else window.location.href = "/gyms";
       })
       .catch((message) => alert(message));
   }
@@ -72,7 +72,7 @@ export default function ClinicEditAdmin() {
 
   return (
     <div className="auth-page-container">
-      {<h2>{id !== "new" ? "Edit Clinic" : "Add Clinic"}</h2>}
+      {<h2>{id !== "new" ? "Edit Gym" : "Add Gym"}</h2>}
       {modal}
       <div className="auth-form-container">
         <Form onSubmit={handleSubmit}>
@@ -85,7 +85,7 @@ export default function ClinicEditAdmin() {
               required
               name="name"
               id="name"
-              value={clinic.name || ""}
+              value={gym.name || ""}
               onChange={handleChange}
               className="custom-input"
             />
@@ -99,7 +99,7 @@ export default function ClinicEditAdmin() {
               required
               name="address"
               id="address"
-              value={clinic.address || ""}
+              value={gym.address || ""}
               onChange={handleChange}
               className="custom-input"
             />
@@ -113,7 +113,7 @@ export default function ClinicEditAdmin() {
               required
               name="telephone"
               id="telephone"
-              value={clinic.telephone || ""}
+              value={gym.telephone || ""}
               onChange={handleChange}
               className="custom-input"
             />
@@ -127,7 +127,7 @@ export default function ClinicEditAdmin() {
               name="plan"
               required
               type="select"
-              value={clinic.plan || ""}
+              value={gym.plan || ""}
               onChange={handleChange}
               className="custom-input"
             >
@@ -139,22 +139,22 @@ export default function ClinicEditAdmin() {
             </Input>
           </div>
           <div className="custom-form-input">
-            <Label for="clinicOwner" className="custom-form-input-label">
-              Clinic Owner
+            <Label for="gymOwner" className="custom-form-input-label">
+              Gym Owner
             </Label>
             <Input
-              id="clinicOwner"
-              name="clinicOwner"
+              id="gymOwner"
+              name="gymOwner"
               required
               type="select"
-              value={clinic.clinicOwner ? clinic.clinicOwner.id : ""}
+              value={gym.gymOwner ? gym.gymOwner.id : ""}
               onChange={handleChange}
               className="custom-input"
             >
               <option value="">None</option>
-              {clinicOwners.map((clinicOwner) => {
+              {gymOwners.map((gymOwner) => {
                 return(
-                    <option value={clinicOwner.id}>{clinicOwner.firstName} {clinicOwner.lastName}</option>
+                    <option value={gymOwner.id}>{gymOwner.firstName} {gymOwner.lastName}</option>
                 );
               })}
               
@@ -163,7 +163,7 @@ export default function ClinicEditAdmin() {
           <div className="custom-button-row">
             <button className="auth-button">Save</button>
             <Link
-              to={`/clinicOwners`}
+              to={`/gymOwners`}
               className="auth-button"
               style={{ textDecoration: "none" }}
             >

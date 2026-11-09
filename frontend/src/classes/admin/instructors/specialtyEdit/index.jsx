@@ -24,7 +24,7 @@ class SpecialtyEdit extends Component {
 
     async componentDidMount() {
         if (this.id !== 'new') {
-            const specialty = await (await fetch(`/api/v1/vets/specialties/${this.id}`, {
+            const specialty = await (await fetch(`/api/v1/instructors/specialties/${this.id}`, {
                 headers: {
                     "Authorization": `Bearer ${this.jwt}`,
                 },
@@ -47,7 +47,7 @@ class SpecialtyEdit extends Component {
         event.preventDefault();
         const { specialty } = this.state;
 
-        await fetch('/api/v1/vets/specialties' + (specialty.id ? '/' + specialty.id : ''), {
+        await fetch('/api/v1/instructors/specialties' + (specialty.id ? '/' + specialty.id : ''), {
             method: (specialty.id) ? 'PUT' : 'POST',
             headers: {
                 "Authorization": `Bearer ${this.jwt}`,
@@ -56,7 +56,7 @@ class SpecialtyEdit extends Component {
             },
             body: JSON.stringify(specialty),
         });
-        window.location.href = '/vets/specialties';
+        window.location.href = '/instructors/specialties';
     }
 
     render() {
@@ -75,7 +75,7 @@ class SpecialtyEdit extends Component {
                             </FormGroup>
                             <FormGroup style={{ marginTop: "10px" }}>
                                 <Button color="primary" type="submit">Save</Button>{' '}
-                                <Button color="secondary" tag={Link} to="/vets/specialties">Cancel</Button>
+                                <Button color="secondary" tag={Link} to="/instructors/specialties">Cancel</Button>
                             </FormGroup>
                         </Form>
                     </Col>

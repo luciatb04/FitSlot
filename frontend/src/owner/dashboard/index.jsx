@@ -39,10 +39,10 @@ export default function OwnerDashboard() {
         end.setMinutes(start.getMinutes() + 30);
         return {
           visitId: Number(visit.id),
-          petId: Number(visit.pet.id),
+          classId: Number(visit.class.id),
           start: start,
           end: end,
-          title: `Visit for ${visit.pet.name} with Vet ${visit.vet.firstName} ${visit.vet.lastName}`,
+          title: `Visit for ${visit.class.name} with Instructor ${visit.instructor.firstName} ${visit.instructor.lastName}`,
           description: visit.description,
         };
       });
@@ -58,7 +58,7 @@ export default function OwnerDashboard() {
     ).json();
     if (owner.message) setMessage(owner.message);
     else {
-      setPlan(owner.clinic.plan);
+      setPlan(owner.gym.plan);
     }
   }
 
@@ -85,7 +85,7 @@ export default function OwnerDashboard() {
                   agenda: true,
                 }}
                 onSelectEvent={(e) =>
-                  (window.location.href = `/myPets/${e.petId}/visits/${e.visitId}`)
+                  (window.location.href = `/myClasses/${e.classId}/visits/${e.visitId}`)
                 }
               />
             </div>

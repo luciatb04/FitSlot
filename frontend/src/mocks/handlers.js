@@ -24,30 +24,30 @@ const userOwner2 = {
     "authority": authOwner
 };
 
-const userVet1 = {
+const userInstructor1 = {
     "id": 12,
-    "username": "vet1",
+    "username": "instructor1",
     "authority": {
-        "authority": "VET"
+        "authority": "INSTRUCTOR"
     }
 };
 
-const userVet2 = {
+const userInstructor2 = {
     "id": 13,
-    "username": "vet2",
+    "username": "instructor2",
     "authority": {
-        "authority": "VET"
+        "authority": "INSTRUCTOR"
     }
 };
 
-const clinic1 = {
+const gym1 = {
     "id": 1,
-    "name": "Happy Pets Clinic"
+    "name": "Happy Classes Gym"
 };
 
-const clinic2 = {
+const gym2 = {
     "id": 2,
-    "name": "Healthy Animals Clinic"
+    "name": "Healthy Animals Gym"
 };
 
 const owner1 = {
@@ -58,7 +58,7 @@ const owner1 = {
     "city": "Sevilla",
     "telephone": "608555103",
     "plan": "PLATINUM",
-    "clinic": clinic1,
+    "gym": gym1,
     "user": userOwner1
 };
 
@@ -70,11 +70,11 @@ const owner2 = {
     "city": "Sevilla",
     "telephone": "608555174",
     "plan": "PLATINUM",
-    "clinic": clinic2,
+    "gym": gym2,
     "user": userOwner2
 };
 
-const pet1 = {
+const class1 = {
     "id": 1,
     "name": "Leo",
     "birthDate": "2010-09-07",
@@ -85,7 +85,7 @@ const pet1 = {
     "owner": owner1
 };
 
-const pet2 = {
+const class2 = {
     "id": 2,
     "name": "Basil",
     "birthDate": "2012-08-06",
@@ -96,17 +96,17 @@ const pet2 = {
     "owner": owner2
 };
 
-const vet1 = {
+const instructor1 = {
     "id": 1,
     "firstName": "James",
     "lastName": "Carter",
     "specialties": [],
-    "user": userVet1,
+    "user": userInstructor1,
     "city": "Sevilla",
-    "clinic": clinic1
+    "gym": gym1
 }
 
-const vet2 = {
+const instructor2 = {
     "id": 2,
     "firstName": "Helen",
     "lastName": "Leary",
@@ -116,17 +116,17 @@ const vet2 = {
             "name": "radiology"
         }
     ],
-    "user": userVet2,
+    "user": userInstructor2,
     "city": "Sevilla",
-    "clinic": clinic2
+    "gym": gym2
 };
 
 const visit1 = {
     "id": 1,
     "datetime": "2013-01-01T13:00:00",
     "description": "rabies shot",
-    "pet": pet1,
-    "vet": vet1,
+    "class": class1,
+    "instructor": instructor1,
     "city": "Badajoz",
 };
 
@@ -134,8 +134,8 @@ const visit2 = {
     "id": 2,
     "datetime": "2013-01-02T15:30:00",
     "description": "",
-    "pet": pet1,
-    "vet": vet2
+    "class": class1,
+    "instructor": instructor2
 };
 
 const consultation1 = {
@@ -143,7 +143,7 @@ const consultation1 = {
     "title": "Mi gato no come",
     "status": "ANSWERED",
     "owner": owner2,
-    "pet": pet1,
+    "class": class1,
     "creationDate": "2023-04-11T11:20:00"
 };
 
@@ -152,7 +152,7 @@ const consultation2 = {
     "title": "Título 2",
     "status": "PENDING",
     "owner": owner1,
-    "pet": pet1,
+    "class": class1,
     "creationDate": "2023-04-11T11:20:00"
 };
 
@@ -168,7 +168,7 @@ const ticket2 = {
     "id": 2,
     "description": "Rabies' one.",
     "creationDate": "2023-01-04T17:36:00",
-    "user": userVet1,
+    "user": userInstructor1,
     "consultation": consultation1
 }
 
@@ -177,13 +177,13 @@ export const handlers = [
 
     http.get('*/api/v1/owners', () => HttpResponse.json([owner1, owner2])),
 
-    http.get('*/api/v1/pets', () => HttpResponse.json([pet1, pet2])),
+    http.get('*/api/v1/classes', () => HttpResponse.json([class1, class2])),
 
     http.get('*/api/v1/users', () => HttpResponse.json([userAdmin1, userOwner1])),
 
-    http.get('*/api/v1/vets', () => HttpResponse.json([vet1, vet2])),
+    http.get('*/api/v1/instructors', () => HttpResponse.json([instructor1, instructor2])),
 
-    http.get('*/api/v1/vets/specialties', () => HttpResponse.json([
+    http.get('*/api/v1/instructors/specialties', () => HttpResponse.json([
                 {
                     "id": 1,
                     "name": "radiology"
@@ -198,7 +198,7 @@ export const handlers = [
                 }
             ])),
 
-    http.get('*/api/v1/pets/:petId/visits', () => HttpResponse.json([visit1, visit2])),
+    http.get('*/api/v1/classes/:classId/visits', () => HttpResponse.json([visit1, visit2])),
 
     http.get('*/api/v1/consultations', () => HttpResponse.json([consultation1, consultation2])),
 
@@ -219,7 +219,7 @@ export const handlers = [
         "title": "Consulta sobre vacunas",
         "status": "CLOSED",
         "owner": owner1,
-        "pet": pet1,
+        "class": class1,
         "creationDate": "2023-01-04T17:30:00"
     })),
 

@@ -9,12 +9,12 @@ import {
   ModalHeader,
 } from "reactstrap";
 import FormGenerator from "../../../components/formGenerator/formGenerator";
-import { petEditFormInputs } from "./form/petEditFormInputs";
-import "../../../static/css/owner/editPet.css";
+import { classEditFormInputs } from "./form/classEditFormInputs";
+import "../../../static/css/owner/editClasses.css";
 import "../../../static/css/auth/authButton.css"
 import useFetchState from "../../../util/useFetchState";
 
-export default function OwnerPetEdit(){
+export default function OwnerClassesEdit(){
   let pathArray = window.location.pathname.split("/");
   const emptyItem = {
     id: null,
@@ -27,29 +27,28 @@ export default function OwnerPetEdit(){
   const [message,setMessage] = useState(null);
   const [modalShow,setModalShow] = useState(false);
   const [types, setTypes] = useState([])
-  const [pet,setPet] = useState(emptyItem);  
-  const [petId,setPetId] = useState(pathArray[2]);
-  const editPetFormRef=useRef();
+  const [classEntity, setClassEntity] = useState(emptyItem);
+  const [classId] = useState(pathArray[2]);
+  const editClassesFormRef = useRef();
   
-  useEffect( () => setupPet(),[]);  
+  useEffect( () => setupClasses(),[]);  
   
-  function setupPet(){
-      if (petId !== "new" && pet.id==null) { 
-        const pet = fetch(
-            `/api/v1/pets/${petId}`, 
+  function setupClasses(){
+      if (classId !== "new" && classEntity.id == null) {
+        fetch(
+            `/api/v1/classes/${classId}`, 
             {
               headers: {
               Authorization: `Bearer ${jwt}`,
             },
           })
-          .then((p) => p.json())
-          .then((p) => {
-            if(p.message){ 
-              setMessage(pet.message);
+          .then((response) => response.json())
+          .then((data) => {
+            if(data.message){
+              setMessage(data.message);
               setModalShow( true );
             }else {
-              setPet(p);
-              setPetId(p.id);                
+              setClassEntity(data);
             }
           }).catch(m =>{
             setMessage(m);
@@ -57,7 +56,7 @@ export default function OwnerPetEdit(){
           });          
     }    
     if(types.length===0){
-      fetch(`/api/v1/pets/types`, {
+      fetch(`/api/v1/classes/types`, {
           headers: {
             Authorization: `Bearer ${jwt}`,
           },
@@ -77,36 +76,36 @@ export default function OwnerPetEdit(){
     const target = event.target;
     const value = target.value;
     const name = target.name;
-    let newPet = { ...pet };
+    const newClass = { ...classEntity };
     if (name === "type")
-      newPet.type= types.filter(
+      newClass.type= types.filter(
                 (type) => type.id === Number(value))[0];
     else 
-      newPet.name = value;
-    setPet(newPet);
+      newClass[name] = value;
+    setClassEntity(newClass);
   }  
 
   async function handleSubmit({ values }) {
 
-    if (!editPetFormRef.current.validate()) return;
+    if (!editClassesFormRef.current.validate()) return;
 
-    const mypet = {
-      id: pet.id,
+    const classPayload = {
+      id: classEntity.id,
       name: values["name"],
       birthDate: values["birthDate"],
       type: types.filter((type) => type.name === values["type"])[0],
-      owner: pet.owner,
+      owner: classEntity.owner,
     };
 
-    const submit = await (await fetch("/api/v1/pets" + (pet.id ? "/" + petId : ""), 
+    const submit = await (await fetch("/api/v1/classes" + (classEntity.id ? "/" + classId : ""),
       {
-        method: mypet.id ? "PUT" : "POST",
+        method: classPayload.id ? "PUT" : "POST",
         headers: {
           Authorization: `Bearer ${jwt}`,
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(mypet),
+        body: JSON.stringify(classPayload),
       }
     )).json();
 
@@ -114,27 +113,27 @@ export default function OwnerPetEdit(){
       setMessage(submit.message);
       setModalShow(true);
     }
-    else window.location.href = `/myPets`;
+    else window.location.href = `/myClasses`;
   }
   
     const title = (
-      <h2 className="text-center">{pet.id ? "Edit Pet" : "Add Pet"}</h2>
+      <h2 className="text-center">{classEntity.id ? "Edit Class" : "Add Class"}</h2>
     );
 
-    petEditFormInputs.forEach(i => i.handleChange=handleChange);
+    classEditFormInputs.forEach(i => i.handleChange=handleChange);
     
 
-    if (petEditFormInputs[2].values.length < 2) {
-      petEditFormInputs[2].values = [
-        ...petEditFormInputs[2].values,
+    if (classEditFormInputs[2].values.length < 2) {
+      classEditFormInputs[2].values = [
+        ...classEditFormInputs[2].values,
         ...types.map((type) => type.name),
       ];
     }
 
-    if (pet && petEditFormInputs[2].values.length >= 2) {
-      petEditFormInputs[0].defaultValue = pet.name || "";
-      petEditFormInputs[1].defaultValue = pet.birthDate || "";
-      petEditFormInputs[2].defaultValue = pet.type.name || "None";
+    if (classEntity && classEditFormInputs[2].values.length >= 2) {
+      classEditFormInputs[0].defaultValue = classEntity.name || "";
+      classEditFormInputs[1].defaultValue = classEntity.birthDate || "";
+      classEditFormInputs[2].defaultValue = classEntity.type?.name || "None";
     }
 
     function handleShow() {
@@ -163,7 +162,7 @@ export default function OwnerPetEdit(){
             )}
             <ModalBody>{message || ""}</ModalBody>
             <ModalFooter>
-              <Button color="primary" tag={Link} to={`/myPets`}>
+              <Button color="primary" tag={Link} to={`/myClasses`}>
                 Back
               </Button>
             </ModalFooter>
@@ -173,12 +172,12 @@ export default function OwnerPetEdit(){
     }
 
     return (
-      <div className="edit-pet-page-container">
-        <div className="edit-pet-form-container">
+      <div className="edit-class-page-container">
+        <div className="edit-class-form-container">
           {title}
           <FormGenerator
-            ref={editPetFormRef}
-            inputs={petEditFormInputs}
+            ref={editClassesFormRef}
+            inputs={classEditFormInputs}
             onSubmit={handleSubmit}
             buttonText="Save"
             buttonClassName="auth-button"
@@ -188,4 +187,3 @@ export default function OwnerPetEdit(){
       </div>
     );
   }
-

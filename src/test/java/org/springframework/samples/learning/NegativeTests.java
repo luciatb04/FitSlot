@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * Integration test of the Service and the Repository layer.
  * <p>
- * ClinicServiceSpringDataJpaTests subclasses benefit from the following services provided
+ * GymServiceSpringDataJpaTests subclasses benefit from the following services provided
  * by the Spring TestContext Framework:
  * </p>
  * <ul>
@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * <li><strong>Dependency Injection</strong> of test fixture instances, meaning that we
  * don't need to perform application context lookups. See the use of
  * {@link Autowired @Autowired} on the <code>{@link
- * ClinicServiceTests#clinicService clinicService}</code> instance variable, which uses
+ * GymServiceTests#gymService gymService}</code> instance variable, which uses
  * autowiring <em>by type</em>.
  * <li><strong>Transaction management</strong>, meaning each test method is executed in
  * its own transaction, which is automatically rolled back by default. Thus, even if tests
@@ -50,7 +50,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Dave Syer
  */
 
-class NegativeTests {         
+public class NegativeTests {         
 
 	@Test
 	  void testExpectedException() {

@@ -8,51 +8,51 @@ class VisitEdit extends Component {
         id: '',
         datetime: '',
         description: '',
-        vet: {},
-        pet: {},
+        instructor: {},
+        class: {},
     };
 
     constructor(props) {
         super(props);
         this.state = {
             visit: this.emptyVisit,
-            pet: {},
-            vets: [],
+            class: {},
+            instructors: [],
             message: null,
             modalShow: false,
         };
         this.handleChange = this.handleChange.bind(this);
-        this.handleVetChange = this.handleVetChange.bind(this);
+        this.handleInstructorChange = this.handleInstructorChange.bind(this);
         this.handleShow = this.handleShow.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.jwt = JSON.parse(window.localStorage.getItem("jwt"));
 
         let pathArray = window.location.pathname.split('/');
-        this.petId = pathArray[2];
+        this.classId = pathArray[2];
         this.visitId = pathArray[4];
     }
 
     async componentDidMount() {
-        const pet = await (await fetch(`/api/v1/pets/${this.petId}`, {
+        const class = await (await fetch(`/api/v1/classes/${this.classId}`, {
             headers: {
                 "Authorization": `Bearer ${this.jwt}`,
             },
         })).json();
-        if (pet.message) this.setState({ message: pet.message, modalShow: true });
-        else this.setState({ pet: pet });
+        if (class.message) this.setState({ message: class.message, modalShow: true });
+        else this.setState({ class: class });
 
         if (!this.state.message) {
-            const vets = await (await fetch(`/api/v1/vets/`, {
+            const instructors = await (await fetch(`/api/v1/instructors/`, {
                 headers: {
                     "Authorization": `Bearer ${this.jwt}`,
                 },
             })).json();
-            this.setState({ vets: vets });
-            if (vets.message) this.setState({ message: vets.message, modalShow: true });
-            else this.setState({ vets: vets });
+            this.setState({ instructors: instructors });
+            if (instructors.message) this.setState({ message: instructors.message, modalShow: true });
+            else this.setState({ instructors: instructors });
 
             if (this.visitId !== 'new' && !this.state.message) {
-                const visit = await (await fetch(`/api/v1/pets/${this.petId}/visits/${this.visitId}`, {
+                const visit = await (await fetch(`/api/v1/classes/${this.classId}/visits/${this.visitId}`, {
                     headers: {
                         "Authorization": `Bearer ${this.jwt}`,
                     },
@@ -72,14 +72,14 @@ class VisitEdit extends Component {
         this.setState({ visit });
     }
 
-    handleVetChange(event) {
+    handleInstructorChange(event) {
         const target = event.target;
         const value = Number(target.value);
-        const vets = [...this.state.vets]
-        let selectedVet = null;
-        selectedVet = vets.filter((vet) => vet.id === value)[0];
+        const instructors = [...this.state.instructors]
+        let selectedInstructor = null;
+        selectedInstructor = instructors.filter((instructor) => instructor.id === value)[0];
         let visit = { ...this.state.visit };
-        visit["vet"] = selectedVet;
+        visit["instructor"] = selectedInstructor;
         this.setState({ visit });
     }
 
@@ -91,10 +91,10 @@ class VisitEdit extends Component {
     async handleSubmit(event) {
         event.preventDefault();
         let visit = { ...this.state.visit };
-        const pet = { ...this.state.pet };
-        visit["pet"] = pet;
+        const class = { ...this.state.class };
+        visit["class"] = class;
 
-        const submit = await (await fetch(`/api/v1/pets/${this.petId}/visits` + (visit.id ? '/' + visit.id : ''), {
+        const submit = await (await fetch(`/api/v1/classes/${this.classId}/visits` + (visit.id ? '/' + visit.id : ''), {
             method: (visit.id) ? 'PUT' : 'POST',
             headers: {
                 "Authorization": `Bearer ${this.jwt}`,
@@ -104,15 +104,15 @@ class VisitEdit extends Component {
             body: JSON.stringify(visit),
         })).json();
         if (submit.message) this.setState({ message: submit.message, modalShow: true });
-        else window.location.href = `/pets/${this.petId}/visits`;
+        else window.location.href = `/classes/${this.classId}/visits`;
 
     }
 
     render() {
-        const { visit, pet, vets } = this.state;
+        const { visit, class, instructors } = this.state;
         const title = <h2>{visit.id ? 'Edit Visit' : 'Add Visit'}</h2>;
 
-        const vetOptions = vets.map(vet => <option key={vet.id} value={vet.id}>{vet.firstName} {vet.lastName}</option>);
+        const instructorOptions = instructors.map(instructor => <option key={instructor.id} value={instructor.id}>{instructor.firstName} {instructor.lastName}</option>);
 
         let modal = <></>;
         if (this.state.message) {
@@ -131,7 +131,7 @@ class VisitEdit extends Component {
                     </ModalBody>
                     <ModalFooter>
                         <Button color="info" onClick={this.handleShow} type="button">Close</Button>
-                        <Button color="primary" tag={Link} to={`/myPets`}>Back</Button>
+                        <Button color="primary" tag={Link} to={`/myClasses`}>Back</Button>
                     </ModalFooter>
                 </Modal></div>
         }
@@ -152,20 +152,20 @@ class VisitEdit extends Component {
                             onChange={this.handleChange} autoComplete="description" />
                     </FormGroup>
                     <FormGroup>
-                        <Label for="vet">Vet</Label>
-                        <Input type="select" required name="vet" id="vet" value={visit.vet.id}
-                            onChange={this.handleVetChange} autoComplete="vet">
+                        <Label for="instructor">Instructor</Label>
+                        <Input type="select" required name="instructor" id="instructor" value={visit.instructor.id}
+                            onChange={this.handleInstructorChange} autoComplete="instructor">
                             <option value="">None</option>
-                            {vetOptions}
+                            {instructorOptions}
                         </Input>
                     </FormGroup>
                     <FormGroup>
-                        <Label for="pet">Pet</Label>
-                        <p>{pet.name || ''}</p>
+                        <Label for="class">Class</Label>
+                        <p>{class.name || ''}</p>
                     </FormGroup>
                     <FormGroup>
                         <Button color="primary" type="submit">Save</Button>{' '}
-                        <Button color="secondary" tag={Link} to={`/pets/${this.petId}/visits`}>Cancel</Button>
+                        <Button color="secondary" tag={Link} to={`/classes/${this.classId}/visits`}>Cancel</Button>
                     </FormGroup>
                 </Form>
             </Container>

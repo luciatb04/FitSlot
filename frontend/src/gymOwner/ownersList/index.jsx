@@ -8,12 +8,12 @@ import useFetchState from "../../util/useFetchState";
 const user = tokenService.getUser();
 const jwt = tokenService.getLocalAccessToken();
 
-export default function OwnerListClinicOwner(){
+export default function OwnerListGymOwner(){
   const [message, setMessage] = useState(null);
   const [visible, setVisible] = useState(false);
   const [owners, ] = useFetchState(
     [],
-    `/api/v1/clinics/owners?userId=${user.id}`,
+    `/api/v1/gyms/owners?userId=${user.id}`,
     jwt,
     setMessage,
     setVisible
@@ -31,7 +31,7 @@ export default function OwnerListClinicOwner(){
         <td>{owner.city}</td>
         <td>{owner.telephone}</td>
         <td>{owner.user.username}</td>
-        <td>{owner.clinic.name}</td>
+        <td>{owner.gym.name}</td>
       </tr>
     );
   });
@@ -53,7 +53,7 @@ export default function OwnerListClinicOwner(){
                 <th width="15%">City</th>
                 <th width="15%">Telephone</th>
                 <th width="15%">User</th>
-                <th width="20%">Clinic</th>
+                <th width="20%">Gym</th>
               </tr>
             </thead>
             <tbody>{ownerList}</tbody>

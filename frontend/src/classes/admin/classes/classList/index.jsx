@@ -3,26 +3,26 @@ import { Button, ButtonGroup, Container, Table } from "reactstrap";
 // import AppNavbar from "../AppNavbar";
 import { Link } from "react-router-dom";
 
-class PetList extends Component {
+class ClassList extends Component {
     constructor(props) {
         super(props);
-        this.state = { pets: [] };
+        this.state = { classes: [] };
         this.remove = this.remove.bind(this);
         this.jwt = JSON.parse(window.localStorage.getItem("jwt"));
     }
 
     componentDidMount() {
-        fetch("/api/v1/pets", {
+        fetch("/api/v1/classes", {
             headers: {
                 "Authorization": `Bearer ${this.jwt}`,
                 "Content-Type": "application/json",
             },
         }).then((response) => response.json())
-            .then((data) => this.setState({ pets: data }));
+            .then((data) => this.setState({ classes: data }));
     }
 
     async remove(id) {
-        await fetch(`/api/v1/pets/${id}`, {
+        await fetch(`/api/v1/classes/${id}`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${this.jwt}`,
@@ -31,8 +31,8 @@ class PetList extends Component {
             },
         }).then((response) => {
             if (response.status === 200) {
-                let updatedPets = [...this.state.pets].filter((i) => i.id !== id);
-                this.setState({ pets: updatedPets });
+                let updatedClasses = [...this.state.classes].filter((i) => i.id !== id);
+                this.setState({ classes: updatedClasses });
             }
             return response.json();
         }).then(function (data) {
@@ -41,32 +41,32 @@ class PetList extends Component {
     }
 
     render() {
-        const { pets, isLoading } = this.state;
+        const { classes, isLoading } = this.state;
 
         if (isLoading) {
             return <p>Loading...</p>;
         }
 
-        const petList = pets.map((pet) => {
+        const classList = classes.map((classEntity) => {
             return (
-                <tr key={pet.id}>
-                    <td>{pet.name}</td>
-                    <td>{pet.birthDate}</td>
-                    <td>{pet.type?.name}</td>
-                    <td>{pet.owner.user.username}</td>
+                <tr key={classEntity.id}>
+                    <td>{classEntity.name}</td>
+                    <td>{classEntity.birthDate}</td>
+                    <td>{classEntity.type?.name}</td>
+                    <td>{classEntity.owner?.user?.username}</td>
                     <td>
                         <Button size="sm" color="info" tag={Link}
-                            to={`/pets/${pet.id}/visits`}>
+                            to={`/classes/${classEntity.id}/visits`}>
                             Visits
                         </Button>
                     </td>
                     <td>
                         <ButtonGroup>
                             <Button size="sm" color="primary" tag={Link}
-                                to={"/pets/" + pet.id}>
+                                to={"/classes/" + classEntity.id}>
                                 Edit
                             </Button>
-                            <Button size="sm" color="danger" onClick={() => this.remove(pet.id)}>
+                            <Button size="sm" color="danger" onClick={() => this.remove(classEntity.id)}>
                                 Delete
                             </Button>
                         </ButtonGroup>
@@ -79,9 +79,9 @@ class PetList extends Component {
             <div>
                 {/* <AppNavbar /> */}
                 <Container style={{ marginTop: "15px" }} fluid>
-                    <h1 className="text-center">Pets</h1>
-                    <Button color="success" tag={Link} to="/pets/new">
-                        Add Pet
+                    <h1 className="text-center">Classes</h1>
+                    <Button color="success" tag={Link} to="/classes/new">
+                        Add Class
                     </Button>
                     <Table className="mt-4">
                         <thead>
@@ -94,7 +94,7 @@ class PetList extends Component {
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>{petList}</tbody>
+                        <tbody>{classList}</tbody>
                     </Table>
                 </Container>
             </div>
@@ -102,4 +102,4 @@ class PetList extends Component {
     }
 }
 
-export default PetList;
+export default ClassList;

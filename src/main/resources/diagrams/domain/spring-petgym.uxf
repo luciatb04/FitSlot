@@ -33,7 +33,7 @@
       <w>210</w>
       <h>70</h>
     </coordinates>
-    <panel_attributes>Pet
+    <panel_attributes>Class
 --
 birthDate: Date {Past}
 </panel_attributes>
@@ -47,7 +47,7 @@ birthDate: Date {Past}
       <w>100</w>
       <h>40</h>
     </coordinates>
-    <panel_attributes>Vet</panel_attributes>
+    <panel_attributes>Instructor</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -152,7 +152,7 @@ owns &gt;</panel_attributes>
       <w>120</w>
       <h>40</h>
     </coordinates>
-    <panel_attributes>PetType
+    <panel_attributes>ClassType
 </panel_attributes>
     <additional_attributes/>
   </element>

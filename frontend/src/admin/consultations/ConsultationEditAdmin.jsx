@@ -17,7 +17,8 @@ export default function ConsultationEditAdmin() {
     title: "",
     status: null,
     owner: null,
-    isClinicComment: false,
+    classes: null,
+    isGymComment: false,
   };
   const id = getIdFromUrl(2);
   const [message, setMessage] = useState(null);
@@ -31,8 +32,8 @@ export default function ConsultationEditAdmin() {
     id
   );
   const owners = useFetchData("/api/v1/owners", jwt);
-  const pets = useFetchData(`/api/v1/pets`, jwt);
-  const [petsOwned, setPetsOwned] = useState([]);
+  const classes = useFetchData(`/api/v1/classes`, jwt);
+  const [classsOwned, setClassesOwned] = useState([]);
 
   function handleChange(event) {
     const target = event.target;
@@ -41,12 +42,16 @@ export default function ConsultationEditAdmin() {
     if (name === "owner") {
       const owner = owners.find((owner) => owner.id === Number(value));
       setConsultation({ ...consultation, owner: owner });
-      setPetsOwned(pets.filter((pet) => pet.owner.id === Number(value)));
-    } else if (name === "pet") {
-      const pet = pets.find((pet) => pet.id === Number(value));
-      setConsultation({ ...consultation, pet: pet });
-    } else if (name === "isClinicComment"){
-      setConsultation({...consultation, isClinicComment: target.checked ? true : false});
+      setClassesOwned(
+        classes.filter((classEntity) => classEntity.owner?.id === Number(value))
+      );
+    } else if (name === "classes") {
+      const classEntity = classes.find(
+        (classEntity) => classEntity.id === Number(value)
+      );
+      setConsultation({ ...consultation, classes: classEntity });
+    } else if (name === "isGymComment"){
+      setConsultation({...consultation, isGymComment: target.checked ? true : false});
     } else {
       setConsultation({ ...consultation, [name]: value });
     }
@@ -83,18 +88,18 @@ export default function ConsultationEditAdmin() {
       {owner.user.username}
     </option>
   ));
-  let petOptions;
-  if (consultation.id)
-    petOptions = (
-      <option key={consultation.pet.id} value={consultation.pet.id}>
-        {consultation.pet.name}
+  let classOptions;
+  if (consultation.id && consultation.classes)
+    classOptions = (
+      <option key={consultation.classes.id} value={consultation.classes.id}>
+        {consultation.classes.name}
       </option>
     );
   else
-    petOptions = consultation.owner ? (
-      petsOwned.map((pet) => (
-        <option key={pet.id} value={pet.id}>
-          {pet.name}
+    classOptions = consultation.owner ? (
+      classsOwned.map((classEntity) => (
+        <option key={classEntity.id} value={classEntity.id}>
+          {classEntity.name}
         </option>
       ))
     ) : (
@@ -173,52 +178,52 @@ export default function ConsultationEditAdmin() {
             )}
           </div>
           <div className="custom-form-input">
-            <Label for="pet" className="custom-form-input-label">
-              Pet
+            <Label for="classes" className="custom-form-input-label">
+              Class
             </Label>
             {consultation.id ? (
               <Input
                 type="select"
                 disabled
-                name="pet"
-                id="pet"
-                value={consultation.pet?.id || ""}
+                name="classes"
+                id="classes"
+                value={consultation.classes?.id || ""}
                 onChange={handleChange}
                 className="custom-input"
               >
                 <option value="">None</option>
-                {petOptions}
+                {classOptions}
               </Input>
             ) : (
               <Input
                 type="select"
                 required
-                name="pet"
-                id="pet"
-                value={consultation.pet?.id || ""}
+                name="classes"
+                id="classes"
+                value={consultation.classes?.id || ""}
                 onChange={handleChange}
                 className="custom-input"
               >
                 <option value="">None</option>
-                {petOptions}
+                {classOptions}
               </Input>
             )}
           </div>
           <div className="consultation-checkbox-container">
-            <label htmlFor="isClinicComment">
-              ¿Is the consultation a comment for the clinic?
+            <label htmlFor="isGymComment">
+              ¿Is the consultation a comment for the gym?
             </label>
             <div className="checkbox-wrapper-10">
               <Input
                 type="checkbox"
-                id="isClinicComment"
+                id="isGymComment"
                 className="tgl tgl-flip"
                 onChange={handleChange}
-                name="isClinicComment"
-                checked={consultation.isClinicComment}
+                name="isGymComment"
+                checked={consultation.isGymComment}
               />
               <label
-                htmlFor="isClinicComment"
+                htmlFor="isGymComment"
                 data-tg-on="Yes"
                 data-tg-off="No"
                 className="tgl-btn"

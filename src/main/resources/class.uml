@@ -4,7 +4,7 @@
     <eAnnotations xmi:id="_WPWS0ORXEe2tGYjis3CJEQ" source="http://ns.yatta.de/umllab">
       <contents xmi:type="ecore:EAnnotation" xmi:id="_WPWS0eRXEe2tGYjis3CJEQ" source="codegen">
         <details xmi:id="_WPW54ORXEe2tGYjis3CJEQ" key="codegenDirectory" value="/TFG-rafsanesp/src/main/java"/>
-        <details xmi:id="_XVjs8ORXEe2tGYjis3CJEQ" key="AssociatedSourceCode" value="/TFG-rafsanesp/src/main/java/org/springframework/samples/petclinic/vet/Specialty.java;355893302/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/petclinic/model/NamedEntity.java;391884313/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/petclinic/model/Person.java;1419873321/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/petclinic/owner/Owner.java;2702717819/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/petclinic/owner/PricingPlan.java;2154484877/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/petclinic/pet/Pet.java;3413064518/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/petclinic/pet/PetType.java;3267037478/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/petclinic/user/Authorities.java;2467694921/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/petclinic/user/User.java;1413578845/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/petclinic/consultation/Ticket.java;2324209440/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/petclinic/consultation/Consultation.java;4197651120/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/petclinic/vet/Vet.java;4253523977/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/petclinic/visit/Visit.java;195937984/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/petclinic/consultation/ConsultationStatus.java;3307093216/1;"/>
+        <details xmi:id="_XVjs8ORXEe2tGYjis3CJEQ" key="AssociatedSourceCode" value="/TFG-rafsanesp/src/main/java/org/springframework/samples/gym/instructor/Specialty.java;355893302/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/gym/model/NamedEntity.java;391884313/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/gym/model/Person.java;1419873321/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/gym/owner/Owner.java;2702717819/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/gym/owner/PricingPlan.java;2154484877/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/gym/class/Class.java;3413064518/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/gym/class/ClassType.java;3267037478/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/gym/user/Authorities.java;2467694921/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/gym/user/User.java;1413578845/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/gym/consultation/Ticket.java;2324209440/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/gym/consultation/Consultation.java;4197651120/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/gym/instructor/Instructor.java;4253523977/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/gym/visit/Visit.java;195937984/1;/TFG-rafsanesp/src/main/java/org/springframework/samples/gym/consultation/ConsultationStatus.java;3307093216/1;"/>
       </contents>
       <contents xmi:type="ecore:EAnnotation" xmi:id="_fB-oQORmEe2ed5xORDi_qw" source="preferences">
         <contents xmi:type="ecore:EAnnotation" xmi:id="_fB-oQeRmEe2ed5xORDi_qw" source="com.yattasolutions.codegen.reverse">
@@ -44,7 +44,7 @@
     <packagedElement xmi:type="uml:Package" xmi:id="_Wq_tAORXEe2tGYjis3CJEQ" name="org">
       <packagedElement xmi:type="uml:Package" xmi:id="_WrAUEORXEe2tGYjis3CJEQ" name="springframework">
         <packagedElement xmi:type="uml:Package" xmi:id="_WrA7IORXEe2tGYjis3CJEQ" name="samples">
-          <packagedElement xmi:type="uml:Package" xmi:id="_WrA7IeRXEe2tGYjis3CJEQ" name="petclinic">
+          <packagedElement xmi:type="uml:Package" xmi:id="_WrA7IeRXEe2tGYjis3CJEQ" name="gym">
             <packagedElement xmi:type="uml:Package" xmi:id="_WrGasORXEe2tGYjis3CJEQ" name="model">
               <packagedElement xmi:type="uml:Class" xmi:id="_Ws2uMuRXEe2tGYjis3CJEQ" name="NamedEntity">
                 <ownedComment xmi:id="_W4n5UORXEe2tGYjis3CJEQ">
@@ -140,11 +140,11 @@ a base class for objects needing these properties.&#xD;
               </packagedElement>
               <packagedElement xmi:type="uml:Class" xmi:id="_W26pIORXEe2tGYjis3CJEQ" name="BaseEntity"/>
             </packagedElement>
-            <packagedElement xmi:type="uml:Package" xmi:id="_WrI28ORXEe2tGYjis3CJEQ" name="vet">
+            <packagedElement xmi:type="uml:Package" xmi:id="_WrI28ORXEe2tGYjis3CJEQ" name="instructor">
               <packagedElement xmi:type="uml:Class" xmi:id="_WspS0ORXEe2tGYjis3CJEQ" name="Specialty">
                 <generalization xmi:id="_W1nBkeRXEe2tGYjis3CJEQ" general="_Ws2uMuRXEe2tGYjis3CJEQ"/>
               </packagedElement>
-              <packagedElement xmi:type="uml:Class" xmi:id="_WvGw8ORXEe2tGYjis3CJEQ" name="Vet">
+              <packagedElement xmi:type="uml:Class" xmi:id="_WvGw8ORXEe2tGYjis3CJEQ" name="Instructor">
                 <generalization xmi:id="_W3kwceRXEe2tGYjis3CJEQ" general="_WtMscORXEe2tGYjis3CJEQ"/>
                 <ownedAttribute xmi:id="_W4Qs8ORXEe2tGYjis3CJEQ" name="specialties" visibility="private" type="_WspS0ORXEe2tGYjis3CJEQ" isOrdered="true" association="_W51aQeRXEe2tGYjis3CJEQ">
                   <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_KQVRMORZEe2tGYjis3CJEQ"/>
@@ -275,10 +275,10 @@ a base class for objects needing these properties.&#xD;
                 <ownedEnd xmi:id="_W43w8eRXEe2tGYjis3CJEQ" name="" type="_WtbV8ORXEe2tGYjis3CJEQ" association="_W43w8ORXEe2tGYjis3CJEQ"/>
               </packagedElement>
             </packagedElement>
-            <packagedElement xmi:type="uml:Package" xmi:id="_WrwiAORXEe2tGYjis3CJEQ" name="pet">
-              <packagedElement xmi:type="uml:Class" xmi:id="_WtvfAORXEe2tGYjis3CJEQ" name="Pet">
+            <packagedElement xmi:type="uml:Package" xmi:id="_WrwiAORXEe2tGYjis3CJEQ" name="class">
+              <packagedElement xmi:type="uml:Class" xmi:id="_WtvfAORXEe2tGYjis3CJEQ" name="Class">
                 <ownedComment xmi:id="_W4puguRXEe2tGYjis3CJEQ">
-                  <body>Simple business object representing a pet.&#xD;
+                  <body>Simple business object representing a class.&#xD;
  *&#xD;
 @author Ken Krebs&#xD;
 @author Juergen Hoeller&#xD;
@@ -289,7 +289,7 @@ a base class for objects needing these properties.&#xD;
                 <ownedAttribute xmi:id="_W4Ft0ORXEe2tGYjis3CJEQ" name="type" visibility="private" type="_Wt_9sORXEe2tGYjis3CJEQ" association="_W5D-MORXEe2tGYjis3CJEQ"/>
                 <ownedAttribute xmi:id="_W4GU4uRXEe2tGYjis3CJEQ" name="owner" visibility="protected" type="_WtbV8ORXEe2tGYjis3CJEQ" association="_W5I2sORXEe2tGYjis3CJEQ"/>
               </packagedElement>
-              <packagedElement xmi:type="uml:Class" xmi:id="_Wt_9sORXEe2tGYjis3CJEQ" name="PetType">
+              <packagedElement xmi:type="uml:Class" xmi:id="_Wt_9sORXEe2tGYjis3CJEQ" name="ClassType">
                 <ownedComment xmi:id="_W4qVk-RXEe2tGYjis3CJEQ">
                   <body>@author Juergen Hoeller Can be Cat, Dog, Hamster...</body>
                 </ownedComment>
@@ -325,7 +325,7 @@ a base class for objects needing these properties.&#xD;
                 </ownedAttribute>
                 <ownedAttribute xmi:id="_W4NppORXEe2tGYjis3CJEQ" name="status" visibility="private" type="_fOmH8ORmEe2ed5xORDi_qw"/>
                 <ownedAttribute xmi:id="_W4OQsuRXEe2tGYjis3CJEQ" name="owner" visibility="private" type="_WtbV8ORXEe2tGYjis3CJEQ" association="_W5jGYeRXEe2tGYjis3CJEQ"/>
-                <ownedAttribute xmi:id="_W4O3xeRXEe2tGYjis3CJEQ" name="pet" visibility="private" type="_WtvfAORXEe2tGYjis3CJEQ" association="_W5p0EeRXEe2tGYjis3CJEQ"/>
+                <ownedAttribute xmi:id="_W4O3xeRXEe2tGYjis3CJEQ" name="class" visibility="private" type="_WtvfAORXEe2tGYjis3CJEQ" association="_W5p0EeRXEe2tGYjis3CJEQ"/>
                 <ownedAttribute xmi:id="_W4Pe1uRXEe2tGYjis3CJEQ" name="creationDate" visibility="private" type="_W3FoQORXEe2tGYjis3CJEQ" association="_W5whweRXEe2tGYjis3CJEQ"/>
               </packagedElement>
               <packagedElement xmi:type="uml:Association" xmi:id="_W5Uc4ORXEe2tGYjis3CJEQ" name="" memberEnd="_W5Uc4eRXEe2tGYjis3CJEQ _W4J_RORXEe2tGYjis3CJEQ">
@@ -371,8 +371,8 @@ a base class for objects needing these properties.&#xD;
                 <ownedAttribute xmi:id="_W4VlcuRXEe2tGYjis3CJEQ" name="description" visibility="private">
                   <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
                 </ownedAttribute>
-                <ownedAttribute xmi:id="_W4XaoORXEe2tGYjis3CJEQ" name="pet" visibility="private" type="_WtvfAORXEe2tGYjis3CJEQ" association="_W6L_keRXEe2tGYjis3CJEQ"/>
-                <ownedAttribute xmi:id="_W4YBsuRXEe2tGYjis3CJEQ" name="vet" visibility="private" type="_WvGw8ORXEe2tGYjis3CJEQ" association="_W6SGMeRXEe2tGYjis3CJEQ"/>
+                <ownedAttribute xmi:id="_W4XaoORXEe2tGYjis3CJEQ" name="class" visibility="private" type="_WtvfAORXEe2tGYjis3CJEQ" association="_W6L_keRXEe2tGYjis3CJEQ"/>
+                <ownedAttribute xmi:id="_W4YBsuRXEe2tGYjis3CJEQ" name="instructor" visibility="private" type="_WvGw8ORXEe2tGYjis3CJEQ" association="_W6SGMeRXEe2tGYjis3CJEQ"/>
                 <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_W4mrMORXEe2tGYjis3CJEQ" name="Visit" specification="_Wva6AORXEe2tGYjis3CJEQ">
                   <ownedParameter xmi:id="_W4mrMeRXEe2tGYjis3CJEQ" type="_WvTlQORXEe2tGYjis3CJEQ" direction="return"/>
                   <language>java</language>
@@ -494,7 +494,7 @@ a base class for objects needing these properties.&#xD;
     <annotations xmi:id="_Wtp_ceRXEe2tGYjis3CJEQ" name="Getter"/>
     <annotations xmi:id="_Wtp_cuRXEe2tGYjis3CJEQ" name="Setter"/>
   </UMLLabProfile:Annotations>
-  <Persistency:Table xmi:id="_Wt7FMORXEe2tGYjis3CJEQ" tableName="pets" base_Classifier="_WtvfAORXEe2tGYjis3CJEQ"/>
+  <Persistency:Table xmi:id="_Wt7FMORXEe2tGYjis3CJEQ" tableName="classes" base_Classifier="_WtvfAORXEe2tGYjis3CJEQ"/>
   <Persistency:JPA1StyledElement xmi:id="_Wt7sQORXEe2tGYjis3CJEQ" base_Element="_WtvfAORXEe2tGYjis3CJEQ"/>
   <UMLLabProfile:Annotations xmi:id="_Wt86YORXEe2tGYjis3CJEQ" base_Element="_WtvfAORXEe2tGYjis3CJEQ">
     <annotations xmi:id="_Wt86YeRXEe2tGYjis3CJEQ" name="Getter"/>
@@ -529,7 +529,7 @@ a base class for objects needing these properties.&#xD;
     <annotations xmi:id="_WvDGkeRXEe2tGYjis3CJEQ" name="Getter"/>
     <annotations xmi:id="_WvDGkuRXEe2tGYjis3CJEQ" name="Setter"/>
   </UMLLabProfile:Annotations>
-  <Persistency:Table xmi:id="_WvNeoORXEe2tGYjis3CJEQ" tableName="vets" base_Classifier="_WvGw8ORXEe2tGYjis3CJEQ"/>
+  <Persistency:Table xmi:id="_WvNeoORXEe2tGYjis3CJEQ" tableName="instructors" base_Classifier="_WvGw8ORXEe2tGYjis3CJEQ"/>
   <Persistency:JPA1StyledElement xmi:id="_WvOFsORXEe2tGYjis3CJEQ" base_Element="_WvGw8ORXEe2tGYjis3CJEQ"/>
   <UMLLabProfile:Annotations xmi:id="_WvPT0ORXEe2tGYjis3CJEQ" base_Element="_WvGw8ORXEe2tGYjis3CJEQ">
     <annotations xmi:id="_WvPT0eRXEe2tGYjis3CJEQ" name="Getter"/>
@@ -771,7 +771,7 @@ a base class for objects needing these properties.&#xD;
     <annotations xmi:id="_W4Pe0uRXEe2tGYjis3CJEQ" name="OneToOne"/>
     <annotations xmi:id="_W4Pe0-RXEe2tGYjis3CJEQ" name="JoinColumn">
       <annotationParameters xmi:id="_W4Pe1ORXEe2tGYjis3CJEQ" name="name" skipArray="true">
-        <valueSpecifications xmi:type="uml:LiteralString" xmi:id="_fOtcs-RmEe2ed5xORDi_qw" value="&quot;pet_id&quot;"/>
+        <valueSpecifications xmi:type="uml:LiteralString" xmi:id="_fOtcs-RmEe2ed5xORDi_qw" value="&quot;class_id&quot;"/>
       </annotationParameters>
       <annotationParameters xmi:id="_W4Pe1eRXEe2tGYjis3CJEQ" name="nullable" skipArray="true">
         <valueSpecifications xmi:type="uml:LiteralString" xmi:id="_fOuDwORmEe2ed5xORDi_qw" value="false"/>
@@ -799,12 +799,12 @@ a base class for objects needing these properties.&#xD;
     </annotations>
     <annotations xmi:id="_W4RUBeRXEe2tGYjis3CJEQ" name="JoinTable">
       <annotationParameters xmi:id="_W4RUBuRXEe2tGYjis3CJEQ" name="name" skipArray="true">
-        <valueSpecifications xmi:type="uml:LiteralString" xmi:id="_W4sx0eRXEe2tGYjis3CJEQ" value="&quot;vet_specialties&quot;"/>
+        <valueSpecifications xmi:type="uml:LiteralString" xmi:id="_W4sx0eRXEe2tGYjis3CJEQ" value="&quot;instructor_specialties&quot;"/>
       </annotationParameters>
       <annotationParameters xmi:id="_W4R7EORXEe2tGYjis3CJEQ" name="joinColumns" skipArray="true">
         <annotations xmi:id="_W4R7EeRXEe2tGYjis3CJEQ" name="JoinColumn">
           <annotationParameters xmi:id="_W4R7EuRXEe2tGYjis3CJEQ" name="name" skipArray="true">
-            <valueSpecifications xmi:type="uml:LiteralString" xmi:id="_W4sx0uRXEe2tGYjis3CJEQ" value="&quot;vet_id&quot;"/>
+            <valueSpecifications xmi:type="uml:LiteralString" xmi:id="_W4sx0uRXEe2tGYjis3CJEQ" value="&quot;instructor_id&quot;"/>
           </annotationParameters>
         </annotations>
       </annotationParameters>
@@ -818,7 +818,7 @@ a base class for objects needing these properties.&#xD;
       <annotationParameters xmi:id="_W4R7FuRXEe2tGYjis3CJEQ" name="uniqueConstraints">
         <annotations xmi:id="_W4R7F-RXEe2tGYjis3CJEQ" name="UniqueConstraint">
           <annotationParameters xmi:id="_W4R7GORXEe2tGYjis3CJEQ" name="columnNames">
-            <valueSpecifications xmi:type="uml:LiteralString" xmi:id="_W4tY4eRXEe2tGYjis3CJEQ" value="&quot;vet_id&quot;"/>
+            <valueSpecifications xmi:type="uml:LiteralString" xmi:id="_W4tY4eRXEe2tGYjis3CJEQ" value="&quot;instructor_id&quot;"/>
             <valueSpecifications xmi:type="uml:LiteralString" xmi:id="_W4tY4uRXEe2tGYjis3CJEQ" value="&quot;specialty_id&quot;"/>
           </annotationParameters>
         </annotations>
@@ -878,7 +878,7 @@ a base class for objects needing these properties.&#xD;
     <annotations xmi:id="_W4Xao-RXEe2tGYjis3CJEQ" name="ManyToOne"/>
     <annotations xmi:id="_W4YBsORXEe2tGYjis3CJEQ" name="JoinColumn">
       <annotationParameters xmi:id="_W4YBseRXEe2tGYjis3CJEQ" name="name" skipArray="true">
-        <valueSpecifications xmi:type="uml:LiteralString" xmi:id="_W4t_8-RXEe2tGYjis3CJEQ" value="&quot;pet_id&quot;"/>
+        <valueSpecifications xmi:type="uml:LiteralString" xmi:id="_W4t_8-RXEe2tGYjis3CJEQ" value="&quot;class_id&quot;"/>
       </annotationParameters>
     </annotations>
   </UMLLabProfile:Annotations>
@@ -887,7 +887,7 @@ a base class for objects needing these properties.&#xD;
     <annotations xmi:id="_W4YBteRXEe2tGYjis3CJEQ" name="ManyToOne"/>
     <annotations xmi:id="_W4YBtuRXEe2tGYjis3CJEQ" name="JoinColumn">
       <annotationParameters xmi:id="_W4YowORXEe2tGYjis3CJEQ" name="name" skipArray="true">
-        <valueSpecifications xmi:type="uml:LiteralString" xmi:id="_W4t_9ORXEe2tGYjis3CJEQ" value="&quot;vet_id&quot;"/>
+        <valueSpecifications xmi:type="uml:LiteralString" xmi:id="_W4t_9ORXEe2tGYjis3CJEQ" value="&quot;instructor_id&quot;"/>
       </annotationParameters>
     </annotations>
   </UMLLabProfile:Annotations>

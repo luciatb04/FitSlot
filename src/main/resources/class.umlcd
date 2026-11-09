@@ -55,7 +55,7 @@
       <visibility xmi:id="_XmwKpORXEe2tGYjis3CJEQ" label="+"/>
       <cardinality xmi:id="_XmwKpeRXEe2tGYjis3CJEQ" label="*" max="-1"/>
     </sourceRole>
-    <targetRole xmi:id="_XmwKpuRXEe2tGYjis3CJEQ" aggregationKind="NONE" name="pet" navigable="true">
+    <targetRole xmi:id="_XmwKpuRXEe2tGYjis3CJEQ" aggregationKind="NONE" name="class" navigable="true">
       <modelElement href="class.uml#_W4O3xeRXEe2tGYjis3CJEQ"/>
       <visualProperties xmi:id="_X9iS8eRXEe2tGYjis3CJEQ" position="1.0,22.99999999999997"/>
       <stereotypes xmi:id="_VYKyMuRiEe2tGYjis3CJEQ" name="LegacyStyledElement">
@@ -406,7 +406,7 @@
       <visibility xmi:id="_Xp0sxeRXEe2tGYjis3CJEQ" label="+"/>
       <cardinality xmi:id="_Xp0sxORXEe2tGYjis3CJEQ" label="*" max="-1"/>
     </sourceRole>
-    <targetRole xmi:id="_Xpy3k-RXEe2tGYjis3CJEQ" aggregationKind="NONE" name="pet" navigable="true">
+    <targetRole xmi:id="_Xpy3k-RXEe2tGYjis3CJEQ" aggregationKind="NONE" name="class" navigable="true">
       <modelElement href="class.uml#_W4XaoORXEe2tGYjis3CJEQ"/>
       <visualProperties xmi:id="_X9t5IeRXEe2tGYjis3CJEQ" position="-34.99999999999997,33.0"/>
       <stereotypes xmi:id="_VYNOcuRiEe2tGYjis3CJEQ" name="LegacyStyledElement">
@@ -434,7 +434,7 @@
       <visibility xmi:id="_Xp1T0ORXEe2tGYjis3CJEQ" label="+"/>
       <cardinality xmi:id="_Xp0syuRXEe2tGYjis3CJEQ" label="*" max="-1"/>
     </sourceRole>
-    <targetRole xmi:id="_Xpy3l-RXEe2tGYjis3CJEQ" aggregationKind="NONE" name="vet" navigable="true">
+    <targetRole xmi:id="_Xpy3l-RXEe2tGYjis3CJEQ" aggregationKind="NONE" name="instructor" navigable="true">
       <modelElement href="class.uml#_W4YBsuRXEe2tGYjis3CJEQ"/>
       <visualProperties xmi:id="_X9vHQeRXEe2tGYjis3CJEQ" position="0.9999999999999432,17.000000000000114"/>
       <stereotypes xmi:id="_VYNOdORiEe2tGYjis3CJEQ" name="LegacyStyledElement">
@@ -586,7 +586,7 @@
     </stereotypes>
     <visibility xmi:id="_XpkOFeRXEe2tGYjis3CJEQ" label="+"/>
   </nodes>
-  <nodes xsi:type="com.yattasolutions.uml.diagrams.classifier:ClassifierVisual" xmi:id="_XpsJ4ORXEe2tGYjis3CJEQ" name="Vet" associationsIn="_XpxpcORXEe2tGYjis3CJEQ" associationsOut="_XpmqUORXEe2tGYjis3CJEQ _XpnRYORXEe2tGYjis3CJEQ" generalizations="_Xpn4cORXEe2tGYjis3CJEQ">
+  <nodes xsi:type="com.yattasolutions.uml.diagrams.classifier:ClassifierVisual" xmi:id="_XpsJ4ORXEe2tGYjis3CJEQ" name="Instructor" associationsIn="_XpxpcORXEe2tGYjis3CJEQ" associationsOut="_XpmqUORXEe2tGYjis3CJEQ _XpnRYORXEe2tGYjis3CJEQ" generalizations="_Xpn4cORXEe2tGYjis3CJEQ">
     <modelElement href="class.uml#_WvGw8ORXEe2tGYjis3CJEQ"/>
     <visualProperties xmi:id="_XpsJ4eRXEe2tGYjis3CJEQ" position="-426.0,94.0" size="-1.0,-1.0"/>
     <stereotypes xmi:id="_XpsJ4uRXEe2tGYjis3CJEQ" name="Table">
@@ -995,7 +995,7 @@
         <modelElement href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
       </type>
     </attributes>
-    <attributes xmi:id="_Xp3JEuRXEe2tGYjis3CJEQ" name="pet">
+    <attributes xmi:id="_Xp3JEuRXEe2tGYjis3CJEQ" name="class">
       <modelElement href="class.uml#_W4XaoORXEe2tGYjis3CJEQ"/>
       <stereotypes xmi:id="_VYiloORiEe2tGYjis3CJEQ" name="LegacyStyledElement"/>
       <stereotypes xmi:id="_VYiloeRiEe2tGYjis3CJEQ" name="Annotations"/>
@@ -1011,11 +1011,11 @@
       <stereotypes xmi:id="_cU1FgORmEe2ed5xORDi_qw" name="Annotations"/>
       <visibility xmi:id="_Xp3JFeRXEe2tGYjis3CJEQ" label="-"/>
       <cardinality xmi:id="_Xp3JFuRXEe2tGYjis3CJEQ" label="1" max="1" min="1"/>
-      <type xmi:id="_Xp3JF-RXEe2tGYjis3CJEQ" name="Pet">
+      <type xmi:id="_Xp3JF-RXEe2tGYjis3CJEQ" name="Class">
         <modelElement href="class.uml#_WtvfAORXEe2tGYjis3CJEQ"/>
       </type>
     </attributes>
-    <attributes xmi:id="_Xp3JGORXEe2tGYjis3CJEQ" name="vet">
+    <attributes xmi:id="_Xp3JGORXEe2tGYjis3CJEQ" name="instructor">
       <modelElement href="class.uml#_W4YBsuRXEe2tGYjis3CJEQ"/>
       <stereotypes xmi:id="_VYjMseRiEe2tGYjis3CJEQ" name="LegacyStyledElement"/>
       <stereotypes xmi:id="_VYjMsuRiEe2tGYjis3CJEQ" name="Annotations"/>
@@ -1031,7 +1031,7 @@
       <stereotypes xmi:id="_cU1skORmEe2ed5xORDi_qw" name="Annotations"/>
       <visibility xmi:id="_Xp3JG-RXEe2tGYjis3CJEQ" label="-"/>
       <cardinality xmi:id="_Xp3JHORXEe2tGYjis3CJEQ" label="1" max="1" min="1"/>
-      <type xmi:id="_Xp3JHeRXEe2tGYjis3CJEQ" name="Vet">
+      <type xmi:id="_Xp3JHeRXEe2tGYjis3CJEQ" name="Instructor">
         <modelElement href="class.uml#_WvGw8ORXEe2tGYjis3CJEQ"/>
       </type>
     </attributes>
@@ -1112,7 +1112,7 @@
         <modelElement href="class.uml#_WtbV8ORXEe2tGYjis3CJEQ"/>
       </type>
     </attributes>
-    <attributes xmi:id="_XmxY4eRXEe2tGYjis3CJEQ" name="pet">
+    <attributes xmi:id="_XmxY4eRXEe2tGYjis3CJEQ" name="class">
       <modelElement href="class.uml#_W4O3xeRXEe2tGYjis3CJEQ"/>
       <stereotypes xmi:id="_VYXmgORiEe2tGYjis3CJEQ" name="LegacyStyledElement"/>
       <stereotypes xmi:id="_VYXmgeRiEe2tGYjis3CJEQ" name="Annotations"/>
@@ -1128,7 +1128,7 @@
       <stereotypes xmi:id="_cU26seRmEe2ed5xORDi_qw" name="Annotations"/>
       <visibility xmi:id="_XmxY5ORXEe2tGYjis3CJEQ" label="-"/>
       <cardinality xmi:id="_XmxY5eRXEe2tGYjis3CJEQ" label="1" max="1" min="1"/>
-      <type xmi:id="_XmxY5uRXEe2tGYjis3CJEQ" name="Pet">
+      <type xmi:id="_XmxY5uRXEe2tGYjis3CJEQ" name="Class">
         <modelElement href="class.uml#_WtvfAORXEe2tGYjis3CJEQ"/>
       </type>
     </attributes>
@@ -1212,7 +1212,7 @@
       <modelElement href="class.uml#_g0uYQuRmEe2ed5xORDi_qw"/>
     </literals>
   </nodes>
-  <nodes xsi:type="com.yattasolutions.uml.diagrams.classifier:ClassifierVisual" xmi:id="_XpMaqeRXEe2tGYjis3CJEQ" comments="_XooZ8ORXEe2tGYjis3CJEQ" targetConnectionVisual="_XooZ8eRXEe2tGYjis3CJEQ" name="Pet" associationsIn="_XmwKoORXEe2tGYjis3CJEQ _XpwbUORXEe2tGYjis3CJEQ" associationsOut="_XopBAORXEe2tGYjis3CJEQ _Xoq2MuRXEe2tGYjis3CJEQ _XpMaoORXEe2tGYjis3CJEQ" generalizations="_XonL0ORXEe2tGYjis3CJEQ">
+  <nodes xsi:type="com.yattasolutions.uml.diagrams.classifier:ClassifierVisual" xmi:id="_XpMaqeRXEe2tGYjis3CJEQ" comments="_XooZ8ORXEe2tGYjis3CJEQ" targetConnectionVisual="_XooZ8eRXEe2tGYjis3CJEQ" name="Class" associationsIn="_XmwKoORXEe2tGYjis3CJEQ _XpwbUORXEe2tGYjis3CJEQ" associationsOut="_XopBAORXEe2tGYjis3CJEQ _Xoq2MuRXEe2tGYjis3CJEQ _XpMaoORXEe2tGYjis3CJEQ" generalizations="_XonL0ORXEe2tGYjis3CJEQ">
     <modelElement href="class.uml#_WtvfAORXEe2tGYjis3CJEQ"/>
     <visualProperties xmi:id="_XpMaquRXEe2tGYjis3CJEQ" position="-191.0,-83.0" size="-1.0,-1.0"/>
     <stereotypes xmi:id="_XpMaq-RXEe2tGYjis3CJEQ" name="Table">
@@ -1261,7 +1261,7 @@
       <stereotypes xmi:id="_cUtJseRmEe2ed5xORDi_qw" name="Annotations"/>
       <visibility xmi:id="_XpMauORXEe2tGYjis3CJEQ" label="-"/>
       <cardinality xmi:id="_XpMaueRXEe2tGYjis3CJEQ" label="1" max="1" min="1"/>
-      <type xmi:id="_XpMauuRXEe2tGYjis3CJEQ" name="PetType">
+      <type xmi:id="_XpMauuRXEe2tGYjis3CJEQ" name="ClassType">
         <modelElement href="class.uml#_Wt_9sORXEe2tGYjis3CJEQ"/>
       </type>
     </attributes>
@@ -1332,7 +1332,7 @@
     <modelElement href="class.uml#_W4n5UORXEe2tGYjis3CJEQ"/>
     <visualProperties xmi:id="_s0A0wORmEe2ed5xORDi_qw" position="-419.0,-513.0" size="200.0,150.0" visible="false"/>
   </nodes>
-  <nodes xsi:type="com.yattasolutions.uml.diagrams.classifier:ClassifierVisual" xmi:id="_XpQsEORXEe2tGYjis3CJEQ" comments="_Xoq2MORXEe2tGYjis3CJEQ" targetConnectionVisual="_Xoq2MeRXEe2tGYjis3CJEQ" name="PetType" associationsIn="_Xoq2MuRXEe2tGYjis3CJEQ" generalizations="_Xoq2M-RXEe2tGYjis3CJEQ">
+  <nodes xsi:type="com.yattasolutions.uml.diagrams.classifier:ClassifierVisual" xmi:id="_XpQsEORXEe2tGYjis3CJEQ" comments="_Xoq2MORXEe2tGYjis3CJEQ" targetConnectionVisual="_Xoq2MeRXEe2tGYjis3CJEQ" name="ClassType" associationsIn="_Xoq2MuRXEe2tGYjis3CJEQ" generalizations="_Xoq2M-RXEe2tGYjis3CJEQ">
     <modelElement href="class.uml#_Wt_9sORXEe2tGYjis3CJEQ"/>
     <visualProperties xmi:id="_XpQsEeRXEe2tGYjis3CJEQ" position="-216.0,-197.0" size="-1.0,-1.0"/>
     <stereotypes xmi:id="_XpQsEuRXEe2tGYjis3CJEQ" name="Table">
@@ -1347,7 +1347,7 @@
     <modelElement href="class.uml#_W4qVk-RXEe2tGYjis3CJEQ"/>
     <visualProperties xmi:id="_ux1MUORmEe2ed5xORDi_qw" position="-125.0,-177.0" size="200.0,150.0" visible="false"/>
   </nodes>
-  <nodes xsi:type="com.yattasolutions.diagrams:CommentVisual" xmi:id="_XooZ8ORXEe2tGYjis3CJEQ" sourceConnectionVisual="_XooZ8eRXEe2tGYjis3CJEQ" text="Simple business object representing a pet.&#xD;&#xA; *&#xD;&#xA;@author Ken Krebs&#xD;&#xA;@author Juergen Hoeller&#xD;&#xA;@author Sam Brannen" item="_XpMaqeRXEe2tGYjis3CJEQ">
+  <nodes xsi:type="com.yattasolutions.diagrams:CommentVisual" xmi:id="_XooZ8ORXEe2tGYjis3CJEQ" sourceConnectionVisual="_XooZ8eRXEe2tGYjis3CJEQ" text="Simple business object representing a class.&#xD;&#xA; *&#xD;&#xA;@author Ken Krebs&#xD;&#xA;@author Juergen Hoeller&#xD;&#xA;@author Sam Brannen" item="_XpMaqeRXEe2tGYjis3CJEQ">
     <modelElement href="class.uml#_W4puguRXEe2tGYjis3CJEQ"/>
     <visualProperties xmi:id="_rD4T4ORmEe2ed5xORDi_qw" position="-206.0,-461.0" size="200.0,150.0" visible="false"/>
   </nodes>

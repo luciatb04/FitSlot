@@ -9,52 +9,52 @@ import useFetchState from "../../util/useFetchState";
 const user = tokenService.getUser();
 const jwt = tokenService.getLocalAccessToken();
 
-export default function VetListClinicOwner() {
+export default function InstructorListGymOwner() {
   const [message, setMessage] = useState(null);
   const [visible, setVisible] = useState(false);
-  const [vets, setVets] = useFetchState(
+  const [instructors, setInstructors] = useFetchState(
     [],
-    `/api/v1/clinics/vets?userId=${user.id}`,
+    `/api/v1/gyms/instructors?userId=${user.id}`,
     jwt,
     setMessage,
     setVisible
   );
   const [alerts, setAlerts] = useState([]);
 
-  const vetList = vets.map((vet) => {
-    let specialtiesAux = vet.specialties
+  const instructorList = instructors.map((instructor) => {
+    let specialtiesAux = instructor.specialties
       .map((s) => s.name)
       .toString()
       .replaceAll(",", ", ");
     return (
-      <tr key={vet.id}>
+      <tr key={instructor.id}>
         <td style={{ whiteSpace: "nowrap" }}>
-          {vet.firstName} {vet.lastName}
+          {instructor.firstName} {instructor.lastName}
         </td>
-        <td>{vet.city}</td>
+        <td>{instructor.city}</td>
         <td style={{ whiteSpace: "break-spaces" }}>{specialtiesAux}</td>
-        <td>{vet.clinic.name}</td>
-        <td>{vet.user.username}</td>
+        <td>{instructor.gym.name}</td>
+        <td>{instructor.user.username}</td>
         <td>
           <ButtonGroup>
             <Button
               size="sm"
-              aria-label={"edit-" + vet.id}
+              aria-label={"edit-" + instructor.id}
               color="primary"
               tag={Link}
-              to={"/vets/" + vet.id}
+              to={"/instructors/" + instructor.id}
             >
               Edit
             </Button>
             <Button
               size="sm"
-              aria-label={"delete-" + vet.id}
+              aria-label={"delete-" + instructor.id}
               color="danger"
               onClick={() =>
                 deleteFromList(
-                  `/api/v1/vets/${vet.id}`,
-                  vet.id,
-                  [vets, setVets],
+                  `/api/v1/instructors/${instructor.id}`,
+                  instructor.id,
+                  [instructors, setInstructors],
                   [alerts, setAlerts],
                   setMessage,
                   setVisible
@@ -72,30 +72,30 @@ export default function VetListClinicOwner() {
 
   return (
     <div className="admin-page-container">
-      <h1 className="text-center">Vets</h1>
+      <h1 className="text-center">Instructors</h1>
       {alerts.map((a) => a.alert)}
       {modal}
       <div className="float-right">
-        <Button color="success" tag={Link} to="/vets/new">
-          Add Vet
+        <Button color="success" tag={Link} to="/instructors/new">
+          Add Instructor
         </Button>{" "}
-        <Button color="info" tag={Link} to="/vets/specialties">
+        <Button color="info" tag={Link} to="/instructors/specialties">
           Specialties
         </Button>
       </div>
       <div>
-        <Table aria-label="vets" className="mt-4">
+        <Table aria-label="instructors" className="mt-4">
           <thead>
             <tr>
               <th width="15%">Name</th>
               <th width="15%">City</th>
               <th width="20%">Specialties</th>
-              <th width="15%">Clinic</th>
+              <th width="15%">Gym</th>
               <th width="15%">User</th>
               <th width="20%">Actions</th>
             </tr>
           </thead>
-          <tbody>{vetList}</tbody>
+          <tbody>{instructorList}</tbody>
         </Table>
       </div>
     </div>

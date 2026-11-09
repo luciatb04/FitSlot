@@ -9,46 +9,46 @@ import useFetchState from "../../util/useFetchState";
 
 const jwt = tokenService.getLocalAccessToken();
 
-export default function ClinicListAdmin() {
+export default function GymListAdmin() {
   const [message, setMessage] = useState(null);
   const [visible, setVisible] = useState(false);
-  const [clinics, setClinics] = useFetchState(
+  const [gyms, setGyms] = useFetchState(
     [],
-    `/api/v1/clinics`,
+    `/api/v1/gyms`,
     jwt,
     setMessage,
     setVisible
   );
   const [alerts, setAlerts] = useState([]);
 
-  const clinicList = clinics.map((clinic) => {
+  const gymList = gyms.map((gym) => {
     return (
-      <tr key={clinic.id}>
-        <td>{clinic.name}</td>
-        <td>{clinic.address}</td>
-        <td>{clinic.telephone}</td>
-        <td>{clinic.clinicOwner.firstName} {clinic.clinicOwner.lastName}</td>
-        <td>{clinic.plan}</td>
+      <tr key={gym.id}>
+        <td>{gym.name}</td>
+        <td>{gym.address}</td>
+        <td>{gym.telephone}</td>
+        <td>{gym.gymOwner.firstName} {gym.gymOwner.lastName}</td>
+        <td>{gym.plan}</td>
         <td>
           <ButtonGroup>
             <Button
               size="sm"
               color="primary"
-              aria-label={"edit-" + clinic.id}
+              aria-label={"edit-" + gym.id}
               tag={Link}
-              to={"/clinics/" + clinic.id}
+              to={"/gyms/" + gym.id}
             >
               Edit
             </Button>
             <Button
               size="sm"
               color="danger"
-              aria-label={"delete-" + clinic.id}
+              aria-label={"delete-" + gym.id}
               onClick={() =>
                 deleteFromList(
-                  `/api/v1/clinics/${clinic.id}`,
-                  clinic.id,
-                  [clinics, setClinics],
+                  `/api/v1/gyms/${gym.id}`,
+                  gym.id,
+                  [gyms, setGyms],
                   [alerts, setAlerts],
                   setMessage,
                   setVisible
@@ -68,12 +68,12 @@ export default function ClinicListAdmin() {
   return (
     <div>
       <div className="admin-page-container">
-        <h1 className="text-center">Clinic Owners</h1>
+        <h1 className="text-center">Gym Owners</h1>
         {alerts.map((a) => a.alert)}
         {modal}
         <div className="float-right">
-          <Button color="success" tag={Link} to="/clinics/new">
-            Add Clinic Owner
+          <Button color="success" tag={Link} to="/gyms/new">
+            Add Gym Owner
           </Button>
         </div>
         <div>
@@ -83,12 +83,12 @@ export default function ClinicListAdmin() {
                 <th width="15%">Name</th>
                 <th width="20%">Address</th>
                 <th width="15%">Telephone</th>
-                <th width="15%">Clinic Owner</th>
+                <th width="15%">Gym Owner</th>
                 <th width="15%">Plan</th>
                 <th width="20%">Actions</th>
               </tr>
             </thead>
-            <tbody>{clinicList}</tbody>
+            <tbody>{gymList}</tbody>
           </Table>
         </div>
       </div>

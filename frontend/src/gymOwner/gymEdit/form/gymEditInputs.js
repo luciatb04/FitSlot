@@ -1,6 +1,6 @@
 import { formValidators } from "../../../validators/formValidators";
 
-export const clinicEditInputs = [
+export const gymEditInputs = [
     {
         tag: "Name",
         name: "name",

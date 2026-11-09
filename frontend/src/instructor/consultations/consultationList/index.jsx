@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import tokenService from "../../../services/token.service";
 
-export default function VetConsultationList() {
+export default function InstructorConsultationList() {
   let [consultations, setConsultations] = useState([]);
   let [filtered, setFiltered] = useState(null);
   let [filter, setFilter] = useState("");
@@ -50,7 +50,7 @@ export default function VetConsultationList() {
         <tr key={c.id}>
           <td>{c.title}</td>
           <td>{c.status}</td>
-          <td>{c.pet?.name}</td>
+          <td>{c.class?.name}</td>
           <td>{new Date(c.creationDate).toLocaleString()}</td>
           <td>
             <ButtonGroup>

@@ -1,8 +1,8 @@
 import { formValidators } from "../../../validators/formValidators";
-import { registerFormClinicOwnerInputs } from "./registerFormClinicOwnerInputs";
+import { registerFormGymOwnerInputs } from "./registerFormGymOwnerInputs";
 
-export const registerFormVetInputs = [
-  ...registerFormClinicOwnerInputs,
+export const registerFormInstructorInputs = [
+  ...registerFormGymOwnerInputs,
   {
     tag: "City",
     name: "city",
@@ -12,8 +12,8 @@ export const registerFormVetInputs = [
     validators: [formValidators.notEmptyValidator],
   },
   {
-    tag: "Clinic",
-    name: "clinic",
+    tag: "Gym",
+    name: "gym",
     type: "select",
     values: ["None"],
     defaultValue: "",

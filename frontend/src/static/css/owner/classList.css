@@ -1,4 +1,4 @@
-.pet-list-page-container{
+.class-list-page-container{
     height: 100%;
     width: 100%;
     display: flex;
@@ -17,11 +17,11 @@
     align-items: center;
 }
 
-.pet-list-title{
+.class-list-title{
     margin-bottom: 2rem;
 }
 
-.pet-row{
+.class-row{
     width: 50%;
     height: 100%;
     display: flex;
@@ -35,7 +35,7 @@
     margin: 25px 0;
 }
 
-.pet-data{
+.class-data{
     width: 100%;
     height: 100%;
     display: flex;
@@ -44,7 +44,7 @@
     align-items: flex-start;
 }
 
-.pet-options{
+.class-options{
     width: 100%;
     height: 100%;
     display: flex;
@@ -54,7 +54,7 @@
     border-bottom: 1px solid var(--main-green-color);
 }
 
-.pet-visits{
+.class-visits{
     width: 100%;
     height: 100%;
     display: flex;
@@ -64,7 +64,7 @@
     padding-left: 30px;
 }
 
-.pet-name{
+.class-name{
     text-transform: uppercase;
     font-weight: bold;
 }

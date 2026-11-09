@@ -127,7 +127,7 @@ Como grupo nos gustaría poder hacer pruebas con un conjunto de datos reales suf
 •	Ralentiza todo el trabajo con el sistema para el desarrollo. 
 •	Tenemos que buscar nosotros los datos reales
 
-*Alternativa 1.b*: Crear un script con los datos adicionales a incluir (extra-data.sql) y un controlador que se encargue de leerlo y lanzar las consultas a petición cuando queramos tener más datos para mostrar.
+*Alternativa 1.b*: Crear un script con los datos adicionales a incluir (extra-data.sql) y un controlador que se encargue de leerlo y lanzar las consultas a classición cuando queramos tener más datos para mostrar.
 *Ventajas:*
 •	Podemos reutilizar parte de los datos que ya tenemos especificados en (data.sql).
 •	No afecta al trabajo diario de desarrollo y pruebas de la aplicación

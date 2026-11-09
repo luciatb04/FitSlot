@@ -1,4 +1,4 @@
-# React Petclinic frontend
+# React Classgym frontend
 
 React frontend built with Vite and tested with Vitest.
 

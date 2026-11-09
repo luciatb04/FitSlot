@@ -1,4 +1,4 @@
-.edit-pet-page-container{
+.edit-class-page-container{
     width: 100%;
     height: 100%;
     display: flex;
@@ -6,7 +6,7 @@
     align-items: center;
 }
 
-.edit-pet-form-container{
+.edit-class-form-container{
     max-width: 600px;
     height: 800px;
     width: 90%;

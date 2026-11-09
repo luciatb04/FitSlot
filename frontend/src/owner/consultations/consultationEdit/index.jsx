@@ -13,10 +13,11 @@ export default function OwnerConsultationEdit() {
     id: null,
     title: "",
     status: "PENDING",
-    isClinicComment: false,
+    classes: null,
+    isGymComment: false,
   });
 
-  let [pets, setPets] = useState([]);
+  let [classes, setClasses] = useState([]);
   let [owner, setOwner] = useState({});
   let [message, setMessage] = useState(null);
 
@@ -32,9 +33,11 @@ export default function OwnerConsultationEdit() {
     const value = target.value;
     const name = target.name;
     let consultationAux = { ...consultation };
-    if (name === "pet")
-      consultationAux.pet = pets.filter((pet) => pet.id === Number(value))[0];
-    else if (name === "isClinicComment")
+    if (name === "classes")
+      consultationAux.classes = classes.find(
+        (classEntity) => classEntity.id === Number(value)
+      );
+    else if (name === "isGymComment")
       consultationAux[name] = target.checked ? true : false;
     else consultationAux[name] = value;
 
@@ -81,17 +84,17 @@ export default function OwnerConsultationEdit() {
       else setConsultation(consultation);
     }
     if (!message) {
-      const pets = await (
-        await fetch(`/api/v1/pets?userId=${userId}`, {
+      const classes = await (
+        await fetch(`/api/v1/classes?userId=${userId}`, {
           headers: {
             Authorization: `Bearer ${jwt}`,
           },
         })
       ).json();
-      if (pets.message) setMessage(pets.message);
+      if (classes.message) setMessage(classes.message);
       else {
-        setPets(pets);
-        setOwner(pets[0].owner);
+        setClasses(classes);
+        setOwner(classes[0]?.owner);
       }
     }
   }
@@ -129,34 +132,34 @@ export default function OwnerConsultationEdit() {
             type="select"
             disabled={consultation.id !== null}
             required={consultation.id === null}
-            name="pet"
-            id="pet"
-            value={consultation.pet?.id || ""}
+            name="classes"
+            id="classes"
+            value={consultation.classes?.id || ""}
             onChange={handleChange}
           >
             <option value="">None</option>
-            {pets &&
-              pets.map((pet) => (
-                <option key={pet.id} value={pet.id}>
-                  {pet.name}
+            {classes &&
+              classes.map((classEntity) => (
+                <option key={classEntity.id} value={classEntity.id}>
+                  {classEntity.name}
                 </option>
               ))}
           </Input>
           <div className="consultation-checkbox-container">
-            <label htmlFor="isClinicComment">
-              ¿Is the consultation a comment for the clinic?
+            <label htmlFor="isGymComment">
+              ¿Is the consultation a comment for the gym?
             </label>
             <div className="checkbox-wrapper-10">
               <Input
                 type="checkbox"
-                id="isClinicComment"
+                id="isGymComment"
                 className="tgl tgl-flip"
                 onChange={handleChange}
-                name="isClinicComment"
-                checked={consultation.isClinicComment}
+                name="isGymComment"
+                checked={consultation.isGymComment}
               />
               <label
-                htmlFor="isClinicComment"
+                htmlFor="isGymComment"
                 data-tg-on="Yes"
                 data-tg-off="No"
                 className="tgl-btn"

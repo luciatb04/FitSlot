@@ -14,7 +14,7 @@ import useFetchState from "../../util/useFetchState";
 
 const jwt = tokenService.getLocalAccessToken();
 
-export default function VetEditClinicOwner() {
+export default function InstructorEditGymOwner() {
   const emptyItem = {
     id: "",
     firstName: "",
@@ -25,21 +25,21 @@ export default function VetEditClinicOwner() {
   const id = getIdFromUrl(2);
   const [message, setMessage] = useState(null);
   const [visible, setVisible] = useState(false);
-  const [vet, setVet] = useFetchState(
+  const [instructor, setInstructor] = useFetchState(
     emptyItem,
-    `/api/v1/vets/${id}`,
+    `/api/v1/instructors/${id}`,
     jwt,
     setMessage,
     setVisible,
     id
   );
-  const specialties = useFetchData(`/api/v1/vets/specialties`, jwt);
+  const specialties = useFetchData(`/api/v1/instructors/specialties`, jwt);
 
   function handleChange(event) {
     const target = event.target;
     const value = target.value;
     const name = target.name;
-    setVet({ ...vet, [name]: value });
+    setInstructor({ ...instructor, [name]: value });
   }
 
   function handleSpecialtyChange(event) {
@@ -47,44 +47,44 @@ export default function VetEditClinicOwner() {
     const checked = target.checked;
     const name = target.name;
     if (checked) {
-      setVet({
-        ...vet,
+      setInstructor({
+        ...instructor,
         specialties: [
-          ...vet.specialties,
+          ...instructor.specialties,
           specialties.find((s) => s.name === name),
         ],
       });
     } else
-      setVet({
-        ...vet,
-        specialties: vet.specialties.filter((s) => s.name !== name),
+      setInstructor({
+        ...instructor,
+        specialties: instructor.specialties.filter((s) => s.name !== name),
       });
   }
 
   function handleSubmit(event) {
     event.preventDefault();
 
-    fetch("/api/v1/vets" + (vet.id ? "/" + vet.id : ""), {
-      method: vet.id ? "PUT" : "POST",
+    fetch("/api/v1/instructors" + (instructor.id ? "/" + instructor.id : ""), {
+      method: instructor.id ? "PUT" : "POST",
       headers: {
         Authorization: `Bearer ${jwt}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(vet),
+      body: JSON.stringify(instructor),
     })
       .then((response) => response.json())
       .then((json) => {
         if (json.message) {
           setMessage(json.message);
           setVisible(true);
-        } else window.location.href = "/vets";
+        } else window.location.href = "/instructors";
       })
       .catch((message) => alert(message));
   }
 
   const modal = getErrorModal(setVisible, visible, message);
-  const selectedSpecialties = vet.specialties.map(
+  const selectedSpecialties = instructor.specialties.map(
     (specialty) => specialty.name
   );
   const specialtiesBoxes = specialties.map((specialty) => {
@@ -117,7 +117,7 @@ export default function VetEditClinicOwner() {
 
   return (
     <div className="auth-page-container">
-      {<h2>{vet.id ? "Edit Vet" : "Add Vet"}</h2>}
+      {<h2>{instructor.id ? "Edit Instructor" : "Add Instructor"}</h2>}
       {modal}
       <div className="auth-form-container">
         <Form onSubmit={handleSubmit}>
@@ -129,7 +129,7 @@ export default function VetEditClinicOwner() {
               type="text"
               name="firstName"
               id="firstName"
-              value={vet.firstName || ""}
+              value={instructor.firstName || ""}
               onChange={handleChange}
               className="custom-input"
             />
@@ -142,7 +142,7 @@ export default function VetEditClinicOwner() {
               type="text"
               name="lastName"
               id="lastName"
-              value={vet.lastName || ""}
+              value={instructor.lastName || ""}
               onChange={handleChange}
               className="custom-input"
             />
@@ -155,7 +155,7 @@ export default function VetEditClinicOwner() {
               type="text"
               name="city"
               id="city"
-              value={vet.city || ""}
+              value={instructor.city || ""}
               onChange={handleChange}
               className="custom-input"
             />
@@ -169,7 +169,7 @@ export default function VetEditClinicOwner() {
           <div className="custom-button-row">
             <button className="auth-button">Save</button>
             <Link
-              to={`/vets`}
+              to={`/instructors`}
               className="auth-button"
               style={{ textDecoration: "none" }}
             >

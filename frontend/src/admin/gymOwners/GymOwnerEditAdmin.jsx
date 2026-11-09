@@ -9,7 +9,7 @@ import useFetchState from "../../util/useFetchState";
 const user = tokenService.getUser();
 const jwt = tokenService.getLocalAccessToken();
 
-export default function ClinicOwnerEditAdmin() {
+export default function GymOwnerEditAdmin() {
   const emptyItem = {
     id: "",
     firstName: "",
@@ -18,9 +18,9 @@ export default function ClinicOwnerEditAdmin() {
   const id = getIdFromUrl(2);
   const [message, setMessage] = useState(null);
   const [visible, setVisible] = useState(false);
-  const [clinicOwner, setClinicOwner] = useFetchState(
+  const [gymOwner, setGymOwner] = useFetchState(
     emptyItem,
-    `/api/v1/clinicOwners/${id}`,
+    `/api/v1/gymOwners/${id}`,
     jwt,
     setMessage,
     setVisible,
@@ -31,27 +31,27 @@ export default function ClinicOwnerEditAdmin() {
     const target = event.target;
     const value = target.value;
     const name = target.name;
-    setClinicOwner({ ...clinicOwner, [name]: value });
+    setGymOwner({ ...gymOwner, [name]: value });
   }
 
   function handleSubmit(event) {
     event.preventDefault();
 
-    fetch("/api/v1/clinicOwners" + (clinicOwner.id ? "/" + clinicOwner.id : "" + `?userId=${user.id}`), {
-      method: clinicOwner.id ? "PUT" : "POST",
+    fetch("/api/v1/gymOwners" + (gymOwner.id ? "/" + gymOwner.id : "" + `?userId=${user.id}`), {
+      method: gymOwner.id ? "PUT" : "POST",
       headers: {
         Authorization: `Bearer ${jwt}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(clinicOwner),
+      body: JSON.stringify(gymOwner),
     })
       .then((response) => response.json())
       .then((json) => {
         if (json.message) {
           setMessage(json.message);
           setVisible(true);
-        } else window.location.href = "/clinicOwners";
+        } else window.location.href = "/gymOwners";
       })
       .catch((message) => alert(message));
   }
@@ -60,7 +60,7 @@ export default function ClinicOwnerEditAdmin() {
 
   return (
     <div className="auth-page-container">
-      {<h2>{id !== "new" ? "Edit Clinic Owner" : "Add Clinic Owner"}</h2>}
+      {<h2>{id !== "new" ? "Edit Gym Owner" : "Add Gym Owner"}</h2>}
       {modal}
       <div className="auth-form-container">
         <Form onSubmit={handleSubmit}>
@@ -73,7 +73,7 @@ export default function ClinicOwnerEditAdmin() {
               required
               name="firstName"
               id="firstName"
-              value={clinicOwner.firstName || ""}
+              value={gymOwner.firstName || ""}
               onChange={handleChange}
               className="custom-input"
             />
@@ -87,7 +87,7 @@ export default function ClinicOwnerEditAdmin() {
               required
               name="lastName"
               id="lastName"
-              value={clinicOwner.lastName || ""}
+              value={gymOwner.lastName || ""}
               onChange={handleChange}
               className="custom-input"
             />
@@ -95,7 +95,7 @@ export default function ClinicOwnerEditAdmin() {
           <div className="custom-button-row">
             <button className="auth-button">Save</button>
             <Link
-              to={`/clinicOwners`}
+              to={`/gymOwners`}
               className="auth-button"
               style={{ textDecoration: "none" }}
             >

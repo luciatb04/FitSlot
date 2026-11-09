@@ -3,9 +3,9 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="gym" tagdir="/WEB-INF/tags" %>
 
-<petclinic:layout pageName="owners">
+<gym:layout pageName="owners">
     <h2>Owners</h2>
 
     <table id="ownersTable" class="table table-striped">
@@ -15,7 +15,7 @@
             <th style="width: 200px;">Address</th>
             <th>City</th>
             <th style="width: 120px">Telephone</th>
-            <th>Pets</th>
+            <th>Classes</th>
         </tr>
         </thead>
         <tbody>
@@ -37,8 +37,8 @@
                     <c:out value="${owner.telephone}"/>
                 </td>
                 <td>
-                    <c:forEach var="pet" items="${owner.pets}">
-                        <c:out value="${pet.name} "/>
+                    <c:forEach var="class" items="${owner.classes}">
+                        <c:out value="${class.name} "/>
                     </c:forEach>
                 </td>
                 
@@ -56,4 +56,4 @@
         </c:forEach>
         </tbody>
     </table>
-</petclinic:layout>
+</gym:layout>

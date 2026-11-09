@@ -3,14 +3,14 @@ import "../../static/css/auth/authPage.css";
 import tokenService from "../../services/token.service";
 import FormGenerator from "../../components/formGenerator/formGenerator";
 import { registerFormOwnerInputs } from "./form/registerFormOwnerInputs";
-import { registerFormVetInputs } from "./form/registerFormVetInputs";
-import { registerFormClinicOwnerInputs } from "./form/registerFormClinicOwnerInputs";
+import { registerFormInstructorInputs } from "./form/registerFormInstructorInputs";
+import { registerFormGymOwnerInputs } from "./form/registerFormGymOwnerInputs";
 import { useEffect, useRef, useState } from "react";
 
 export default function Register() {
   let [type, setType] = useState(null);
   let [authority, setAuthority] = useState(null);
-  let [clinics, setClinics] = useState([]);
+  let [gyms, setGyms] = useState([]);
 
   const registerFormRef = useRef();
 
@@ -27,7 +27,7 @@ export default function Register() {
     if(!registerFormRef.current.validate()) return;
 
     const request = values;
-    request.clinic = clinics.filter((clinic) => clinic.name === request.clinic)[0];
+    request.gym = gyms.filter((gym) => gym.name === request.gym)[0];
     request["authority"] = authority;
     let state = "";
 
@@ -76,9 +76,9 @@ export default function Register() {
   }
 
   useEffect(() => {
-    if (type === "Owner" || type === "Vet") {
+    if (type === "Owner" || type === "Instructor") {
       if (registerFormOwnerInputs[5].values.length === 1){
-        fetch("/api/v1/clinics")
+        fetch("/api/v1/gyms")
         .then(function (response) {
           if (response.status === 200) {
             return response.json();
@@ -87,13 +87,13 @@ export default function Register() {
           }
         })
         .then(function (data) {
-          setClinics(data);
+          setGyms(data);
           if (data.length !== 0) {
-            let clinicNames = data.map((clinic) => {
-              return clinic.name;
+            let gymNames = data.map((gym) => {
+              return gym.name;
             });
 
-            registerFormOwnerInputs[5].values = ["None", ...clinicNames];
+            registerFormOwnerInputs[5].values = ["None", ...gymNames];
           }
         })
         .catch((message) => {
@@ -112,8 +112,8 @@ export default function Register() {
             ref={registerFormRef}
             inputs={
               type === "Owner" ? registerFormOwnerInputs 
-              : type === "Vet" ? registerFormVetInputs
-              : registerFormClinicOwnerInputs
+              : type === "Instructor" ? registerFormInstructorInputs
+              : registerFormGymOwnerInputs
             }
             onSubmit={handleSubmit}
             numberOfColumns={1}
@@ -142,17 +142,17 @@ export default function Register() {
             </button>
             <button
               className="auth-button"
-              value="Vet"
+              value="Instructor"
               onClick={handleButtonClick}
             >
-              Vet
+              Instructor
             </button>
             <button
               className="auth-button"
-              value="Clinic Owner"
+              value="Gym Owner"
               onClick={handleButtonClick}
             >
-              Clinic Owner
+              Gym Owner
             </button>
           </div>
         </div>

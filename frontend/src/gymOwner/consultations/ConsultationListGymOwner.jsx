@@ -9,7 +9,7 @@ import getErrorModal from '../../util/getErrorModal';
 const user = tokenService.getUser();
 const jwt = tokenService.getLocalAccessToken();
 
-export default function ConsultationListClinicOwner() {
+export default function ConsultationListGymOwner() {
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
     const [consultations, setConsultations] = useFetchState([], `/api/v1/consultations?userId=${user.id}`, jwt, setMessage, setVisible);
@@ -99,8 +99,8 @@ export default function ConsultationListClinicOwner() {
                             <th>Title</th>
                             <th>Status</th>
                             <th>Owner</th>
-                            <th>Pet</th>
-                            <th>Clinic</th>
+                            <th>Class</th>
+                            <th>Gym</th>
                             <th>Sent To</th>
                             <th>Creation Date</th>
                             <th>Actions</th>

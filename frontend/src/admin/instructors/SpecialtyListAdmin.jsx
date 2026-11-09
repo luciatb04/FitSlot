@@ -14,7 +14,7 @@ export default function SpecialtyListAdmin() {
   const [visible, setVisible] = useState(false);
   const [specialties, setSpecialties] = useFetchState(
     [],
-    `/api/v1/vets/specialties`,
+    `/api/v1/instructors/specialties`,
     jwt,
     setMessage,
     setVisible
@@ -32,7 +32,7 @@ export default function SpecialtyListAdmin() {
               aria-label={"edit-" + s.id}
               color="primary"
               tag={Link}
-              to={"/vets/specialties/" + s.id}
+              to={"/instructors/specialties/" + s.id}
             >
               Edit
             </Button>
@@ -42,7 +42,7 @@ export default function SpecialtyListAdmin() {
               color="danger"
               onClick={() =>
                 deleteFromList(
-                  `/api/v1/vets/specialties/${s.id}`,
+                  `/api/v1/instructors/specialties/${s.id}`,
                   s.id,
                   [specialties, setSpecialties],
                   [alerts, setAlerts],
@@ -65,10 +65,10 @@ export default function SpecialtyListAdmin() {
       <h1 className="text-center">Specialties</h1>
       {alerts.map((a) => a.alert)}
       {modal}
-      <Button color="success" tag={Link} to="/vets/specialties/new">
+      <Button color="success" tag={Link} to="/instructors/specialties/new">
         Add Specialty
       </Button>{" "}
-      <Button color="info" tag={Link} to="/vets">
+      <Button color="info" tag={Link} to="/instructors">
         Back
       </Button>
       <div>

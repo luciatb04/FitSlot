@@ -12,11 +12,11 @@ En esta sección debes describir de manera general cual es la funcionalidad del 
 
 < Nombre Rol >: < Breve descripción del rol >
 
-_Ej1: Propietario: Dueño de una o varias mascota que viene a la clínica para mantenerla sana y cuidar de su salud._
+_Ej1: Propietario: Dueño de una o varias mascota que viene al gym para mantenerla sana y cuidar de su salud._
 
-_Ej2: Veterinario: Profesional de la salud animal con titulación universitaria homologada, está registrado en la clínica y se encarga de realizar diagnósticos y recetar tratamientos. Además mantiene actualizado el vademécum._
+_Ej2: Instructor: Profesional responsable de los usuarios del gym con la formación correspondiente, está registrado en el gym y se encarga de realizar el seguimiento y recomendar rutinas. Además mantiene actualizado el catálogo de ejercicios._
 
-_Ej3: Administrador: Dueño de la clínica que se encarga de dar de alta veterinarios y gestionar la información registrada en la aplicación de la clínica._
+_Ej3: Administrador: Responsable del gym que se encarga de dar de alta instructores y gestionar la información registrada en la aplicación del gym._
 
 
 
@@ -69,5 +69,4 @@ El diagnóstico debe estar asociado a una enfermedad que es compatible con el ti
 …
 
 _Muchas de las reglas del juego se transformarán en nuestro caso en reglas de negocio, por ejemplo, “la carta X solo podrá jugarse en la ronda Y si en la ronda anterior se jugó la carta Z”, o “en caso de que un jugador quede eliminado el turno cambia de sentido”_
-
 

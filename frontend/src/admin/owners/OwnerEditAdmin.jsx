@@ -29,9 +29,9 @@ export default function OwnerEditAdmin() {
     setVisible,
     id
   );
-  const [clinics, setClinics] = useFetchState(
+  const [gyms, setGyms] = useFetchState(
     [],
-    `/api/v1/clinics`,
+    `/api/v1/gyms`,
     jwt,
     setMessage,
     setVisible
@@ -41,8 +41,8 @@ export default function OwnerEditAdmin() {
     const target = event.target;
     const value = target.value;
     const name = target.name;
-    if(name === "clinic") {
-      setOwner({ ...owner, clinic: clinics.filter((clinic) => clinic.id === parseInt(value))[0] });
+    if(name === "gym") {
+      setOwner({ ...owner, gym: gyms.filter((gym) => gym.id === parseInt(value))[0] });
     }else{
       setOwner({ ...owner, [name]: value });
     }
@@ -150,23 +150,23 @@ export default function OwnerEditAdmin() {
             />
           </div>
           <div className="custom-form-input">
-            <Label for="clinic" className="custom-form-input-label">
-              Clinic
+            <Label for="gym" className="custom-form-input-label">
+              Gym
             </Label>
             <Input
-              id="clinic"
-              name="clinic"
+              id="gym"
+              name="gym"
               required
               type="select"
-              value={owner.clinic ? owner.clinic.id : ""}
+              value={owner.gym ? owner.gym.id : ""}
               onChange={handleChange}
               className="custom-input"
             >
               <option value="">None</option>
               {
-                clinics && clinics.map((clinic) => {
-                  console.log(clinic);
-                  return <option value={clinic.id}>{clinic.name}</option>
+                gyms && gyms.map((gym) => {
+                  console.log(gym);
+                  return <option value={gym.id}>{gym.name}</option>
                 })
               }
             </Input>

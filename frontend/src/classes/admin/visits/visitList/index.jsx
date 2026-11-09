@@ -11,11 +11,11 @@ class VisitList extends Component {
         this.jwt = JSON.parse(window.localStorage.getItem("jwt"));
 
         let pathArray = window.location.pathname.split('/');
-        this.petId = pathArray[2];
+        this.classId = pathArray[2];
     }
 
     componentDidMount() {
-        fetch(`/api/v1/pets/${this.petId}/visits`, {
+        fetch(`/api/v1/classes/${this.classId}/visits`, {
             headers: {
                 "Authorization": `Bearer ${this.jwt}`,
                 "Content-Type": "application/json",
@@ -25,7 +25,7 @@ class VisitList extends Component {
     }
 
     async remove(id) {
-        await fetch(`/api/v1/pets/${this.petId}/visits/${id}`, {
+        await fetch(`/api/v1/classes/${this.classId}/visits/${id}`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${this.jwt}`,
@@ -55,11 +55,11 @@ class VisitList extends Component {
                 <tr key={visit.id}>
                     <td>{(new Date(visit.datetime)).toLocaleString()}</td>
                     <td>{visit.description ? visit.description : "No description provided"}</td>
-                    <td>{visit.vet.firstName} {visit.vet.lastName}</td>
+                    <td>{visit.instructor.firstName} {visit.instructor.lastName}</td>
                     <td>
                         <ButtonGroup>
                             <Button size="sm" color="primary" tag={Link}
-                                to={`/pets/${this.petId}/visits/${visit.id}`}>
+                                to={`/classes/${this.classId}/visits/${visit.id}`}>
                                 Edit
                             </Button>
                             <Button size="sm" color="danger" onClick={() => this.remove(visit.id)}>
@@ -76,10 +76,10 @@ class VisitList extends Component {
                 {/* <AppNavbar /> */}
                 <Container style={{ marginTop: "15px" }} fluid>
                     <h1 className="text-center">Visits</h1>
-                    <Button color="success" tag={Link} to={`/pets/${this.petId}/visits/new`}>
+                    <Button color="success" tag={Link} to={`/classes/${this.classId}/visits/new`}>
                         Add Visit
                     </Button>{" "}
-                    <Button color="primary" tag={Link} to={`/pets/`}>
+                    <Button color="primary" tag={Link} to={`/classes/`}>
                         Back
                     </Button>
                     <Table className="mt-4">
@@ -87,7 +87,7 @@ class VisitList extends Component {
                             <tr>
                                 <th>Date and Time</th>
                                 <th>Description</th>
-                                <th>Vet</th>
+                                <th>Instructor</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>

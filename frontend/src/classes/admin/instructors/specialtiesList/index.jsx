@@ -13,7 +13,7 @@ class SpecialtiesList extends Component {
     }
 
     componentDidMount() {
-        fetch('/api/v1/vets/specialties', {
+        fetch('/api/v1/instructors/specialties', {
             headers: {
                 "Authorization": `Bearer ${this.jwt}`,
             },
@@ -23,7 +23,7 @@ class SpecialtiesList extends Component {
     }
 
     async remove(id) {
-        await fetch(`/api/v1/vets/specialties/${id}`, {
+        await fetch(`/api/v1/instructors/specialties/${id}`, {
             method: 'DELETE',
             headers: {
                 "Authorization": `Bearer ${this.jwt}`,
@@ -49,7 +49,7 @@ class SpecialtiesList extends Component {
                 <td style={{ whiteSpace: 'nowrap' }}>{s.name}</td>
                 <td>
                     <ButtonGroup>
-                        <Button size="sm" color="primary" tag={Link} to={"/vets/specialties/" + s.id}>Edit</Button>
+                        <Button size="sm" color="primary" tag={Link} to={"/instructors/specialties/" + s.id}>Edit</Button>
                         <Button size="sm" color="danger" onClick={() => this.remove(s.id)}>Delete</Button>
                     </ButtonGroup>
                 </td>
@@ -59,10 +59,10 @@ class SpecialtiesList extends Component {
         return (
             <div>
                 <Container style={{ marginTop: "15px" }} fluid>
-                    <h1 className='text-center'>Vets</h1>
-                    <Button color="success" tag={Link} to="/vets/specialties/new">Add Specialty</Button>
+                    <h1 className='text-center'>Instructors</h1>
+                    <Button color="success" tag={Link} to="/instructors/specialties/new">Add Specialty</Button>
                     {" "}
-                    <Button color="info" tag={Link} to="/vets">Back</Button>
+                    <Button color="info" tag={Link} to="/instructors">Back</Button>
                     <Table className="mt-4">
                         <thead>
                             <tr>

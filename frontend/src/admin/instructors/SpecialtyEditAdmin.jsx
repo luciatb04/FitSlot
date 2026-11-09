@@ -19,7 +19,7 @@ export default function SpecialtyEditAdmin() {
   const [visible, setVisible] = useState(false);
   const [specialty, setSpecialty] = useFetchState(
     emptyItem,
-    `/api/v1/vets/specialties/${id}`,
+    `/api/v1/instructors/specialties/${id}`,
     jwt,
     setMessage,
     setVisible,
@@ -37,7 +37,7 @@ export default function SpecialtyEditAdmin() {
     event.preventDefault();
 
     fetch(
-      "/api/v1/vets/specialties" + (specialty.id ? "/" + specialty.id : ""),
+      "/api/v1/instructors/specialties" + (specialty.id ? "/" + specialty.id : ""),
       {
         method: specialty.id ? "PUT" : "POST",
         headers: {
@@ -53,7 +53,7 @@ export default function SpecialtyEditAdmin() {
         if (json.message) {
           setMessage(json.message);
           setVisible(true);
-        } else window.location.href = "/vets/specialties";
+        } else window.location.href = "/instructors/specialties";
       })
       .catch((message) => alert(message));
   }
@@ -82,7 +82,7 @@ export default function SpecialtyEditAdmin() {
           <div className="custom-button-row">
             <button className="auth-button">Save</button>
             <Link
-              to={`/vets/specialties`}
+              to={`/instructors/specialties`}
               className="auth-button"
               style={{ textDecoration: "none" }}
             >

@@ -1,8 +1,8 @@
-import { registerFormVetInputs } from "./registerFormVetInputs";
+import { registerFormInstructorInputs } from "./registerFormInstructorInputs";
 import { formValidators } from "../../../validators/formValidators";
 
 export const registerFormOwnerInputs = [
-  ...registerFormVetInputs,
+  ...registerFormInstructorInputs,
   {
     tag: "Address",
     name: "address",

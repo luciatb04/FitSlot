@@ -33,7 +33,7 @@
       <w>364</w>
       <h>91</h>
     </coordinates>
-    <panel_attributes>Pet
+    <panel_attributes>Class
 --
 birthDate: Date {Past}
 </panel_attributes>
@@ -47,7 +47,7 @@ birthDate: Date {Past}
       <w>130</w>
       <h>52</h>
     </coordinates>
-    <panel_attributes>Vet</panel_attributes>
+    <panel_attributes>Instructor</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -97,7 +97,7 @@ description: String {NotEmpty}</panel_attributes>
       <w>156</w>
       <h>52</h>
     </coordinates>
-    <panel_attributes>PetType
+    <panel_attributes>ClassType
 </panel_attributes>
     <additional_attributes/>
   </element>
@@ -393,7 +393,7 @@ develops</panel_attributes>
     <panel_attributes>*Business Rule 1*
 fg=red
 A diagnose should be associated to a disease that
-is compatible with the type of pet of its related visit</panel_attributes>
+is compatible with the type of class of its related visit</panel_attributes>
     <additional_attributes/>
   </element>
   <element>

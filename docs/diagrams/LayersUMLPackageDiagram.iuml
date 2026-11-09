@@ -8,9 +8,9 @@ package " Presentation Layer " as Presentation {
     class WelcomeController
     class UserController
     class OwnerController
-    class PetController
+    class ClassesController
     class VisitController
-    class VetController
+    class InstructorController
 }
 
 package " Business Logic Layer " as BusinessLogic {
@@ -18,18 +18,18 @@ package " Business Logic Layer " as BusinessLogic {
     class AuthoritiesService
     class UserService
     class OwnerService
-    class PetService
+    class ClassesService
     class VisitService
-    class VetService
+    class InstructorService
 }
 
 package " Resources Layer " as Resources {
     hide attributes
     interface AuthoritiesRepository 
     interface UserRepository 
-    interface PetRepository
+    interface ClassesRepository
     interface VisitRepository {
-        List<Visit> findVisitByPetId(Integer PetId)
+        List<Visit> findVisitByClassesId(Integer ClassesId)
     }
     interface OwnerRepository {
         List<Owner> findByLastName(String lastname)
@@ -41,8 +41,8 @@ OwnerController ..> OwnerService
 PetController ..> OwnerService
 PetController ..> PetService
 VisitController ..> PetService
-VisitController ..> VetService
-VetController ..> VetService
+VisitController ..> InstructorService
+InstructorController ..> InstructorService
 
 AuthoritiesService ..> UserService
 OwnerService ..> UserService

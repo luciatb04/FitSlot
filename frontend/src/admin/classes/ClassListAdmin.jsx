@@ -8,32 +8,33 @@ import deleteFromList from "../../util/deleteFromList";
 
 const jwt = tokenService.getLocalAccessToken();
 
-export default function PetListAdmin() {
+export default function ClassListAdmin() {
   const [message, setMessage] = useState(null);
   const [visible, setVisible] = useState(false);
-  const [pets, setPets] = useFetchState(
+  const [classes, setClasses] = useFetchState(
     [],
-    `/api/v1/pets`,
+    `/api/v1/classes`,
     jwt,
     setMessage,
     setVisible
   );
   const [alerts, setAlerts] = useState([]);
+  const [classesOwned, setClassesOwned] = useState([]);
 
-  const petList = pets.map((pet) => {
+  const classList = classes.map((classEntity) => {
     return (
-      <tr key={pet.id}>
-        <td>{pet.name}</td>
-        <td>{pet.birthDate}</td>
-        <td>{pet.type?.name}</td>
-        <td>{pet.owner.user.username}</td>
+      <tr key={classEntity.id}>
+        <td>{classEntity.name}</td>
+        <td>{classEntity.birthDate}</td>
+        <td>{classEntity.type?.name}</td>
+        <td>{classEntity.owner?.user?.username}</td>
         <td>
           <Button
-            aria-label={"visits-" + pet.id}
+            aria-label={"visits-" + classEntity.id}
             size="sm"
             color="info"
             tag={Link}
-            to={`/pets/${pet.id}/visits`}
+            to={`/classes/${classEntity.id}/visits`}
           >
             Visits
           </Button>
@@ -41,23 +42,23 @@ export default function PetListAdmin() {
         <td>
           <ButtonGroup>
             <Button
-              aria-label={"edit-" + pet.id}
+              aria-label={"edit-" + classEntity.id}
               size="sm"
               color="primary"
               tag={Link}
-              to={"/pets/" + pet.id}
+              to={"/classes/" + classEntity.id}
             >
               Edit
             </Button>
             <Button
-              aria-label={"delete-" + pet.id}
+              aria-label={"delete-" + classEntity.id}
               size="sm"
               color="danger"
               onClick={() =>
                 deleteFromList(
-                  `/api/v1/pets/${pet.id}`,
-                  pet.id,
-                  [pets, setPets],
+                  `/api/v1/classes/${classEntity.id}`,
+                  classEntity.id,
+                  [classes, setClasses],
                   [alerts, setAlerts],
                   setMessage,
                   setVisible
@@ -75,14 +76,14 @@ export default function PetListAdmin() {
 
   return (
       <div className="admin-page-container">
-        <h1 className="text-center">Pets</h1>
+        <h1 className="text-center">Classes</h1>
         {alerts.map((a) => a.alert)}
         {modal}
-        <Button color="success" tag={Link} to="/pets/new">
-          Add Pet
+        <Button color="success" tag={Link} to="/classes/new">
+          Add Class
         </Button>
         <div>
-          <Table aria-label="pets" className="mt-4">
+          <Table aria-label="classes" className="mt-4">
             <thead>
               <tr>
                 <th>Name</th>
@@ -93,7 +94,7 @@ export default function PetListAdmin() {
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>{petList}</tbody>
+            <tbody>{classList}</tbody>
           </Table>
         </div>
       </div>

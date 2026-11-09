@@ -23,7 +23,7 @@ export default function PricingPlan () {
     ).json();
     if (myowner.message) setMessage(myowner.message);
     else{
-      setPlan(myowner.clinic.plan);
+      setPlan(myowner.gym.plan);
       setOwner(myowner);
     } 
   }
@@ -69,22 +69,22 @@ export default function PricingPlan () {
               <div className="option">
                 <ul>
                   <li>
-                    <BsDot color="white" /> 2 pets
+                    <BsDot color="white" /> 2 classes
                   </li>
                   <li>
-                    <BsDot color="white" /> 1 visit per month and pet
+                    <BsDot color="white" /> 1 visit per month and class
                   </li>
                   <li>
                     <BsDot color="white" /> Low support priority
                   </li>
                   <li>
-                    <FaTimes color="red" /> Vet Selection for Visits
+                    <FaTimes color="red" /> Instructor Selection for Visits
                   </li>
                   <li>
                     <FaTimes color="red" /> Calendar with Upcoming Visits
                   </li>
                   <li>
-                    <FaTimes color="red" /> Dashboard of your Pets
+                    <FaTimes color="red" /> Dashboard of your Classes
                   </li>
                   <li>
                     <FaTimes color="red" /> Online Consultation
@@ -113,22 +113,22 @@ export default function PricingPlan () {
               <div className="option">
                 <ul>
                   <li>
-                    <BsDot color="white" /> 4 pets
+                    <BsDot color="white" /> 4 classes
                   </li>
                   <li>
-                    <BsDot color="white" /> 3 visit per month and pet
+                    <BsDot color="white" /> 3 visit per month and class
                   </li>
                   <li>
                     <BsDot color="white" /> Medium support priority
                   </li>
                   <li>
-                    <FaCheck color="green" /> Vet Selection for Visits
+                    <FaCheck color="green" /> Instructor Selection for Visits
                   </li>
                   <li>
                     <FaCheck color="green" /> Calendar with Upcoming Visits
                   </li>
                   <li>
-                    <FaTimes color="red" /> Dashboard of your Pets
+                    <FaTimes color="red" /> Dashboard of your Classes
                   </li>
                   <li>
                     <FaTimes color="red" /> Online Consultation
@@ -165,22 +165,22 @@ export default function PricingPlan () {
               <div className="option">
                 <ul>
                   <li>
-                    <BsDot color="white" /> 7 pets
+                    <BsDot color="white" /> 7 classes
                   </li>
                   <li>
-                    <BsDot color="white" /> 6 visit per month and pet
+                    <BsDot color="white" /> 6 visit per month and class
                   </li>
                   <li>
                     <BsDot color="white" /> High support priority
                   </li>
                   <li>
-                    <FaCheck color="green" /> Vet Selection for Visits
+                    <FaCheck color="green" /> Instructor Selection for Visits
                   </li>
                   <li>
                     <FaCheck color="green" /> Calendar with Upcoming Visits
                   </li>
                   <li>
-                    <FaCheck color="green" /> Dashboard of your Pets
+                    <FaCheck color="green" /> Dashboard of your Classes
                   </li>
                   <li>
                     <FaCheck color="green" /> Online Consultation

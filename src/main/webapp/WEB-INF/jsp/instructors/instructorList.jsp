@@ -2,12 +2,12 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="gym" tagdir="/WEB-INF/tags" %>
 
-<petclinic:layout pageName="vets">
-    <h2>Veterinarians</h2>
+<gym:layout pageName="instructors">
+    <h2>Instructors</h2>
 
-    <table id="vetsTable" class="table table-striped">
+    <table id="instructorsTable" class="table table-striped">
         <thead>
         <tr>
             <th>Name</th>
@@ -15,16 +15,16 @@
         </tr>
         </thead>
         <tbody>
-        <c:forEach items="${vets.vetList}" var="vet">
+        <c:forEach items="${instructors.instructorList}" var="instructor">
             <tr>
                 <td>
-                    <c:out value="${vet.firstName} ${vet.lastName}"/>
+                    <c:out value="${instructor.firstName} ${instructor.lastName}"/>
                 </td>
                 <td>
-                    <c:forEach var="specialty" items="${vet.specialties}">
+                    <c:forEach var="specialty" items="${instructor.specialties}">
                         <c:out value="${specialty.name} "/>
                     </c:forEach>
-                    <c:if test="${vet.nrOfSpecialties == 0}">none</c:if>
+                    <c:if test="${instructor.nrOfSpecialties == 0}">none</c:if>
                 </td>
             </tr>
         </c:forEach>
@@ -34,8 +34,8 @@
     <table class="table-buttons">
         <tr>
             <td>
-                <a href="<spring:url value="/vets.xml" htmlEscape="true" />">View as XML</a>
+                <a href="<spring:url value="/instructors.xml" htmlEscape="true" />">View as XML</a>
             </td>            
         </tr>
     </table>
-</petclinic:layout>
+</gym:layout>

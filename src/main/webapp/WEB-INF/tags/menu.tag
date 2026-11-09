@@ -1,11 +1,11 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="gym" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
 <!--  >%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%-->
 <%@ attribute name="name" required="true" rtexprvalue="true"
-	description="Name of the active menu: home, owners, vets or error"%>
+	description="Name of the active menu: home, owners, instructors or error"%>
 
 <nav class="navbar navbar-default" role="navigation">
 	<div class="container">
@@ -22,29 +22,29 @@
 		<div class="navbar-collapse collapse" id="main-navbar">
 			<ul class="nav navbar-nav">
 
-				<petclinic:menuItem active="${name eq 'home'}" url="/"
+				<gym:menuItem active="${name eq 'home'}" url="/"
 					title="home page">
 					<span class="glyphicon glyphicon-home" aria-hidden="true"></span>
 					<span>Home</span>
-				</petclinic:menuItem>
+				</gym:menuItem>
 
-				<petclinic:menuItem active="${name eq 'owners'}" url="/owners/find"
+				<gym:menuItem active="${name eq 'owners'}" url="/owners/find"
 					title="find owners">
 					<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
 					<span>Find owners</span>
-				</petclinic:menuItem>
+				</gym:menuItem>
 
-				<petclinic:menuItem active="${name eq 'vets'}" url="/vets"
-					title="veterinarians">
+				<gym:menuItem active="${name eq 'instructors'}" url="/instructors"
+					title="instructors">
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-					<span>Veterinarians</span>
-				</petclinic:menuItem>
+					<span>Instructors</span>
+				</gym:menuItem>
 
-				<petclinic:menuItem active="${name eq 'error'}" url="/oups"
+				<gym:menuItem active="${name eq 'error'}" url="/oups"
 					title="trigger a RuntimeException to see how it is handled">
 					<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
 					<span>Error</span>
-				</petclinic:menuItem>
+				</gym:menuItem>
 
 			</ul>
 
@@ -58,7 +58,7 @@
 				</sec:authorize>
 				<sec:authorize access="isAuthenticated()">
 					<li class="dropdown"><a href="#" class="dropdown-toggle"
-						data-toggle="dropdown"> <span class="glyphicon glyphicon-user"></span> 
+						data-toggle="dropdown"> <span class="glyphicon glyphicon-user"></span>ï¿½
 							<strong><sec:authentication property="name" /></strong> <span
 							class="glyphicon glyphicon-chevron-down"></span>
 					</a>

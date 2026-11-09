@@ -9,19 +9,19 @@ import useFetchState from "../../util/useFetchState";
 
 const jwt = tokenService.getLocalAccessToken();
 
-export default function ClinicOwnerListAdmin() {
+export default function GymOwnerListAdmin() {
   const [message, setMessage] = useState(null);
   const [visible, setVisible] = useState(false);
-  const [clinicOwners, setClinicOwners] = useFetchState(
+  const [gymOwners, setGymOwners] = useFetchState(
     [],
-    `/api/v1/clinicOwners/all`,
+    `/api/v1/gymOwners/all`,
     jwt,
     setMessage,
     setVisible
   );
   const [alerts, setAlerts] = useState([]);
 
-  const clinicOwnerList = clinicOwners.map((owner) => {
+  const gymOwnerList = gymOwners.map((owner) => {
     return (
       <tr key={owner.id}>
         <td style={{ whiteSpace: "nowrap" }}>
@@ -35,7 +35,7 @@ export default function ClinicOwnerListAdmin() {
               color="primary"
               aria-label={"edit-" + owner.user.username}
               tag={Link}
-              to={"/clinicOwners/" + owner.id}
+              to={"/gymOwners/" + owner.id}
             >
               Edit
             </Button>
@@ -45,9 +45,9 @@ export default function ClinicOwnerListAdmin() {
               aria-label={"delete-" + owner.user.username}
               onClick={() =>
                 deleteFromList(
-                  `/api/v1/clinicOwners/${owner.id}`,
+                  `/api/v1/gymOwners/${owner.id}`,
                   owner.id,
-                  [clinicOwners, setClinicOwners],
+                  [gymOwners, setGymOwners],
                   [alerts, setAlerts],
                   setMessage,
                   setVisible
@@ -67,12 +67,12 @@ export default function ClinicOwnerListAdmin() {
   return (
     <div>
       <div className="admin-page-container">
-        <h1 className="text-center">Clinic Owners</h1>
+        <h1 className="text-center">Gym Owners</h1>
         {alerts.map((a) => a.alert)}
         {modal}
         <div className="float-right">
-          <Button color="success" tag={Link} to="/clinicOwners/new">
-            Add Clinic Owner
+          <Button color="success" tag={Link} to="/gymOwners/new">
+            Add Gym Owner
           </Button>
         </div>
         <div>
@@ -84,7 +84,7 @@ export default function ClinicOwnerListAdmin() {
                 <th width="40%">Actions</th>
               </tr>
             </thead>
-            <tbody>{clinicOwnerList}</tbody>
+            <tbody>{gymOwnerList}</tbody>
           </Table>
         </div>
       </div>

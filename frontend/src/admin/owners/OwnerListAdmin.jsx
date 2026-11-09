@@ -31,7 +31,7 @@ export default function OwnerListAdmin() {
         <td>{owner.city}</td>
         <td>{owner.telephone}</td>
         <td>{owner.user.username}</td>
-        <td>{owner.clinic.name}</td>
+        <td>{owner.gym.name}</td>
         <td>
           <ButtonGroup>
             <Button
@@ -88,7 +88,7 @@ export default function OwnerListAdmin() {
                 <th width="10%">City</th>
                 <th width="10%">Telephone</th>
                 <th width="10%">User</th>
-                <th width="10%">Clinic</th>
+                <th width="10%">Gym</th>
                 <th width="40%">Actions</th>
               </tr>
             </thead>

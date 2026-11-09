@@ -16,7 +16,7 @@ import {
 } from "reactstrap";
 import tokenService from "../../../../services/token.service";
 
-export default function VetConsultationTickets() {
+export default function InstructorConsultationTickets() {
   let [consultation, setConsultation] = useState({
     id: null,
     title: "",
@@ -146,7 +146,7 @@ export default function VetConsultationTickets() {
     
     const length = tickets.length;
         return tickets.map((t, index) => {
-            const buttons = index === length - 1 && t.user.authority.authority === "VET" && status !== "CLOSED" ?
+            const buttons = index === length - 1 && t.user.authority.authority === "INSTRUCTOR" && status !== "CLOSED" ?
                 <ButtonGroup>
                     <Button size="sm" color="primary" tag={Link}
                         to={`consultations/${t.consultation.id}/tickets/${t.id}`}>

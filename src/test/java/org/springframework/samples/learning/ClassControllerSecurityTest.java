@@ -12,7 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.samples.petclinic.pet.PetRestController;
+import org.springframework.samples.fitslot.classes.ClassesRestController;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
@@ -24,10 +24,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 @ExtendWith(SpringExtension.class)
 //@SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ApplicationContext.class )
-@SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT, classes={org.springframework.samples.petclinic.PetclinicApplication.class})
+@SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT, classes={org.springframework.samples.fitslot.GymApplication.class})
 //@SpringBootTest(classes={com.lapots.game.monolith.web.GrandJourneyMonolithApplication.class})
 @DirtiesContext
-public class PetControllerSecurityTest {
+public class ClassControllerSecurityTest {
 
 	@Autowired
     private WebApplicationContext context;
@@ -44,10 +44,10 @@ public class PetControllerSecurityTest {
           .build();
     }
 
-	@WithMockUser(username ="SomeRandomVet",authorities = {"vet"})
+	@WithMockUser(username ="SomeRandomInstructor",authorities = {"instructor"})
     @Test
     void unsuccessfullTestInitCreationForm() throws Exception {
-    		mockMvc.perform(get("/owners/{ownerId}/pets/new", TEST_OWNER_ID))
+    		mockMvc.perform(get("/owners/{ownerId}/classes/new", TEST_OWNER_ID))
 	    .andExpect(status().is(HttpStatus.FORBIDDEN.value()));
     }
 

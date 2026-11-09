@@ -1,7 +1,7 @@
 import { formValidators } from "../../../../validators/formValidators";
 import moment from 'moment';
 
-export const petEditFormInputs = [
+export const classEditFormInputs = [
   {
     tag: "Name",
     name: "name",

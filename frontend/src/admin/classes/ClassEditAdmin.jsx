@@ -10,7 +10,7 @@ import "../../static/css/admin/adminPage.css";
 
 const jwt = tokenService.getLocalAccessToken();
 
-export default function PetEditAdmin() {
+export default function ClassEditAdmin() {
   const emptyItem = {
     id: null,
     name: "",
@@ -21,15 +21,15 @@ export default function PetEditAdmin() {
   const id = getIdFromUrl(2);
   const [message, setMessage] = useState(null);
   const [visible, setVisible] = useState(false);
-  const [pet, setPet] = useFetchState(
+  const [classEntity, setClassEntity] = useFetchState(
     emptyItem,
-    `/api/v1/pets/${id}`,
+    `/api/v1/classes/${id}`,
     jwt,
     setMessage,
     setVisible,
     id
   );
-  const types = useFetchData(`/api/v1/pets/types`, jwt);
+  const types = useFetchData(`/api/v1/classes/types`, jwt);
   const owners = useFetchData(`/api/v1/owners`, jwt);
 
   function handleChange(event) {
@@ -38,31 +38,31 @@ export default function PetEditAdmin() {
     const name = target.name;
     if (name === "type") {
       const type = types.find((type) => type.id === Number(value));
-      setPet({ ...pet, type: type });
+      setClassEntity({ ...classEntity, type });
     } else if (name === "owner") {
       const owner = owners.find((owner) => owner.id === Number(value));
-      setPet({ ...pet, owner: owner });
-    } else setPet({ ...pet, [name]: value });
+      setClassEntity({ ...classEntity, owner });
+    } else setClassEntity({ ...classEntity, [name]: value });
   }
 
   function handleSubmit(event) {
     event.preventDefault();
 
-    fetch("/api/v1/pets" + (pet.id ? "/" + pet.id : ""), {
-      method: pet.id ? "PUT" : "POST",
+    fetch("/api/v1/classes" + (classEntity.id ? "/" + classEntity.id : ""), {
+      method: classEntity.id ? "PUT" : "POST",
       headers: {
         Authorization: `Bearer ${jwt}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(pet),
+      body: JSON.stringify(classEntity),
     })
       .then((response) => response.json())
       .then((json) => {
         if (json.message) {
           setMessage(json.message);
           setVisible(true);
-        } else window.location.href = "/pets";
+        } else window.location.href = "/classes";
       })
       .catch((message) => alert(message));
   }
@@ -81,7 +81,7 @@ export default function PetEditAdmin() {
 
   return (
     <div className="auth-page-container">
-      {<h2>{pet.id ? "Edit Pet" : "Add Pet"}</h2>}
+      <h2>{classEntity.id ? "Edit Class" : "Add Class"}</h2>
       {modal}
       <div className="auth-form-container">
         <Form onSubmit={handleSubmit}>
@@ -94,7 +94,7 @@ export default function PetEditAdmin() {
               required
               name="name"
               id="name"
-              value={pet.name || ""}
+              value={classEntity.name || ""}
               onChange={handleChange}
               className="custom-input"
             />
@@ -107,7 +107,7 @@ export default function PetEditAdmin() {
               type="date"
               name="birthDate"
               id="birthDate"
-              value={pet.birthDate || ""}
+              value={classEntity.birthDate || ""}
               onChange={handleChange}
               className="custom-input"
             />
@@ -121,7 +121,7 @@ export default function PetEditAdmin() {
               required
               name="type"
               id="type"
-              value={pet.type?.id}
+              value={classEntity.type?.id || ""}
               onChange={handleChange}
               className="custom-input"
             >
@@ -133,13 +133,13 @@ export default function PetEditAdmin() {
             <Label for="owner" className="custom-form-input-label">
               Owner
             </Label>
-            {pet.id ? (
+            {classEntity.id ? (
               <Input
                 type="select"
                 disabled
                 name="owner"
                 id="owner"
-                value={pet.owner?.id || ""}
+                value={classEntity.owner?.id || ""}
                 onChange={handleChange}
                 className="custom-input"
               >
@@ -152,7 +152,7 @@ export default function PetEditAdmin() {
                 required
                 name="owner"
                 id="owner"
-                value={pet.owner?.id || ""}
+                value={classEntity.owner?.id || ""}
                 onChange={handleChange}
                 className="custom-input"
               >
@@ -164,7 +164,7 @@ export default function PetEditAdmin() {
           <div className="custom-button-row">
             <button className="auth-button">Save</button>
             <Link
-              to={`/pets`}
+              to={`/classes`}
               className="auth-button"
               style={{ textDecoration: "none" }}
             >

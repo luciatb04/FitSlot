@@ -33,13 +33,13 @@ export default function OwnerConsultationList() {
     if (value === "") {
       if (search !== "")
         filteredConsultations = [...consultations].filter((i) =>
-          i.pet.name.toLowerCase().includes(search)
+          i.class.name.toLowerCase().includes(search)
         );
       else filteredConsultations = [...consultations];
     } else {
       if (search !== "")
         filteredConsultations = [...consultations].filter(
-          (i) => i.status === value && i.pet.name.toLowerCase().includes(search)
+          (i) => i.status === value && i.class.name.toLowerCase().includes(search)
         );
       else
         filteredConsultations = [...consultations].filter(
@@ -56,8 +56,8 @@ export default function OwnerConsultationList() {
         <tr key={c.id}>
           <td>{c.title}</td>
           <td>{c.status}</td>
-          <td>{c.pet?.name}</td>
-          <td>{c.isClinicComment ? "Clinic Owner" : "Clinic Vet"}</td>
+          <td>{c.class?.name}</td>
+          <td>{c.isGymComment ? "Gym Owner" : "Gym Instructor"}</td>
           <td>{new Date(c.creationDate).toLocaleString()}</td>
           <td>
             <ButtonGroup>
@@ -101,11 +101,11 @@ export default function OwnerConsultationList() {
     } else {
       if (filter !== "")
         filteredConsultations = [...consultations].filter(
-          (i) => i.status === filter && i.pet.name.toLowerCase().includes(value)
+          (i) => i.status === filter && i.class.name.toLowerCase().includes(value)
         );
       else
         filteredConsultations = [...consultations].filter((i) =>
-          i.pet.name.toLowerCase().includes(value)
+          i.class.name.toLowerCase().includes(value)
         );
     }
 
@@ -134,7 +134,7 @@ export default function OwnerConsultationList() {
       })
     ).json();
     if (owner.message) setMessage(owner.message);
-    else setPlan(owner.clinic.plan);
+    else setPlan(owner.gym.plan);
   }
 
   useEffect(() => {
@@ -172,7 +172,7 @@ export default function OwnerConsultationList() {
           <Col className="col-sm-3">
             <Input
               type="search"
-              placeholder="Introduce a pet name to search by it"
+              placeholder="Introduce a class name to search by it"
               value={search || ""}
               onChange={handleChange}
             />
@@ -188,7 +188,7 @@ export default function OwnerConsultationList() {
             <tr>
               <th>Title</th>
               <th>Status</th>
-              <th>Pet</th>
+              <th>Class</th>
               <th>Sent To</th>
               <th>Creation Date</th>
               <th>Actions</th>

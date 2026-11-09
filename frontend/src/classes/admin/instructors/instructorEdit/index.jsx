@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Col, Container, Form, FormGroup, Input, Label, Row } from 'reactstrap';
 
-class VetEdit extends Component {
+class InstructorEdit extends Component {
 
-    emptyVet = {
+    emptyInstructor = {
         id: '',
         firstName: '',
         lastName: '',
@@ -15,7 +15,7 @@ class VetEdit extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            vet: this.emptyVet,
+            instructor: this.emptyInstructor,
             allSpecialties: [],
             // users: [],
         };
@@ -29,22 +29,22 @@ class VetEdit extends Component {
 
     async componentDidMount() {
         if (this.id !== 'new') {
-            const vet = await (await fetch(`/api/v1/vets/${this.id}`, {
+            const instructor = await (await fetch(`/api/v1/instructors/${this.id}`, {
                 headers: {
                     "Authorization": `Bearer ${this.jwt}`,
                 },
             })).json();
-            this.setState({ vet: vet });
+            this.setState({ instructor: instructor });
         }
 
-        const specialtiesList = await (await fetch(`/api/v1/vets/specialties`, {
+        const specialtiesList = await (await fetch(`/api/v1/instructors/specialties`, {
             headers: {
                 "Authorization": `Bearer ${this.jwt}`,
             },
         })).json();
         this.setState({ allSpecialties: specialtiesList });
 
-        const users = await (await fetch(`/api/v1/users?auth=VET`, {
+        const users = await (await fetch(`/api/v1/users?auth=INSTRUCTOR`, {
             headers: {
                 "Authorization": `Bearer ${this.jwt}`,
             },
@@ -56,11 +56,11 @@ class VetEdit extends Component {
         const target = event.target;
         const value = target.value;
         const name = target.name;
-        let vet = { ...this.state.vet };
+        let instructor = { ...this.state.instructor };
         if (name === "user") {
-            vet.user.id = value;
-        } else vet[name] = value;
-        this.setState({ vet });
+            instructor.user.id = value;
+        } else instructor[name] = value;
+        this.setState({ instructor });
     }
 
     handleSpecialtyChange(event) {
@@ -68,39 +68,39 @@ class VetEdit extends Component {
         const checked = target.checked;
         const name = target.name;
         const allSpecialties = { ...this.state.allSpecialties }
-        let vet = { ...this.state.vet };
-        let selectedSpecialties = vet.specialties;
+        let instructor = { ...this.state.instructor };
+        let selectedSpecialties = instructor.specialties;
         for (let i = 0; i < Object.keys(allSpecialties).length; i++) {
             if (allSpecialties[i].name === name) {
                 if (!checked) selectedSpecialties = selectedSpecialties.filter(specialty => specialty.name !== name);
                 else selectedSpecialties.push(allSpecialties[i]);
             }
         }
-        vet.specialties = selectedSpecialties;
-        this.setState({ vet });
+        instructor.specialties = selectedSpecialties;
+        this.setState({ instructor });
     }
 
     async handleSubmit(event) {
         event.preventDefault();
-        const { vet } = this.state;
+        const { instructor } = this.state;
 
-        await fetch('/api/v1/vets' + (vet.id ? '/' + vet.id : ''), {
-            method: (vet.id) ? 'PUT' : 'POST',
+        await fetch('/api/v1/instructors' + (instructor.id ? '/' + instructor.id : ''), {
+            method: (instructor.id) ? 'PUT' : 'POST',
             headers: {
                 "Authorization": `Bearer ${this.jwt}`,
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(vet),
+            body: JSON.stringify(instructor),
         });
-        window.location.href = '/vets';
+        window.location.href = '/instructors';
     }
 
     render() {
-        const { vet, allSpecialties } = this.state;
-        const title = <h2>{vet.id ? 'Edit Vet' : 'Add Vet'}</h2>;
+        const { instructor, allSpecialties } = this.state;
+        const title = <h2>{instructor.id ? 'Edit Instructor' : 'Add Instructor'}</h2>;
 
-        const selectedSpecialties = vet.specialties.map(specialty => specialty.name);
+        const selectedSpecialties = instructor.specialties.map(specialty => specialty.name);
         const specialties = allSpecialties.map(specialty => {
             if (selectedSpecialties.includes(specialty.name)) {
                 return (<FormGroup key={specialty.name}>
@@ -126,33 +126,33 @@ class VetEdit extends Component {
                         <Form onSubmit={this.handleSubmit}>
                             <FormGroup>
                                 <Label for="firstName">First Name</Label>
-                                <Input type="text" name="firstName" id="firstName" value={vet.firstName || ''}
+                                <Input type="text" name="firstName" id="firstName" value={instructor.firstName || ''}
                                     onChange={this.handleChange} autoComplete="firstName" />
                             </FormGroup>
                             <FormGroup>
                                 <Label for="lastName">Last Name</Label>
-                                <Input type="text" name="lastName" id="lastName" value={vet.lastName || ''}
+                                <Input type="text" name="lastName" id="lastName" value={instructor.lastName || ''}
                                     onChange={this.handleChange} autoComplete="lastName" />
                             </FormGroup>
                             <FormGroup>
                                 <Label for="city">City</Label>
-                                <Input type="text" name="city" id="city" value={vet.city || ''}
+                                <Input type="text" name="city" id="city" value={instructor.city || ''}
                                     onChange={this.handleChange} autoComplete="city" />
                             </FormGroup>
                             <Label for="specialties">Specialties</Label>
                             <Row className="row-cols-lg-auto g-3 align-items-center">
                                 {specialties}
                             </Row>
-                            {vet.id ?
+                            {instructor.id ?
                                 <FormGroup>
                                     <Label for="user">User</Label>
-                                    <p>{vet.user.username || ''}</p>
+                                    <p>{instructor.user.username || ''}</p>
                                 </FormGroup> : <></>
                             }
                             <br></br>
                             <FormGroup>
                                 <Button color="primary" type="submit">Save</Button>{' '}
-                                <Button color="secondary" tag={Link} to="/vets">Cancel</Button>
+                                <Button color="secondary" tag={Link} to="/instructors">Cancel</Button>
                             </FormGroup>
                         </Form>
                     </Col>
@@ -161,4 +161,4 @@ class VetEdit extends Component {
         )
     }
 }
-export default VetEdit;
+export default InstructorEdit;

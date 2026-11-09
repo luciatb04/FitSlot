@@ -33,19 +33,19 @@ function AppNavbar() {
                         <NavLink style={{ color: "white" }} tag={Link} to="/owners">Owners</NavLink>
                     </NavItem>
                     <NavItem>
-                        <NavLink style={{ color: "white" }} tag={Link} to="/pets">Pets</NavLink>
+                        <NavLink style={{ color: "white" }} tag={Link} to="/classes">Classes</NavLink>
                     </NavItem>
                     <NavItem>
-                        <NavLink style={{ color: "white" }} tag={Link} to="/vets">Vets</NavLink>
+                        <NavLink style={{ color: "white" }} tag={Link} to="/instructors">Instructors</NavLink>
                     </NavItem>
                     <NavItem>
                         <NavLink style={{ color: "white" }} tag={Link} to="/consultations">Consultations</NavLink>
                     </NavItem>
                     <NavItem>
-                        <NavLink style={{ color: "white" }} tag={Link} to="/clinicOwners">Clinic Owners</NavLink>
+                        <NavLink style={{ color: "white" }} tag={Link} to="/gymOwners">Gym Owners</NavLink>
                     </NavItem>
                     <NavItem>
-                        <NavLink style={{ color: "white" }} tag={Link} to="/clinics">Clinics</NavLink>
+                        <NavLink style={{ color: "white" }} tag={Link} to="/gyms">Gyms</NavLink>
                     </NavItem>
                     <NavItem>
                         <NavLink style={{ color: "white" }} tag={Link} to="/users">Users</NavLink>
@@ -57,7 +57,7 @@ function AppNavbar() {
             ownerLinks = (
                 <>
                     <NavItem>
-                        <NavLink style={{ color: "white" }} tag={Link} to="/myPets">My Pets</NavLink>
+                        <NavLink style={{ color: "white" }} tag={Link} to="/myClasses">My Classes</NavLink>
                     </NavItem>
                     <NavItem>
                         <NavLink style={{ color: "white" }} tag={Link} to="/consultations">Consultations</NavLink>
@@ -68,7 +68,7 @@ function AppNavbar() {
                 </>
             )
         }
-        if (role === "VET") {
+        if (role === "INSTRUCTOR") {
             ownerLinks = (
                 <>
                     <NavItem>
@@ -78,11 +78,11 @@ function AppNavbar() {
             )
         }
 
-        if (role === "CLINIC_OWNER") {
+        if (role === "GYM_OWNER") {
             ownerLinks = (
                 <>
                     <NavItem>
-                        <NavLink style={{ color: "white" }} tag={Link} to="/clinics">Clinics</NavLink>
+                        <NavLink style={{ color: "white" }} tag={Link} to="/gyms">Gyms</NavLink>
                     </NavItem>
                     <NavItem>
                         <NavLink style={{ color: "white" }} tag={Link} to="/owners">Owners</NavLink>
@@ -91,7 +91,7 @@ function AppNavbar() {
                         <NavLink style={{ color: "white" }} tag={Link} to="/consultations">Consultations</NavLink>
                     </NavItem>
                     <NavItem>
-                        <NavLink style={{ color: "white" }} tag={Link} to="/vets">Vets</NavLink>
+                        <NavLink style={{ color: "white" }} tag={Link} to="/instructors">Instructors</NavLink>
                     </NavItem>
                 </>
             )
@@ -145,7 +145,7 @@ function AppNavbar() {
             <Navbar expand="md" dark color="dark">
                 <NavbarBrand href="/">
                     <img alt="logo" src="/logo1-recortado.png" style={{ height: 40, width: 40 }} />
-                    {" "}PetClinic
+                    {" "}ClassGym
                 </NavbarBrand>
                 <NavbarToggler onClick={toggleNavbar} className="ms-2" />
                 <Collapse isOpen={!collapsed} navbar>
