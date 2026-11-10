@@ -29,17 +29,6 @@ export default function ClassListAdmin() {
         <td>{classEntity.type?.name}</td>
         <td>{classEntity.owner?.user?.username}</td>
         <td>
-          <Button
-            aria-label={"visits-" + classEntity.id}
-            size="sm"
-            color="info"
-            tag={Link}
-            to={`/classes/${classEntity.id}/visits`}
-          >
-            Visits
-          </Button>
-        </td>
-        <td>
           <ButtonGroup>
             <Button
               aria-label={"edit-" + classEntity.id}
@@ -90,7 +79,6 @@ export default function ClassListAdmin() {
                 <th>Birth Date</th>
                 <th>Type</th>
                 <th>Owner</th>
-                <th>Visits</th>
                 <th>Actions</th>
               </tr>
             </thead>

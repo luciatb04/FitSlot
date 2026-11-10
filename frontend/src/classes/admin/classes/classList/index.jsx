@@ -55,12 +55,6 @@ class ClassList extends Component {
                     <td>{classEntity.type?.name}</td>
                     <td>{classEntity.owner?.user?.username}</td>
                     <td>
-                        <Button size="sm" color="info" tag={Link}
-                            to={`/classes/${classEntity.id}/visits`}>
-                            Visits
-                        </Button>
-                    </td>
-                    <td>
                         <ButtonGroup>
                             <Button size="sm" color="primary" tag={Link}
                                 to={"/classes/" + classEntity.id}>
@@ -90,7 +84,6 @@ class ClassList extends Component {
                                 <th>Birth Date</th>
                                 <th>Type</th>
                                 <th>Owner</th>
-                                <th>Visits</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>

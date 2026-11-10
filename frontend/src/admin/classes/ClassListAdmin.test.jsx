@@ -19,9 +19,6 @@ describe('ClassListAdmin', () => {
         const deleteButtons = await screen.findAllByRole('button', { 'name': /delete/ });
         expect(deleteButtons).toHaveLength(2);
 
-        const visitLinks = await screen.findAllByRole('link', { 'name': /visits/ });
-        expect(visitLinks).toHaveLength(2);
-
         const class2 = await screen.findByRole('cell', { 'name': 'Basil' });
         expect(class2).toBeInTheDocument();
 
