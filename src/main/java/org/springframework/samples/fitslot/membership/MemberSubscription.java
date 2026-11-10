@@ -40,7 +40,7 @@ public class MemberSubscription extends BaseEntity {
     private LocalDate startDate;
 
     @NotNull
-    @Column(name = "end_date", nullable = false)
+    @Column(name = "end_date", nullable = true)
     private LocalDate endDate;
 
     @Min(0)

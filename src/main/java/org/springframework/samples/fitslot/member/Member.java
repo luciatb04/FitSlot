@@ -28,6 +28,9 @@ public class Member extends Person {
     private String telephone;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", unique = true)
+    @JoinColumn(name = "user_id", unique = true, nullable = true)
     private User user;
+
+    @Column(nullable = false)
+    private boolean active = true;
 }

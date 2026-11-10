@@ -1,6 +1,5 @@
 package org.springframework.samples.fitslot.member;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -20,25 +19,34 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public List<Member> findAll() {
-        List<Member> members = new ArrayList<>();
-        memberRepository.findAll().forEach(members::add);
-        return members;
+        return memberRepository.findByActiveTrue();
     }
 
     @Transactional(readOnly = true)
     public Member findById(Integer id) {
-        return memberRepository.findById(id)
+        Member member = memberRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Member", "ID", id));
+
+        if (!member.isActive()) {
+            throw new ResourceNotFoundException("Member", "ID", id);
+        }
+
+        return member;
     }
 
     @Transactional
     public Member create(MemberRequest request) {
         if (memberRepository.existsByEmailIgnoreCase(request.email())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already registered");
+            throw new ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "Email already registered"
+            );
         }
 
         Member member = new Member();
         applyRequest(member, request);
+        member.setActive(true);
+
         return memberRepository.save(member);
     }
 
@@ -47,7 +55,10 @@ public class MemberService {
         Member member = findById(id);
 
         if (memberRepository.existsByEmailIgnoreCaseAndIdNot(request.email(), id)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already registered");
+            throw new ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "Email already registered"
+            );
         }
 
         applyRequest(member, request);
@@ -55,9 +66,10 @@ public class MemberService {
     }
 
     @Transactional
-    public void delete(Integer id) {
+    public void deactivate(Integer id) {
         Member member = findById(id);
-        memberRepository.delete(member);
+        member.setActive(false);
+        memberRepository.save(member);
     }
 
     private void applyRequest(Member member, MemberRequest request) {

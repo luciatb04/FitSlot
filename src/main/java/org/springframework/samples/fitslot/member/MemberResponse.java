@@ -5,6 +5,7 @@ public record MemberResponse(
     String firstName,
     String lastName,
     String email,
-    String telephone
+    String telephone,
+    boolean active
 ) {
 }
