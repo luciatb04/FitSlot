@@ -27,6 +27,9 @@ INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (4, 
 INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (5, 'Henry', 'Stevens','Badajoz', 3, 18);
 INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (6, 'Sharon', 'Jenkins','Cádiz', 3, 19);
 
+INSERT INTO authorities(id,authority) VALUES (5,'MEMBER');
+INSERT INTO authorities(id,authority) VALUES (6,'RECEPTIONIST');
+
 INSERT INTO classes(id,name,birth_date) VALUES (1, 'Morning Strength', '2026-01-15');
 INSERT INTO classes(id,name,birth_date) VALUES (2, 'Yoga', '2026-02-10');
 INSERT INTO classes(id,name,birth_date) VALUES (3, 'Spinning', '2026-03-05');

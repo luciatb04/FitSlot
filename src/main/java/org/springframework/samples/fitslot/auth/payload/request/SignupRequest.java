@@ -29,6 +29,8 @@ public class SignupRequest {
 	
 	@NotBlank
 	private String city;
+	private String email;
+	private String telephone;
 	private Gym gym;
 
 }

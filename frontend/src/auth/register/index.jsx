@@ -4,6 +4,7 @@ import tokenService from "../../services/token.service";
 import FormGenerator from "../../components/formGenerator/formGenerator";
 import { registerFormInstructorInputs } from "./form/registerFormInstructorInputs";
 import { registerFormGymOwnerInputs } from "./form/registerFormGymOwnerInputs";
+import { registerFormMemberInputs } from "./form/registerFormMemberInputs";
 import { useEffect, useRef, useState } from "react";
 
 export default function Register() {
@@ -111,6 +112,7 @@ export default function Register() {
             ref={registerFormRef}
             inputs={
               type === "Instructor" ? registerFormInstructorInputs
+              : type === "Member" ? registerFormMemberInputs
               : registerFormGymOwnerInputs
             }
             onSubmit={handleSubmit}
@@ -137,6 +139,20 @@ export default function Register() {
               onClick={handleButtonClick}
             >
               Instructor
+            </button>
+            <button
+              className="auth-button"
+              value="Member"
+              onClick={handleButtonClick}
+            >
+              Member
+            </button>
+            <button
+              className="auth-button"
+              value="Receptionist"
+              onClick={handleButtonClick}
+            >
+              Receptionist
             </button>
             <button
               className="auth-button"

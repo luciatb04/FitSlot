@@ -43,6 +43,8 @@ public class SecurityConfiguration {
 
 	private static final String ADMIN = "ADMIN";
 	private static final String GYM_OWNER = "GYM_OWNER";
+	private static final String MEMBER = "MEMBER";
+	private static final String RECEPTIONIST = "RECEPTIONIST";
 
 
 	@Bean
@@ -88,14 +90,14 @@ public class SecurityConfiguration {
 
 			// Otras reglas de controal de acceso:
 			.requestMatchers("/api/v1/gymOwners/**").hasAnyAuthority(ADMIN, GYM_OWNER)
-			.requestMatchers("/api/v1/visits/**").authenticated()
+			.requestMatchers("/api/v1/visits/**").hasAnyAuthority(MEMBER, RECEPTIONIST)
 			.requestMatchers("/api/v1/classs").authenticated()
 			.requestMatchers("/api/v1/classs/**").authenticated()
 			.requestMatchers("/api/v1/gyms/**").hasAnyAuthority(GYM_OWNER, ADMIN)
 			.requestMatchers(HttpMethod.GET, "/api/v1/instructors/**").authenticated()
 			.requestMatchers("/api/v1/instructors/**").hasAnyAuthority(ADMIN, "INSTRUCTOR", GYM_OWNER)
 
-			.requestMatchers("/api/v1/members/**").hasAuthority(ADMIN)
+			.requestMatchers("/api/v1/members/**").hasAnyAuthority(ADMIN, RECEPTIONIST)
 			.requestMatchers("/api/membership-tiers/**").hasAuthority(GYM_OWNER)
             // El resto denegado
              .anyRequest().denyAll())

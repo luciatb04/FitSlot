@@ -10,6 +10,8 @@ import org.springframework.samples.fitslot.gymowner.GymOwner;
 import org.springframework.samples.fitslot.gymowner.GymOwnerService;
 import org.springframework.samples.fitslot.instructor.Instructor;
 import org.springframework.samples.fitslot.instructor.InstructorService;
+import org.springframework.samples.fitslot.member.Member;
+import org.springframework.samples.fitslot.member.MemberService;
 import org.springframework.samples.fitslot.user.Authorities;
 import org.springframework.samples.fitslot.user.AuthoritiesService;
 import org.springframework.samples.fitslot.user.User;
@@ -26,16 +28,19 @@ public class AuthService {
 	private final InstructorService instructorService;
 	private final GymOwnerService gymOwnerService;
 	private final GymService gymService;
+	private final MemberService memberService;
 
 	@Autowired
 	public AuthService(PasswordEncoder encoder, AuthoritiesService authoritiesService, UserService userService,
-			InstructorService instructorService, GymOwnerService gymOwnerService, GymService gymService) {
+			InstructorService instructorService, GymOwnerService gymOwnerService, GymService gymService,
+			MemberService memberService) {
 		this.encoder = encoder;
 		this.authoritiesService = authoritiesService;
 		this.userService = userService;
 		this.instructorService = instructorService;
 		this.gymOwnerService = gymOwnerService;
 		this.gymService = gymService;
+		this.memberService = memberService;
 	}
 
 	@Transactional
@@ -73,6 +78,26 @@ public class AuthService {
 			gymOwner.setLastName(request.getLastName());
 			gymOwner.setUser(user);
 			gymOwnerService.saveGymOwner(gymOwner);
+			break;
+		case "member":
+			if (request.getEmail() == null || request.getEmail().isBlank()) {
+				throw new IllegalArgumentException("Email is required for members");
+			}
+			role = authoritiesService.findByAuthority("MEMBER");
+			user.setAuthority(role);
+			userService.saveUser(user);
+			Member member = new Member();
+			member.setFirstName(request.getFirstName());
+			member.setLastName(request.getLastName());
+			member.setEmail(request.getEmail());
+			member.setTelephone(request.getTelephone());
+			member.setUser(user);
+			memberService.saveMember(member);
+			break;
+		case "receptionist":
+			role = authoritiesService.findByAuthority("RECEPTIONIST");
+			user.setAuthority(role);
+			userService.saveUser(user);
 			break;
 		default:
 			throw new IllegalArgumentException("Unsupported authority: " + strRoles);

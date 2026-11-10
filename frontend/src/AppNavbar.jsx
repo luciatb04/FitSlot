@@ -29,10 +29,12 @@ function AppNavbar() {
     }, [jwt]);
 
     let adminLinks = <></>;
+    let instructorLinks = <></>;
     let ownerLinks = <></>;
     let userLinks = <></>;
     let rightLinks = <></>;
     let publicLinks = <></>;
+    let receptionistLinks = <></>;
 
     roles.forEach((role) => {
         if (role === "ADMIN") {
@@ -57,10 +59,112 @@ function AppNavbar() {
             );
         }
 
-        if (role === "INSTRUCTOR") {
-            ownerLinks = <></>;
-        }
+      if (role === "INSTRUCTOR") {
+        instructorLinks = (
+            <>
+                <NavItem>
+                    <NavLink
+                        className="navbar-link-custom"
+                        tag={Link}
+                        to="/myClasses"
+                    >
+                        Classes
+                    </NavLink>
+                </NavItem>
 
+                <NavItem>
+                <NavLink
+                    className="navbar-link-custom"
+                    tag={Link}
+                    to="/availability"
+                >
+                    Availability
+                </NavLink>
+            </NavItem>
+        </>
+    );
+}
+
+        if (role === "MEMBER") {
+            userLinks = (
+                <>
+                    <NavItem>
+                        <NavLink
+                         className="navbar-link-custom"
+                        tag={Link}
+                        to="/classes"
+                    >
+                        Classes
+                </NavLink>
+            </NavItem>
+
+            <NavItem>
+                <NavLink
+                    className="navbar-link-custom"
+                    tag={Link}
+                    to="/my-bookings"
+                >
+                    My Bookings
+                </NavLink>
+            </NavItem>
+
+            <NavItem>
+                <NavLink
+                    className="navbar-link-custom"
+                    tag={Link}
+                    to="/my-membership"
+                >
+                    My Membership
+                </NavLink>
+            </NavItem>
+        </>
+    );
+}
+    if (role === "RECEPTIONIST") {
+        receptionistLinks = (
+            <>
+                <NavItem>
+                    <NavLink
+                    className="navbar-link-custom"
+                    tag={Link}
+                    to="/members"
+                >
+                    Members
+                </NavLink>
+            </NavItem>
+
+            <NavItem>
+                <NavLink
+                    className="navbar-link-custom"
+                    tag={Link}
+                    to="/reception-memberships"
+                >
+                    Memberships
+                </NavLink>
+            </NavItem>
+
+            <NavItem>
+                <NavLink
+                    className="navbar-link-custom"
+                    tag={Link}
+                    to="/check-in"
+                >
+                    Check-in
+                </NavLink>
+            </NavItem>
+
+            <NavItem>
+                <NavLink
+                    className="navbar-link-custom"
+                    tag={Link}
+                    to="/payments"
+                >
+                    Payments
+                </NavLink>
+            </NavItem>
+        </>
+    );
+}
         if (role === "GYM_OWNER") {
             ownerLinks = (
                 <>
@@ -161,6 +265,8 @@ function AppNavbar() {
                         {adminLinks}
                         {ownerLinks}
                         {publicLinks}
+                        {instructorLinks}
+                        {receptionistLinks}
                     </Nav>
 
                     {jwt && rightLinks}

@@ -13,6 +13,8 @@ import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -99,5 +101,42 @@ class MembershipTierServiceTests {
         assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(exception.getReason()).isEqualTo("Membership tier not found");
         verify(repository).findById(TIER_ID);
+    }
+
+    @ParameterizedTest
+    @EnumSource(TimeBand.class)
+    void shouldAssignAndSaveEachTimeBand(TimeBand timeBand) {
+        when(repository.findById(TIER_ID)).thenReturn(Optional.of(tier));
+        when(repository.save(tier)).thenReturn(tier);
+
+        TimeBand result = service.updateTimeBand(TIER_ID, timeBand);
+
+        assertThat(result).isEqualTo(timeBand);
+        assertThat(tier.getTimeBand()).isEqualTo(timeBand);
+        verify(repository).findById(TIER_ID);
+        verify(repository).save(tier);
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void shouldReturnSavedTimeBand() {
+        tier.setTimeBand(TimeBand.MORNINGS_ONLY);
+        when(repository.findById(TIER_ID)).thenReturn(Optional.of(tier));
+
+        assertThat(service.getTimeBand(TIER_ID)).isEqualTo(TimeBand.MORNINGS_ONLY);
+
+        verify(repository).findById(TIER_ID);
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void shouldRejectInvalidNullTimeBandBeforeAccessingRepository() {
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> service.updateTimeBand(TIER_ID, null));
+
+        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(exception.getReason()).isEqualTo("Time band cannot be null");
+        verifyNoMoreInteractions(repository);
     }
 }
