@@ -9,6 +9,7 @@ import PricingPlan from "./owner/plan";
 import Register from "./auth/register";
 import Login from "./auth/login";
 import Logout from "./auth/logout";
+import Dashboard from "./dashboard";
 import OwnerClassesList from "./owner/classes/classList";
 import OwnerClassesEdit from "./owner/classes/classEdit";
 import PlanList from "./public/plan";
@@ -19,6 +20,7 @@ import OwnerConsultationEdit from "./owner/consultations/consultationEdit";
 import OwnerConsultationTickets from "./owner/consultations/tickets/ticketList";
 import InstructorConsultationList from "./instructor/consultations/consultationList";
 import InstructorConsultationTickets from "./instructor/consultations/tickets/ticketList";
+import MembershipServices from "./gymOwner/memberships";
 import ClassEditAdmin from "./admin/classes/ClassEditAdmin";
 import ClassListAdmin from "./admin/classes/ClassListAdmin";
 import UserListAdmin from "./admin/users/UserListAdmin";
@@ -71,6 +73,7 @@ function App() {
   let userRoutes = <></>;
   let instructorRoutes = <></>;
   let publicRoutes = <></>;
+  let gymOwnerRoutes = <></>;
 
   roles.forEach((role) => {
     if (role === "ADMIN") {
@@ -110,14 +113,14 @@ function App() {
     if (role === "INSTRUCTOR") {
       instructorRoutes = (
         <>
-          {/* <Route path="/dashboard" element={<PrivateRoute><OwnerDashboard /></PrivateRoute>} /> */}
+          <Route path="/dashboard" element={<PrivateRoute><OwnerDashboard /></PrivateRoute>} /> 
           <Route path="/myClasses" exact={true} element={<PrivateRoute><OwnerClassesList /></PrivateRoute>} />
           <Route path="/consultations" exact={true} element={<PrivateRoute><InstructorConsultationList /></PrivateRoute>} />
           <Route path="/consultations/:consultationId/tickets" exact={true} element={<PrivateRoute><InstructorConsultationTickets /></PrivateRoute>} />
         </>)
     }
     if (role === "GYM_OWNER") {
-      instructorRoutes = (
+      gymOwnerRoutes = (
         <>
           <Route path="/owners" exact={true} element={<PrivateRoute><OwnerListGymOwner /></PrivateRoute>} />
           <Route path="/gyms" exact={true} element={<PrivateRoute><GymsList /></PrivateRoute>} />
@@ -127,6 +130,7 @@ function App() {
           <Route path="/consultations/:id/tickets" exact={true} element={<PrivateRoute><InstructorConsultationTickets /></PrivateRoute>} />
           <Route path="/instructors" exact={true} element={<PrivateRoute><InstructorListGymOwner /></PrivateRoute>} />
           <Route path="/instructors/:id" exact={true} element={<PrivateRoute><InstructorEditGymOwner /></PrivateRoute>} />
+          <Route path="/membership-services" element={<PrivateRoute><MembershipServices /></PrivateRoute>}/>
         </>)
     }
   })
@@ -140,7 +144,7 @@ function App() {
   } else {
     userRoutes = (
       <>
-        {/* <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} /> */}        
+        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />      
         <Route path="/logout" element={<Logout />} />
         <Route path="/login" element={<Login />} />
       </>
@@ -160,6 +164,7 @@ function App() {
           {adminRoutes}
           {ownerRoutes}
           {instructorRoutes}
+          {gymOwnerRoutes}
         </Routes>
       </ErrorBoundary>
     </div>

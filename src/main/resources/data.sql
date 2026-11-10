@@ -4,8 +4,8 @@ INSERT INTO appusers(id,username,password,authority) VALUES (1,'admin1','$2a$10$
 
 -- Three gym owners, with password "gym_owner"
 INSERT INTO authorities(id,authority) VALUES (2,'GYM_OWNER');
-INSERT INTO appusers(id,username,password,authority) VALUES (2,'gymOwner1','$2a$10$t.I/C4cjUdUWzqlFlSddLeh9SbZ6d8wR7mdbeIRghT355/KRKZPAi',2);
-INSERT INTO appusers(id,username,password,authority) VALUES (3,'gymOwner2','$2a$10$t.I/C4cjUdUWzqlFlSddLeh9SbZ6d8wR7mdbeIRghT355/KRKZPAi',2);
+INSERT INTO appusers(id,username,password,authority) VALUES (2,'gym_owner1','$2a$10$kcz1B6yRGH1fOyONFQXg8OLEbrANr.nN6FeO47O8qeK4lGTexnDp.',2);
+INSERT INTO appusers(id,username,password,authority) VALUES (3,'gymOwner2','$2a$10$kcz1B6yRGH1fOyONFQXg8OLEbrANr.nN6FeO47O8qeK4lGTexnDp.',2);
 
 INSERT INTO gym_owners(id,first_name,last_name,user_id) VALUES (1, 'John', 'Doe', 2);
 INSERT INTO gym_owners(id,first_name,last_name,user_id) VALUES (2, 'Jane', 'Doe', 3);
@@ -101,3 +101,37 @@ INSERT INTO consultation_tickets(id,description,creation_date, user_id, consulta
 INSERT INTO consultation_tickets(id,description,creation_date, user_id, consultation_id) VALUES (6, 'Try to give him some tuna to check if he eats that.', '2023-04-11 15:20', 15, 3);
 INSERT INTO consultation_tickets(id,description,creation_date, user_id, consultation_id) VALUES (7, 'My lovebird doesn''t sing as my neighbour''s one.', '2023-02-24 12:30', 5, 4);
 INSERT INTO consultation_tickets(id,description,creation_date, user_id, consultation_id) VALUES (8, 'Lovebirds do not sing.', '2023-02-24 18:30', 16, 4);
+
+INSERT INTO membership_tiers
+(id, name, price, duration_days, entry_quota, time_band)
+VALUES
+(1, 'Monthly', 40.00, 30, NULL, 'FULL_DAY'),
+(2, 'Yearly', 350.00, 365, NULL, 'FULL_DAY'),
+(3, '10 Entries', 30.00, NULL, 10, 'FULL_DAY'),
+(4, 'Student Morning', 25.00, 30, NULL, 'MORNINGS_ONLY');
+
+-- Monthly: Gym, Pool, Classes
+INSERT INTO tier_services (tier_id, service_type)
+VALUES
+(1, 'WEIGHT_ROOM'),
+(1, 'POOL'),
+(1, 'CLASSES');
+
+-- Yearly: Gym, Pool, Classes
+INSERT INTO tier_services (tier_id, service_type)
+VALUES
+(2, 'WEIGHT_ROOM'),
+(2, 'POOL'),
+(2, 'CLASSES');
+
+-- 10 Entries: Gym, Pool, Classes
+INSERT INTO tier_services (tier_id, service_type)
+VALUES
+(3, 'WEIGHT_ROOM'),
+(3, 'POOL'),
+(3, 'CLASSES');
+
+-- Student Morning: Gym
+INSERT INTO tier_services (tier_id, service_type)
+VALUES
+(4, 'WEIGHT_ROOM');
