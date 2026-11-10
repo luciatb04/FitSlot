@@ -124,7 +124,7 @@ function MembershipServices() {
 
       setServices(updatedServices);
       setMessage("membership saved succesfuly");
-      window.setTimeout(() => navigate("/"), 3000);
+      window.setTimeout(() => navigate("/"), 1500);
     } catch (err) {
       setError(err.message);
     } finally {
