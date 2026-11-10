@@ -1,0 +1,73 @@
+.membership-services-container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 30px;
+}
+
+.membership-services-container h2 {
+  margin-bottom: 15px;
+}
+
+.membership-form {
+  background: #ffffff;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  padding: 25px;
+  margin-top: 25px;
+}
+
+.membership-form select {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  margin-bottom: 25px;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+}
+
+.services-section {
+  margin-top: 20px;
+}
+
+.service-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 15px 0;
+  cursor: pointer;
+}
+
+.service-checkbox input {
+  width: 18px;
+  height: 18px;
+}
+
+.save-services-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.save-services-btn:hover {
+  background: #0056b3;
+}
+
+.save-services-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.success-message {
+  color: #198754;
+  margin-top: 15px;
+}
+
+.error-message {
+  color: #dc3545;
+  margin-top: 15px;
+}

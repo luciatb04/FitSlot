@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import tokenService from '../services/token.service';
 import Login from '../auth/login';
 
@@ -7,21 +7,39 @@ const PrivateRoute = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isValid, setIsValid] = useState(null);
     const [message, setMessage] = useState(null);
-    if (jwt) {
-        fetch(`/api/v1/auth/validate?token=${jwt}`, {
+    useEffect(() => {
+        if (!jwt) {
+            setIsLoading(false);
+            return;
+        }
+
+        fetch(`/api/v1/auth/validate?token=${encodeURIComponent(jwt)}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-        }).then(response => {
-            return response.json();
-        }).then(isValid => {
-            setMessage("Your token has expired. Please, sign in again.")
-            setIsValid(isValid);
-            setIsLoading(false);
-        });
-    } else return <Login message={message} navigation={false} />;
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Token validation failed (${response.status})`);
+                }
+                return response.json();
+            })
+            .then(valid => {
+                setIsValid(valid);
+                if (!valid) {
+                    setMessage("Your token has expired. Please, sign in again.");
+                }
+            })
+            .catch(() => {
+                setMessage("Unable to validate your session. Please, sign in again.");
+                setIsValid(false);
+            })
+            .finally(() => setIsLoading(false));
+    }, [jwt]);
+
+    if (!jwt) return <Login message={message} navigation={false} />;
 
     if (isLoading === true) {
         return <div>Loading...</div>;

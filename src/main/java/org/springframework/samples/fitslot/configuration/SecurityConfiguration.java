@@ -102,6 +102,7 @@ public class SecurityConfiguration {
 			.requestMatchers("/api/v1/instructors/**").hasAnyAuthority(ADMIN, "INSTRUCTOR", GYM_OWNER)
 
 			.requestMatchers("/api/v1/members/**").hasAuthority(ADMIN)
+			.requestMatchers("/api/membership-tiers/**").hasAuthority(GYM_OWNER)
             // El resto denegado
              .anyRequest().denyAll())
 

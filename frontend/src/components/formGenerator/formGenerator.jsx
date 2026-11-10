@@ -8,6 +8,7 @@ import {
   forwardRef,
   useEffect,
   useRef,
+  Fragment,
 } from "react";
 
 import PropTypes from "prop-types";
@@ -155,7 +156,7 @@ const FormGenerator = forwardRef(({
         {Object.keys(formValues).length > 0 &&
           props.inputs.map((input, index) => {
             return (
-              <>
+              <Fragment key={input.name}>
                 {props.childrenPosition !== -1 &&
                   index === props.childrenPosition &&
                   props.children}
@@ -177,7 +178,7 @@ const FormGenerator = forwardRef(({
                   disabled={input.disabled}
                   ref={(input) => (formInputs.current[index] = input)}
                 />
-              </>
+              </Fragment>
             );
           })}
         {props.childrenPosition === -1 && props.children}

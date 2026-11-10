@@ -1,0 +1,56 @@
+package org.springframework.samples.fitslot.membership;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+
+@Service 
+public class MembershipTierService {
+    
+ private final MembershipTierRepository repository;
+
+    public MembershipTierService(
+            MembershipTierRepository repository) {
+        this.repository = repository;
+    }
+
+    @Transactional(readOnly = true)
+    public Set<ServiceType> getServices(Integer tierId) {
+
+        MembershipTier tier = repository.findById(tierId)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Membership tier not found"
+            ));
+
+        return new HashSet<>(tier.getAllowedServices());
+    }
+
+    @Transactional(readOnly = true)
+    public Iterable<MembershipTier> getAllTiers() {
+        return repository.findAll();
+    }
+
+    @Transactional
+    public Set<ServiceType> updateServices(
+            Integer tierId, Set<ServiceType> services) {
+
+        MembershipTier tier = repository.findById(tierId)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Membership tier not found"
+            ));
+
+        tier.getAllowedServices().clear();
+        tier.getAllowedServices().addAll(services);
+
+        repository.save(tier);
+
+        return new HashSet<>(tier.getAllowedServices());
+    }
+}
