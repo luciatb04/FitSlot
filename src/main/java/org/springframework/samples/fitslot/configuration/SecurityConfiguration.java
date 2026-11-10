@@ -102,7 +102,9 @@ public class SecurityConfiguration {
 			.requestMatchers("/api/v1/instructors/**").hasAnyAuthority(ADMIN, "INSTRUCTOR", GYM_OWNER)
 
 			.requestMatchers("/api/v1/members/**").hasAuthority(ADMIN)
-            // El resto denegado
+			.requestMatchers("/api/v1/membership-tiers/**").hasAuthority(ADMIN)
+			
+			// El resto denegado
              .anyRequest().denyAll())
 
 			.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
