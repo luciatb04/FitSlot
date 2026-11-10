@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import tokenService from "../../services/token.service";
 import "./membershipService.css";
 
@@ -11,6 +12,7 @@ const AVAILABLE_SERVICES = [
 ];
 
 function MembershipServices() {
+  const navigate = useNavigate();
   const [tiers, setTiers] = useState([]);
   const [selectedTier, setSelectedTier] = useState("");
   const [services, setServices] = useState([]);
@@ -28,7 +30,6 @@ function MembershipServices() {
     };
   };
 
-  // Load available membership types
   useEffect(() => {
     async function loadTiers() {
       try {
@@ -50,7 +51,6 @@ function MembershipServices() {
     loadTiers();
   }, []);
 
-  // Load services assigned to selected tier
   useEffect(() => {
     if (!selectedTier) return;
 
@@ -91,7 +91,6 @@ function MembershipServices() {
     };
   }, [selectedTier]);
 
-  // Select or deselect a service
   const handleServiceChange = (service) => {
     setMessage("");
 
@@ -102,7 +101,6 @@ function MembershipServices() {
     );
   };
 
-  // Save changes in the database
   const handleSave = async () => {
     setLoading(true);
     setError("");
@@ -125,7 +123,8 @@ function MembershipServices() {
       const updatedServices = await response.json();
 
       setServices(updatedServices);
-      setMessage("Services updated successfully!");
+      setMessage("membership saved succesfuly");
+      window.setTimeout(() => navigate("/"), 3000);
     } catch (err) {
       setError(err.message);
     } finally {
