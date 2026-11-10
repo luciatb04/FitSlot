@@ -27,12 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.samples.fitslot.auth.payload.response.MessageResponse;
 import org.springframework.samples.fitslot.exceptions.AccessDeniedException;
-import org.springframework.samples.fitslot.exceptions.LimitReachedException;
-import org.springframework.samples.fitslot.exceptions.ResourceNotOwnedException;
-import org.springframework.samples.fitslot.owner.Owner;
 import org.springframework.samples.fitslot.classes.exceptions.DuplicatedClassesNameException;
-import org.springframework.samples.fitslot.user.User;
-import org.springframework.samples.fitslot.user.UserService;
 import org.springframework.samples.fitslot.util.RestPreconditions;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -57,58 +52,27 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class ClassesRestController {
 
 	private final ClassesService classesService;
-	private final UserService userService;
-	private static final String OWNER_AUTH = "OWNER";
-	private static final String ADMIN_AUTH = "ADMIN";
-	private static final String INSTRUCTOR_AUTH = "INSTRUCTOR";
-	private static final String GYM_OWNER_AUTH = "GYM_OWNER";
-
 	@Autowired
-	public ClassesRestController(ClassesService classesService, UserService userService) {
+	public ClassesRestController(ClassesService classesService) {
 		this.classesService = classesService;
-		this.userService = userService;
 	}
 /**
  * 
  * @param dataBinder
 */
 	@GetMapping
-	public ResponseEntity<List<Classes>> findAll(@RequestParam(required = false) Integer userId) {
-		User user = userService.findCurrentUser();
-		if (userId != null) {
-			if (user.getId().equals(userId) || user.hasAnyAuthority(INSTRUCTOR_AUTH, ADMIN_AUTH, GYM_OWNER_AUTH).equals(true))
-				return new ResponseEntity<>(classesService.findAllClassesByUserId(userId), HttpStatus.OK);
-		} else {
-			if (user.hasAnyAuthority(INSTRUCTOR_AUTH, ADMIN_AUTH, GYM_OWNER_AUTH).equals(true))
-				return new ResponseEntity<>((List<Classes>) this.classesService.findAll(), HttpStatus.OK);
-		}
-		throw new AccessDeniedException();
-	}
-
-	@GetMapping("types")
-	public ResponseEntity<List<ClassesType>> findAllTypes() {
-		List<ClassesType> res = (List<ClassesType>) classesService.findClassesTypes();
-		return new ResponseEntity<>(res, HttpStatus.OK);
+	public ResponseEntity<List<Classes>> findAll() {
+		return new ResponseEntity<>(this.classesService.findAll(), HttpStatus.OK);
 	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<Classes> create(@RequestBody @Valid Classes classEntity)
 			throws DataAccessException, DuplicatedClassesNameException {
-		User user = userService.findCurrentUser();
 		Classes newClasses = new Classes();
 		Classes savedClasses;
 		BeanUtils.copyProperties(classEntity, newClasses, "id");
-		if (user.hasAuthority(OWNER_AUTH).equals(true)) {
-			Owner owner = userService.findOwnerByUser(user.getId());
-			if (this.classesService.underLimit(owner)) {
-				newClasses.setOwner(owner);
-				savedClasses = this.classesService.saveClasses(newClasses);
-			} else
-				throw new LimitReachedException("Classes", owner.getGym().getPlan());
-		} else {
-			savedClasses = this.classesService.saveClasses(newClasses);
-		}
+		savedClasses = this.classesService.saveClasses(newClasses);
 
 		return new ResponseEntity<>(savedClasses, HttpStatus.CREATED);
 	}
@@ -117,55 +81,22 @@ public class ClassesRestController {
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<Classes> update(@PathVariable("classId") int classId, @RequestBody @Valid Classes classEntity) {
 		Classes aux = RestPreconditions.checkNotNull(classesService.findClassesById(classId), "class", "ID", classId);
-		User user = userService.findCurrentUser();
-		if (user.hasAuthority(OWNER_AUTH).equals(true)) {
-			Owner loggedOwner = userService.findOwnerByUser(user.getId());
-			Owner classOwner = aux.getOwner();
-			if (loggedOwner.getId().equals(classOwner.getId())) {
-				Classes res = this.classesService.updateClasses(classEntity, classId);
-				return new ResponseEntity<>(res, HttpStatus.OK);
-			} else
-				throw new ResourceNotOwnedException(aux);
-		} else {
-			Classes res = this.classesService.updateClasses(classEntity, classId);
-			return new ResponseEntity<>(res, HttpStatus.OK);
-		}
-
+		Classes res = this.classesService.updateClasses(classEntity, classId);
+		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
 	@GetMapping("{classesId}")
 	public ResponseEntity<Classes> findById(@PathVariable("classesId") int classesId) {
 		Classes classEntity = RestPreconditions.checkNotNull(classesService.findClassesById(classesId), "class", "ID", classesId);
-		User user = userService.findCurrentUser();
-		if (user.hasAuthority(OWNER_AUTH).equals(true)) {
-			Owner loggedOwner = userService.findOwnerByUser(user.getId());
-			Owner classOwner = classEntity.getOwner();
-			if (loggedOwner.getId().equals(classOwner.getId()))
-				return new ResponseEntity<>(this.classesService.findClassesById(classesId), HttpStatus.OK);
-			else
-				throw new ResourceNotOwnedException(classEntity);
-		} else {
-			return new ResponseEntity<>(this.classesService.findClassesById(classesId), HttpStatus.OK);
-		}
+		return new ResponseEntity<>(this.classesService.findClassesById(classesId), HttpStatus.OK);
 	}
 
 	@DeleteMapping("{classesId}")
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<MessageResponse> delete(@PathVariable("classesId") int classId) {
 		Classes classEntity = RestPreconditions.checkNotNull(classesService.findClassesById(classId), "class", "ID", classId);
-		User user = userService.findCurrentUser();
-		if (user.hasAuthority(OWNER_AUTH).equals(true)) {
-			Owner loggedOwner = userService.findOwnerByUser(user.getId());
-			Owner classOwner = classEntity.getOwner();
-			if (loggedOwner.getId().equals(classOwner.getId())) {
-				classesService.deleteClasses(classId);
-				return new ResponseEntity<>(new MessageResponse("class deleted!"), HttpStatus.OK);
-			} else
-				throw new ResourceNotOwnedException(classEntity);
-		} else {
-			classesService.deleteClasses(classId);
-			return new ResponseEntity<>(new MessageResponse("class deleted!"), HttpStatus.OK);
-		}
+		classesService.deleteClasses(classId);
+		return new ResponseEntity<>(new MessageResponse("class deleted!"), HttpStatus.OK);
 	}
 
 	@GetMapping(value = "stats")

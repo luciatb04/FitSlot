@@ -80,14 +80,9 @@ public class SecurityConfiguration {
             .requestMatchers("/api/v1/gyms").permitAll()
             .requestMatchers("/api/v1/developers").permitAll()
 
-            // API restringida para propietarios de mascotas:
-            .requestMatchers("/api/v1/plan").hasAuthority("OWNER")
-
             // API restringida para administradores
             .requestMatchers("/api/v1/users/**").hasAuthority(ADMIN)
             .requestMatchers("/api/v1/gymOwners/all").hasAuthority(ADMIN)
-            .requestMatchers(HttpMethod.DELETE, "/api/v1/consultations/**").hasAuthority(ADMIN)
-            .requestMatchers("/api/v1/owners/**").hasAuthority(ADMIN)
             .requestMatchers("/api/v1/classs/stats").hasAuthority(ADMIN)
             .requestMatchers("/api/v1/instructors/stats").hasAuthority(ADMIN)
 
@@ -96,7 +91,6 @@ public class SecurityConfiguration {
 			.requestMatchers("/api/v1/visits/**").authenticated()
 			.requestMatchers("/api/v1/classs").authenticated()
 			.requestMatchers("/api/v1/classs/**").authenticated()
-            .requestMatchers("/api/v1/consultations/**").authenticated()
 			.requestMatchers("/api/v1/gyms/**").hasAnyAuthority(GYM_OWNER, ADMIN)
 			.requestMatchers(HttpMethod.GET, "/api/v1/instructors/**").authenticated()
 			.requestMatchers("/api/v1/instructors/**").hasAnyAuthority(ADMIN, "INSTRUCTOR", GYM_OWNER)

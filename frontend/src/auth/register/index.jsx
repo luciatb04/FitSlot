@@ -2,7 +2,6 @@ import "../../static/css/auth/authButton.css";
 import "../../static/css/auth/authPage.css";
 import tokenService from "../../services/token.service";
 import FormGenerator from "../../components/formGenerator/formGenerator";
-import { registerFormOwnerInputs } from "./form/registerFormOwnerInputs";
 import { registerFormInstructorInputs } from "./form/registerFormInstructorInputs";
 import { registerFormGymOwnerInputs } from "./form/registerFormGymOwnerInputs";
 import { useEffect, useRef, useState } from "react";
@@ -76,8 +75,8 @@ export default function Register() {
   }
 
   useEffect(() => {
-    if (type === "Owner" || type === "Instructor") {
-      if (registerFormOwnerInputs[5].values.length === 1){
+    if (type === "Instructor") {
+      if (registerFormInstructorInputs[5].values.length === 1){
         fetch("/api/v1/gyms")
         .then(function (response) {
           if (response.status === 200) {
@@ -93,7 +92,7 @@ export default function Register() {
               return gym.name;
             });
 
-            registerFormOwnerInputs[5].values = ["None", ...gymNames];
+            registerFormInstructorInputs[5].values = ["None", ...gymNames];
           }
         })
         .catch((message) => {
@@ -111,8 +110,7 @@ export default function Register() {
           <FormGenerator
             ref={registerFormRef}
             inputs={
-              type === "Owner" ? registerFormOwnerInputs 
-              : type === "Instructor" ? registerFormInstructorInputs
+              type === "Instructor" ? registerFormInstructorInputs
               : registerFormGymOwnerInputs
             }
             onSubmit={handleSubmit}
@@ -133,13 +131,6 @@ export default function Register() {
             What type of user will you be?
           </h2>
           <div className="options-row">
-            <button
-              className="auth-button"
-              value="Owner"
-              onClick={handleButtonClick}
-            >
-              Owner
-            </button>
             <button
               className="auth-button"
               value="Instructor"

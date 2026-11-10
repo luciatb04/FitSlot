@@ -1,7 +1,5 @@
 package org.springframework.samples.fitslot.auth;
 
-import java.util.ArrayList;
-
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
@@ -12,9 +10,6 @@ import org.springframework.samples.fitslot.gymowner.GymOwner;
 import org.springframework.samples.fitslot.gymowner.GymOwnerService;
 import org.springframework.samples.fitslot.instructor.Instructor;
 import org.springframework.samples.fitslot.instructor.InstructorService;
-import org.springframework.samples.fitslot.instructor.Specialty;
-import org.springframework.samples.fitslot.owner.Owner;
-import org.springframework.samples.fitslot.owner.OwnerService;
 import org.springframework.samples.fitslot.user.Authorities;
 import org.springframework.samples.fitslot.user.AuthoritiesService;
 import org.springframework.samples.fitslot.user.User;
@@ -28,18 +23,16 @@ public class AuthService {
 	private final PasswordEncoder encoder;
 	private final AuthoritiesService authoritiesService;
 	private final UserService userService;
-	private final OwnerService ownerService;
 	private final InstructorService instructorService;
 	private final GymOwnerService gymOwnerService;
 	private final GymService gymService;
 
 	@Autowired
 	public AuthService(PasswordEncoder encoder, AuthoritiesService authoritiesService, UserService userService,
-			OwnerService ownerService, InstructorService instructorService, GymOwnerService gymOwnerService, GymService gymService) {
+			InstructorService instructorService, GymOwnerService gymOwnerService, GymService gymService) {
 		this.encoder = encoder;
 		this.authoritiesService = authoritiesService;
 		this.userService = userService;
-		this.ownerService = ownerService;
 		this.instructorService = instructorService;
 		this.gymOwnerService = gymOwnerService;
 		this.gymService = gymService;
@@ -67,7 +60,6 @@ public class AuthService {
 			instructor.setFirstName(request.getFirstName());
 			instructor.setLastName(request.getLastName());
 			instructor.setCity(request.getCity());
-			instructor.setSpecialties(new ArrayList<Specialty>());
 			instructor.setGym(gymService.findGymById(request.getGym().getId()));
 			instructor.setUser(user);
 			instructorService.saveInstructor(instructor);
@@ -83,19 +75,7 @@ public class AuthService {
 			gymOwnerService.saveGymOwner(gymOwner);
 			break;
 		default:
-			role = authoritiesService.findByAuthority("OWNER");
-			user.setAuthority(role);
-			userService.saveUser(user);
-			Owner owner = new Owner();
-			owner.setFirstName(request.getFirstName());
-			owner.setLastName(request.getLastName());
-			owner.setAddress(request.getAddress());
-			owner.setCity(request.getCity());
-			owner.setTelephone(request.getTelephone());
-			owner.setGym(gymService.findGymById(request.getGym().getId()));
-			owner.setUser(user);
-			ownerService.saveOwner(owner);
-
+			throw new IllegalArgumentException("Unsupported authority: " + strRoles);
 		}
 	}
 

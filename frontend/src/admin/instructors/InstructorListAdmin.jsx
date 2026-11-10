@@ -21,17 +21,12 @@ export default function InstructorListAdmin() {
   const [alerts, setAlerts] = useState([]);
 
   const instructorList = instructors.map((instructor) => {
-    let specialtiesAux = instructor.specialties
-      .map((s) => s.name)
-      .toString()
-      .replaceAll(",", ", ");
     return (
       <tr key={instructor.id}>
         <td style={{ whiteSpace: "nowrap" }}>
           {instructor.firstName} {instructor.lastName}
         </td>
         <td>{instructor.city}</td>
-        <td style={{ whiteSpace: "break-spaces" }}>{specialtiesAux}</td>
         <td>{instructor.gym.name}</td>
         <td>{instructor.user.username}</td>
         <td>
@@ -78,9 +73,6 @@ export default function InstructorListAdmin() {
         <Button color="success" tag={Link} to="/instructors/new">
           Add Instructor
         </Button>{" "}
-        <Button color="info" tag={Link} to="/instructors/specialties">
-          Specialties
-        </Button>
       </div>
       <div>
         <Table aria-label="instructors" className="mt-4">
@@ -88,7 +80,6 @@ export default function InstructorListAdmin() {
             <tr>
               <th width="15%">Name</th>
               <th width="15%">City</th>
-              <th width="20%">Specialties</th>
               <th width="15%">Gym</th>
               <th width="15%">User</th>
               <th width="20%">Actions</th>

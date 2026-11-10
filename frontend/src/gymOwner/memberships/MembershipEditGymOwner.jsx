@@ -16,6 +16,7 @@ function MembershipServices() {
   const [tiers, setTiers] = useState([]);
   const [selectedTier, setSelectedTier] = useState("");
   const [services, setServices] = useState([]);
+  const [timeBand, setTimeBand] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingServices, setLoadingServices] = useState(false);
   const [message, setMessage] = useState("");
@@ -51,45 +52,66 @@ function MembershipServices() {
     loadTiers();
   }, []);
 
-  useEffect(() => {
-    if (!selectedTier) return;
+  
+useEffect(() => {
+  if (!selectedTier) {
+    setServices([]);
+    setTimeBand("");
+    return;
+  }
 
-    let cancelled = false;
+  let cancelled = false;
 
-    async function loadServices() {
-      setLoadingServices(true);
-      setError("");
-      setMessage("");
-      setServices([]);
+  async function loadConfiguration() {
+    setLoadingServices(true);
+    setError("");
+    setMessage("");
+    setServices([]);
+    setTimeBand("");
 
-      try {
-        const response = await fetch(
-          `${API_URL}/${selectedTier}/services`,
-          { headers: getHeaders() }
-        );
+    try {
+      const [servicesResponse, timeBandResponse] =
+        await Promise.all([
+          fetch(`${API_URL}/${selectedTier}/services`, {
+            headers: getHeaders()
+          }),
+          fetch(`${API_URL}/${selectedTier}/time-band`, {
+            headers: getHeaders()
+          })
+        ]);
 
-        if (!response.ok) {
-          throw new Error("Could not load services");
-        }
+      if (!servicesResponse.ok || !timeBandResponse.ok) {
+        throw new Error("Could not load membership configuration");
+      }
 
-        const data = await response.json();
+      const [servicesData, timeBandData] =
+        await Promise.all([
+          servicesResponse.json(),
+          timeBandResponse.json()
+        ]);
 
-        if (!cancelled) {
-          setServices(data);
-        }
-      } catch (err) {
-        if (!cancelled) setError(err.message);
-      } finally {
-        if (!cancelled) setLoadingServices(false);
+      if (!cancelled) {
+        setServices(servicesData);
+        setTimeBand(timeBandData);
+      }
+    } catch (err) {
+      if (!cancelled) {
+        setError(err.message);
+      }
+    } finally {
+      if (!cancelled) {
+        setLoadingServices(false);
       }
     }
+  }
 
-    loadServices();
+  loadConfiguration();
 
-    return () => {
-      cancelled = true;
-    };
-  }, [selectedTier]);
+  return () => {
+    cancelled = true;
+  };
+}, [selectedTier]);
+
 
   const handleServiceChange = (service) => {
     setMessage("");
@@ -180,6 +202,54 @@ function MembershipServices() {
                 {service.label}
               </label>
             ))}
+
+          <div className="time-band-section">
+            <h3>Access Time Band</h3>
+                <p>Select when members can access the gym.</p>
+                  <label className="time-band-option">
+                      <input
+                        type="radio"
+                        name="timeBand"
+                        value="FULL_DAY"
+                        checked={timeBand === "FULL_DAY"}
+                        onChange={(e) => setTimeBand(e.target.value)}
+                      />
+                        Full Day
+                  </label>
+
+                  <label className="time-band-option">
+                    <input
+                      type="radio"
+                      name="timeBand"
+                      value="MORNINGS_ONLY"
+                      checked={timeBand === "MORNINGS_ONLY"}
+                      onChange={(e) => setTimeBand(e.target.value)}
+                    />
+                      Mornings Only
+                  </label>
+
+                  <label className="time-band-option">
+                      <input
+                        type="radio"
+                        name="timeBand"
+                        value="AFTERNOONS_ONLY"
+                        checked={timeBand === "AFTERNOONS_ONLY"}
+                        onChange={(e) => setTimeBand(e.target.value)}
+                      />
+                        Afternoons Only
+                  </label>
+
+                  <label className="time-band-option">
+                      <input
+                        type="radio"
+                        name="timeBand"
+                        value="EVENINGS_ONLY"
+                        checked={timeBand === "EVENINGS_ONLY"}
+                        onChange={(e) => setTimeBand(e.target.value)}
+                      />
+                        Evenings Only
+                  </label>
+              </div>
 
             <button
               className="save-services-btn"

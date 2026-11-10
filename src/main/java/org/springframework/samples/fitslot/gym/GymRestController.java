@@ -10,7 +10,6 @@ import org.springframework.samples.fitslot.auth.payload.response.MessageResponse
 import org.springframework.samples.fitslot.gymowner.GymOwner;
 import org.springframework.samples.fitslot.gymowner.GymOwnerService;
 import org.springframework.samples.fitslot.instructor.Instructor;
-import org.springframework.samples.fitslot.owner.Owner;
 import org.springframework.samples.fitslot.user.UserService;
 import org.springframework.samples.fitslot.util.RestPreconditions;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -57,11 +56,6 @@ public class GymRestController {
 	@GetMapping(value = "{gymId}")
 	public ResponseEntity<Gym> findGymById(@PathVariable("gymId") int gymId) {
 		return new ResponseEntity<>(gymService.findGymById(gymId), HttpStatus.OK);
-	}
-
-	@GetMapping(value = "owners")
-	public ResponseEntity<List<Owner>> findOwnersOfUserGyms(@RequestParam int userId) {
-		return new ResponseEntity<>(gymService.findOwnersOfUserGyms(userId), HttpStatus.OK);
 	}
 
 	@GetMapping(value = "instructors")

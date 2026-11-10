@@ -1,0 +1,65 @@
+.brand-custom {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+.brand-text {
+    color: #90ee90;
+    font-size: 1.8rem;
+    margin-left: 6px;
+}
+
+.navbar-collapse-custom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.navbar-center-links {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 auto;
+}
+
+.navbar-link-custom {
+    color: white !important;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.navbar-link-custom:hover {
+    color: #90ee90 !important;
+}
+
+.navbar-right-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-left: 20px;
+}
+
+.navbar-right-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.profile-link {
+    padding-right: 0;
+}
+
+.logout-link {
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-username {
+    color: white;
+    font-size: 0.9rem;
+    margin-top: -2px;
+    margin-right: 2px;
+}

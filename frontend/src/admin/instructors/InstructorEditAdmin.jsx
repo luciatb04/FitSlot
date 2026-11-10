@@ -4,12 +4,10 @@ import {
   Form,
   Input,
   Label,
-  Row
 } from "reactstrap";
 import tokenService from "../../services/token.service";
 import getErrorModal from "../../util/getErrorModal";
 import getIdFromUrl from "../../util/getIdFromUrl";
-import useFetchData from "../../util/useFetchData";
 import useFetchState from "../../util/useFetchState";
 
 const jwt = tokenService.getLocalAccessToken();
@@ -19,7 +17,6 @@ export default function InstructorEditAdmin() {
     id: "",
     firstName: "",
     lastName: "",
-    specialties: [],
     user: {},
   };
   const id = getIdFromUrl(2);
@@ -33,7 +30,6 @@ export default function InstructorEditAdmin() {
     setVisible,
     id
   );
-  const specialties = useFetchData(`/api/v1/instructors/specialties`, jwt);
   const users = useFetchData(`/api/v1/users`, jwt);
 
   function handleChange(event) {
@@ -44,25 +40,6 @@ export default function InstructorEditAdmin() {
       const user = users.find((u) => u.id === Number(value));
       setInstructor({ ...instructor, user: user });
     } else setInstructor({ ...instructor, [name]: value });
-  }
-
-  function handleSpecialtyChange(event) {
-    const target = event.target;
-    const checked = target.checked;
-    const name = target.name;
-    if (checked) {
-      setInstructor({
-        ...instructor,
-        specialties: [
-          ...instructor.specialties,
-          specialties.find((s) => s.name === name),
-        ],
-      });
-    } else
-      setInstructor({
-        ...instructor,
-        specialties: instructor.specialties.filter((s) => s.name !== name),
-      });
   }
 
   function handleSubmit(event) {
@@ -88,36 +65,6 @@ export default function InstructorEditAdmin() {
   }
 
   const modal = getErrorModal(setVisible, visible, message);
-  const selectedSpecialties = instructor.specialties.map(
-    (specialty) => specialty.name
-  );
-  const specialtiesBoxes = specialties.map((specialty) => {
-    if (selectedSpecialties?.includes(specialty.name)) {
-      return (
-        <div className="custom-form-input" key={specialty.name}>
-          <Input
-            type="checkbox"
-            name={specialty.name}
-            onChange={handleSpecialtyChange}
-            checked
-          />
-          <Label for={specialty.name} style={{marginLeft: "15px"}}> {specialty.name}</Label>
-        </div>
-      );
-    } else {
-      return (
-        <div className="custom-form-input" key={specialty.name}>
-          <Input
-            type="checkbox"
-            key={specialty.name}
-            name={specialty.name}
-            onChange={handleSpecialtyChange}
-          />
-          <Label for={specialty.name} style={{marginLeft: "15px"}}> {specialty.name}</Label>
-        </div>
-      );
-    }
-  });
   const userOptions = users.map((user) => (
     <option key={user.id} value={user.id}>
       {user.username}
@@ -169,12 +116,6 @@ export default function InstructorEditAdmin() {
               className="custom-input"
             />
           </div>
-          <Label for="specialties" className="custom-form-input-label">
-            Specialties
-          </Label>
-          <Row className="row-cols-lg-auto g-3 align-items-center" style={{display: "flex", justifyContent: "space-evenly", alignItems: "center"}}>
-            {specialtiesBoxes}
-          </Row>
           <div className="custom-form-input">
             {instructor.id ? (
               <Input

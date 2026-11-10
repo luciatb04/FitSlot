@@ -25,7 +25,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.samples.fitslot.exceptions.ResourceNotFoundException;
 import org.springframework.samples.fitslot.instructor.Instructor;
 import org.springframework.samples.fitslot.instructor.InstructorService;
-import org.springframework.samples.fitslot.owner.Owner;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -36,14 +35,11 @@ public class UserService {
 
 	private UserRepository userRepository;
 
-//	private OwnerService ownerService;
-//
 	private InstructorService instructorService;
 
 	@Autowired
 	public UserService(UserRepository userRepository, InstructorService instructorService) {
 		this.userRepository = userRepository;
-//		this.ownerService = ownerService;
 		this.instructorService = instructorService;
 	}
 
@@ -65,20 +61,9 @@ public class UserService {
 	}
 
 	@Transactional(readOnly = true)
-	public Owner findOwnerByUser(String username) {
-		return userRepository.findOwnerByUser(username)
-				.orElseThrow(() -> new ResourceNotFoundException("Owner", "username", username));
-	}
-
-	@Transactional(readOnly = true)
 	public Instructor findInstructorByUser(int userId) {
 		return userRepository.findInstructorByUser(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("Instructor", "id", userId));
-	}
-
-	@Transactional(readOnly = true)
-	public Owner findOwnerByUser(int id) {
-		return userRepository.findOwnerByUser(id).orElseThrow(() -> new ResourceNotFoundException("Owner", "ID", id));
 	}
 
 	@Transactional(readOnly = true)
@@ -117,19 +102,11 @@ public class UserService {
 	public void deleteUser(Integer id) {
 		User toDelete = findUser(id);
 		deleteRelations(id, toDelete.getAuthority().getAuthority());
-//		this.userRepository.deleteOwnerRelation(id);
-//		this.userRepository.deleteInstructorRelation(id);
 		this.userRepository.delete(toDelete);
 	}
 
 	private void deleteRelations(Integer id, String auth) {
 		switch (auth) {
-		case "OWNER":
-//			Optional<Owner> owner = ownerService.optFindOwnerByUser(id);
-//			if (owner.isPresent())
-//				ownerService.deleteOwner(owner.get().getId());
-			this.userRepository.deleteOwnerRelation(id);
-			break;
 		case "INSTRUCTOR":
 			Optional<Instructor> instructor = instructorService.optFindInstructorByUser(id);
 			if (instructor.isPresent()) {
@@ -137,7 +114,7 @@ public class UserService {
 			}
 			break;
 		default:
-			// The only relations that have user are Owner and Instructor
+			// The only remaining relation with a user is Instructor.
 			break;
 		}
 
