@@ -11,7 +11,6 @@ import Login from "./auth/login";
 import Logout from "./auth/logout";
 import OwnerClassesList from "./owner/classes/classList";
 import OwnerClassesEdit from "./owner/classes/classEdit";
-import OwnerVisitEdit from "./classes/admin/visits/visitEdit";
 import PlanList from "./public/plan";
 import tokenService from "./services/token.service";
 import OwnerDashboard from "./owner/dashboard";
@@ -30,8 +29,6 @@ import SpecialtyListAdmin from "./admin/instructors/SpecialtyListAdmin";
 import SpecialtyEditAdmin from "./admin/instructors/SpecialtyEditAdmin";
 import InstructorListAdmin from "./admin/instructors/InstructorListAdmin";
 import InstructorEditAdmin from "./admin/instructors/InstructorEditAdmin";
-import VisitListAdmin from "./classes/admin/visits/visitList";
-import VisitEditAdmin from "./classes/admin/visits/visitEdit";
 import ConsultationListAdmin from "./admin/consultations/ConsultationListAdmin";
 import TicketListAdmin from "./admin/consultations/TicketListAdmin";
 import ConsultationEditAdmin from "./admin/consultations/ConsultationEditAdmin";
@@ -89,8 +86,6 @@ function App() {
           <Route path="/gymOwners/:id" exact={true} element={<PrivateRoute><GymOwnerEditAdmin /></PrivateRoute>} />
           <Route path="/classes" exact={true} element={<PrivateRoute><ClassListAdmin /></PrivateRoute>} />
           <Route path="/classes/:id" exact={true} element={<PrivateRoute><ClassEditAdmin /></PrivateRoute>} />
-          <Route path="/classes/:classId/visits" exact={true} element={<PrivateRoute><VisitListAdmin /></PrivateRoute>} />
-          <Route path="/classes/:classId/visits/:visitId" exact={true} element={<PrivateRoute><VisitEditAdmin /></PrivateRoute>} />
           <Route path="/instructors" exact={true} element={<PrivateRoute><InstructorListAdmin /></PrivateRoute>} />
           <Route path="/instructors/:id" exact={true} element={<PrivateRoute><InstructorEditAdmin /></PrivateRoute>} />
           <Route path="/instructors/specialties" exact={true} element={<PrivateRoute><SpecialtyListAdmin /></PrivateRoute>} />
@@ -107,7 +102,6 @@ function App() {
           <Route path="/plan" exact={true} element={<PrivateRoute><PricingPlan /></PrivateRoute>} />
           <Route path="/myClasses" exact={true} element={<PrivateRoute><OwnerClassesList /></PrivateRoute>} />
           <Route path="/myClasses/:id" exact={true} element={<PrivateRoute><OwnerClassesEdit /></PrivateRoute>} />
-          <Route path="/myClasses/:id/visits/:id" exact={true} element={<PrivateRoute><OwnerVisitEdit /></PrivateRoute>} />
           <Route path="/consultations" exact={true} element={<PrivateRoute><OwnerConsultationList /></PrivateRoute>} />
           <Route path="/consultations/:consultationId" exact={true} element={<PrivateRoute><OwnerConsultationEdit /></PrivateRoute>} />
           <Route path="/consultations/:consultationId/tickets" exact={true} element={<PrivateRoute><OwnerConsultationTickets /></PrivateRoute>} />

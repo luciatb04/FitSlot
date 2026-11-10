@@ -121,23 +121,6 @@ const instructor2 = {
     "gym": gym2
 };
 
-const visit1 = {
-    "id": 1,
-    "datetime": "2013-01-01T13:00:00",
-    "description": "rabies shot",
-    "class": class1,
-    "instructor": instructor1,
-    "city": "Badajoz",
-};
-
-const visit2 = {
-    "id": 2,
-    "datetime": "2013-01-02T15:30:00",
-    "description": "",
-    "class": class1,
-    "instructor": instructor2
-};
-
 const consultation1 = {
     "id": 1,
     "title": "Mi gato no come",
@@ -197,8 +180,6 @@ export const handlers = [
                     "name": "dentistry"
                 }
             ])),
-
-    http.get('*/api/v1/classes/:classId/visits', () => HttpResponse.json([visit1, visit2])),
 
     http.get('*/api/v1/consultations', () => HttpResponse.json([consultation1, consultation2])),
 

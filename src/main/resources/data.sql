@@ -26,7 +26,7 @@ INSERT INTO appusers(id,username,password,authority) VALUES (10,'owner7','$2a$10
 INSERT INTO appusers(id,username,password,authority) VALUES (11,'owner8','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',3);
 INSERT INTO appusers(id,username,password,authority) VALUES (12,'owner9','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',3);
 INSERT INTO appusers(id,username,password,authority) VALUES (13,'owner10','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',3);
--- One instructor user, named instructor1 with passwor v3t
+-- One instructor user, named instructor1 with password v3t
 /*INSERT INTO users(username,password,enabled) VALUES ('instructor1','v3t',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (12,'instructor1','instructor');*/
 INSERT INTO authorities(id,authority) VALUES (4,'INSTRUCTOR');
