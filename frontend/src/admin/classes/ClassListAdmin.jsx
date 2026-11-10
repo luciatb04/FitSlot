@@ -19,15 +19,11 @@ export default function ClassListAdmin() {
     setVisible
   );
   const [alerts, setAlerts] = useState([]);
-  const [classesOwned, setClassesOwned] = useState([]);
-
   const classList = classes.map((classEntity) => {
     return (
       <tr key={classEntity.id}>
         <td>{classEntity.name}</td>
         <td>{classEntity.birthDate}</td>
-        <td>{classEntity.type?.name}</td>
-        <td>{classEntity.owner?.user?.username}</td>
         <td>
           <ButtonGroup>
             <Button
@@ -77,8 +73,6 @@ export default function ClassListAdmin() {
               <tr>
                 <th>Name</th>
                 <th>Birth Date</th>
-                <th>Type</th>
-                <th>Owner</th>
                 <th>Actions</th>
               </tr>
             </thead>

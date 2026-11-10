@@ -108,6 +108,41 @@ class MembershipTierControllerTests {
         verify(service).getServices(99);
     }
 
+    @Test
+    void shouldGetTimeBandByTierId() throws Exception {
+        when(service.getTimeBand(1)).thenReturn(TimeBand.AFTERNOONS_ONLY);
+
+        mockMvc.perform(get(BASE_URL + "/1/time-band"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value("AFTERNOONS_ONLY"));
+
+        verify(service).getTimeBand(1);
+    }
+
+    @Test
+    void shouldUpdateTimeBandByTierId() throws Exception {
+        when(service.updateTimeBand(1, TimeBand.EVENINGS_ONLY))
+                .thenReturn(TimeBand.EVENINGS_ONLY);
+
+        mockMvc.perform(put(BASE_URL + "/1/time-band")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("\"EVENINGS_ONLY\""))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value("EVENINGS_ONLY"));
+
+        verify(service).updateTimeBand(1, TimeBand.EVENINGS_ONLY);
+    }
+
+    @Test
+    void shouldRejectUnknownTimeBandConfiguration() throws Exception {
+        mockMvc.perform(put(BASE_URL + "/1/time-band")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("\"NOT_A_TIME_BAND\""))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(service);
+    }
+
     private MembershipTier tier(Integer id, String name) {
         MembershipTier tier = new MembershipTier();
         tier.setId(id);

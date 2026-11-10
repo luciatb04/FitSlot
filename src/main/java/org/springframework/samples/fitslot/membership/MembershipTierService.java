@@ -53,4 +53,41 @@ public class MembershipTierService {
 
         return new HashSet<>(tier.getAllowedServices());
     }
+
+
+    @Transactional(readOnly = true)
+    public TimeBand getTimeBand(Integer tierId) {
+
+        MembershipTier tier = repository.findById(tierId)
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Membership tier not found"
+        ));
+
+        return tier.getTimeBand();
+    }
+
+    @Transactional
+    public TimeBand updateTimeBand(
+        Integer tierId, TimeBand timeBand) {
+
+        if (timeBand == null) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Time band cannot be null"
+            );
+        }
+
+    MembershipTier tier = repository.findById(tierId)
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Membership tier not found"
+        ));
+
+    tier.setTimeBand(timeBand);
+    repository.save(tier);
+
+    return tier.getTimeBand();
+    }
+
 }

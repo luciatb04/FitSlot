@@ -43,6 +43,11 @@ public class MemberService {
     }
 
     @Transactional
+    public Member saveMember(Member member) {
+        return memberRepository.save(member);
+    }
+
+    @Transactional
     public Member update(Integer id, MemberRequest request) {
         Member member = findById(id);
 

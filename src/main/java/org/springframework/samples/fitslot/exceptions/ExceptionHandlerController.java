@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 
 @RestControllerAdvice
 public class ExceptionHandlerController {
@@ -90,6 +91,15 @@ public class ExceptionHandlerController {
 		fieldErrors.stream().forEach(error -> fieldError.put(error.getField(), error.getDefaultMessage()));
 		ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), fieldError.toString(),
 				request.getDescription(false));
+
+		return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(value = HttpMessageNotReadableException.class)
+	public ResponseEntity<ErrorMessage> handleUnreadableRequest(HttpMessageNotReadableException ex,
+			WebRequest request) {
+		ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(),
+				"Invalid request body", request.getDescription(false));
 
 		return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
 	}

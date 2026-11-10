@@ -42,4 +42,21 @@ public class MembershipTierController {
 
         return service.updateServices(id, services);
     }
+
+
+    @GetMapping("/{id}/time-band")
+    public TimeBand getTimeBandById(
+        @PathVariable Integer id) {
+
+         return service.getTimeBand(id);
+    }
+
+    @PutMapping("/{id}/time-band")
+    public TimeBand updateTimeBand(
+        @PathVariable Integer id,
+        @RequestBody TimeBand timeBand) {
+
+        return service.updateTimeBand(id, timeBand);
+    }
+
 }

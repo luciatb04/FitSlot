@@ -15,8 +15,6 @@
  */
 package org.springframework.samples.fitslot.instructor;
 
-import java.util.List;
-
 import org.springframework.samples.fitslot.gym.Gym;
 import org.springframework.samples.fitslot.model.Person;
 import org.springframework.samples.fitslot.user.User;
@@ -24,14 +22,10 @@ import org.springframework.samples.fitslot.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -42,11 +36,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Instructor extends Person {
-
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "instructor_specialties", joinColumns = @JoinColumn(name = "instructor_id"), inverseJoinColumns = @JoinColumn(name = "specialty_id"), uniqueConstraints = {
-			@UniqueConstraint(columnNames = { "instructor_id", "specialty_id" }) })
-	private List<Specialty> specialties;
 
 	@OneToOne(cascade = { CascadeType.DETACH, CascadeType.REFRESH, CascadeType.PERSIST })
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
@@ -59,13 +48,5 @@ public class Instructor extends Person {
 	@ManyToOne
 	@JoinColumn(name = "gym", referencedColumnName = "id")
 	private Gym gym;
-
-	public void removeSpecialty(Specialty s) {
-		specialties.remove(s);
-	}
-	
-	public void removeAllSpecialties() {
-		specialties = null;
-	}
 
 }

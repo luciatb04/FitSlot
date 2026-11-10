@@ -7,7 +7,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.fitslot.instructor.Instructor;
-import org.springframework.samples.fitslot.owner.Owner;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,11 +43,6 @@ public class GymService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<Owner> findOwnersOfUserGyms(int userId) throws DataAccessException {
-		return gymRepository.findOwnersOfUserGyms(userId);
-	}
-
-	@Transactional(readOnly = true)
 	public List<Instructor> findInstructorsOfUserGyms(int userId) throws DataAccessException {
 		return gymRepository.findInstructorsOfUserGyms(userId);
 	}
@@ -64,9 +58,9 @@ public class GymService {
 		
 		Gym gymToUpdate = gymRepository.findById(gymId).get();
 		if (gym.getGymOwner() != null){
-			BeanUtils.copyProperties(gym, gymToUpdate, "id", "owners");
+			BeanUtils.copyProperties(gym, gymToUpdate, "id");
 		}else{
-			BeanUtils.copyProperties(gym, gymToUpdate, "id", "gymOwner", "owners");
+			BeanUtils.copyProperties(gym, gymToUpdate, "id", "gymOwner");
 		}
 
 		return save(gymToUpdate);

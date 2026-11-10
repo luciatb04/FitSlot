@@ -1,14 +1,8 @@
 package org.springframework.samples.fitslot.gym;
 
-import java.util.Set;
-
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.samples.fitslot.gymowner.GymOwner;
 import org.springframework.samples.fitslot.model.BaseEntity;
-import org.springframework.samples.fitslot.owner.Owner;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,7 +10,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
@@ -52,8 +45,4 @@ public class Gym extends BaseEntity{
 	@JoinColumn(name = "gym_owner", referencedColumnName = "id")
 	private GymOwner gymOwner;
 
-    @OneToMany(mappedBy = "gym", orphanRemoval = true)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIgnore
-    private Set<Owner> owners;
 }

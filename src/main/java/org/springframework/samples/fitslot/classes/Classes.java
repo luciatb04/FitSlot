@@ -17,18 +17,12 @@ package org.springframework.samples.fitslot.classes;
 
 import java.time.LocalDate;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.samples.fitslot.model.NamedEntity;
-import org.springframework.samples.fitslot.owner.Owner;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.Valid;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,14 +43,5 @@ public class Classes extends NamedEntity {
 	@Column(name = "birth_date")
 	@DateTimeFormat(pattern = "yyyy/MM/dd")
 	private LocalDate birthDate;
-
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "type_id")
-	private ClassesType type;
-
-	@Valid
-	@ManyToOne(optional = true)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	protected Owner owner;
 
 }

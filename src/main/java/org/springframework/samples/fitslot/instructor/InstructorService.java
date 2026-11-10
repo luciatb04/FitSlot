@@ -15,13 +15,11 @@
  */
 package org.springframework.samples.fitslot.instructor;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +32,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class InstructorService {
 
 	private InstructorRepository instructorRepository;
-	private SpecialtyRepository specialtyRepository;
 
 	@Autowired
-	public InstructorService(InstructorRepository instructorRepository, SpecialtyRepository specialtyRepository) {
+	public InstructorService(InstructorRepository instructorRepository) {
 		this.instructorRepository = instructorRepository;
-		this.specialtyRepository = specialtyRepository;
 	}
 
 	@Transactional(readOnly = true)
@@ -80,95 +76,19 @@ public class InstructorService {
 	@Transactional
 	public void deleteInstructor(int id) throws DataAccessException {
 		Instructor toDelete = findInstructorById(id);
-		toDelete.removeAllSpecialties();
 		instructorRepository.delete(toDelete);
 	}
-
-	@Transactional(readOnly = true)
-	public Iterable<Specialty> findSpecialties() throws DataAccessException {
-		return specialtyRepository.findAll();
-	}
-
-	@Transactional(readOnly = true)
-	public Specialty findSpecialtyById(int id) throws DataAccessException {
-		return specialtyRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Specialty", "ID", id));
-	}
-
-	@Transactional
-	public Specialty saveSpecialty(Specialty specialty) throws DataAccessException {
-		specialtyRepository.save(specialty);
-
-		return specialty;
-	}
-
-	@Transactional
-	public Specialty updateSpecialty(Specialty specialty, int id) throws DataAccessException {
-		Specialty toUpdate = findSpecialtyById(id);
-		BeanUtils.copyProperties(specialty, toUpdate, "id");
-		specialtyRepository.save(toUpdate);
-
-		return toUpdate;
-	}
-
-	@Transactional
-	public void deleteSpecialty(int id) throws DataAccessException {
-		Specialty toDelete = findSpecialtyById(id);
-		for (Instructor v : findAll())
-			v.removeSpecialty(toDelete);
-		specialtyRepository.delete(toDelete);
-	}
-
-//	@Transactional
-//	public Instructor addSpecialty(Instructor instructor, Specialty specialty) {
-//		List<Specialty> specialties = instructor.getSpecialties();
-//		if(!specialties.contains(specialty)) {
-//			specialties.add(specialty);
-//			instructor.setSpecialties(specialties);
-//			instructorRepository.save(instructor);
-//		}
-//		return instructor;
-//	}
-//
-//	public Instructor removeSpecialty(Instructor instructor, Specialty specialty) {
-////		List<Specialty> specialties = instructor.getSpecialties();
-////		if(specialties.contains(specialty)) {
-////			specialties.remove(specialty);
-////			instructor.setSpecialties(specialties);
-////			instructorRepository.save(instructor);
-////		}
-//		instructor.removeSpecialty(specialty);
-//		return instructor;
-//	}
 
 	public Map<String, Object> getInstructorsStats() {
 		Map<String, Object> res = new HashMap<>();
 		Integer countAll = this.instructorRepository.countAll();
 		Map<String, Integer> visitsByInstructor = getVisitsByInstructor();
 		Map<String, Integer> instructorsByCity = getInstructorsByCity();
-		Map<String, Integer> instructorsBySpecialty = getInstructorsBySpecialty();
 
 		res.put("totalInstructors", countAll);
 		res.put("visitsByInstructor", visitsByInstructor);
 		res.put("instructorsByCity", instructorsByCity);
-		res.put("instructorsBySpecialty", instructorsBySpecialty);
 
-		return res;
-	}
-
-	private Map<String, Integer> getInstructorsBySpecialty() {
-		Map<String, Integer> res = new HashMap<>();
-		List<Instructor> instructors = (List<Instructor>) findAll();
-		for (Instructor v : instructors) {
-			if (!v.getSpecialties().isEmpty()) {
-				for (Specialty s : v.getSpecialties()) {
-					if (res.containsKey(s.getName())) {
-						res.put(s.getName(), res.get(s.getName()) + 1);
-					} else {
-						res.put(s.getName(), 1);
-					}
-				}
-			}
-		}
 		return res;
 	}
 
