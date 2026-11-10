@@ -2,6 +2,7 @@ package org.springframework.samples.fitslot.membership;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -135,6 +136,56 @@ class MembershipTierServiceTests {
         when(repository.findById(999)).thenReturn(java.util.Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> service.findById(999));
+    }
+
+    @Test
+    void updatesTier() {
+        MembershipTier existing = new MembershipTier();
+        existing.setId(10);
+        existing.setName("Mensual anterior");
+
+        MembershipTierRequest request = request(
+            "Mensual actualizado",
+            30,
+            null
+        );
+
+        when(repository.findById(10)).thenReturn(java.util.Optional.of(existing));
+        when(repository.existsByNameIgnoreCaseAndIdNot("Mensual actualizado", 10))
+            .thenReturn(false);
+        when(repository.save(any(MembershipTier.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
+
+        MembershipTier updated = service.update(10, request);
+
+        assertEquals("Mensual actualizado", updated.getName());
+        assertEquals(30, updated.getDurationDays());
+        assertNull(updated.getEntryQuota());
+        verify(repository).save(existing);
+    }
+
+    @Test
+    void rejectsUpdateWithDuplicateName() {
+        MembershipTier existing = new MembershipTier();
+        existing.setId(10);
+
+        MembershipTierRequest request = request(
+            "Mensual ya existente",
+            30,
+            null
+        );
+
+        when(repository.findById(10)).thenReturn(java.util.Optional.of(existing));
+        when(repository.existsByNameIgnoreCaseAndIdNot("Mensual ya existente", 10))
+            .thenReturn(true);
+
+        ResponseStatusException exception = assertThrows(
+            ResponseStatusException.class,
+            () -> service.update(10, request)
+        );
+
+        assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+        verify(repository, never()).save(any(MembershipTier.class));
     }
 
     private MembershipTierRequest request(

@@ -1,10 +1,12 @@
 package org.springframework.samples.fitslot.membership;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -17,7 +19,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.samples.fitslot.configuration.SecurityConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(MembershipTierRestController.class)
@@ -107,5 +108,74 @@ class MembershipTierRestControllerTests {
             .andExpect(status().isBadRequest());
 
         verifyNoInteractions(membershipTierService);
+    }
+
+    @Test
+    void acceptsEntryBasedTierFromJson() throws Exception {
+        MembershipTier tier = new MembershipTier();
+        tier.setId(101);
+        tier.setName("Bono de 10 entradas");
+        tier.setPrice(new BigDecimal("80.00"));
+        tier.setEntryQuota(10);
+        tier.setAllowedServices(Set.of(ServiceType.WEIGHT_ROOM));
+        tier.setTimeBand(TimeBand.MORNINGS_ONLY);
+
+        when(membershipTierService.create(any(MembershipTierRequest.class)))
+            .thenReturn(tier);
+
+        mockMvc.perform(post("/api/v1/membership-tiers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                      "name": "Bono de 10 entradas",
+                      "price": 80.00,
+                      "durationDays": null,
+                      "entryQuota": 10,
+                      "allowedServices": ["WEIGHT_ROOM"],
+                      "timeBand": "MORNINGS_ONLY"
+                    }
+                    """))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.entryQuota").value(10))
+            .andExpect(jsonPath("$.timeBand").value("MORNINGS_ONLY"));
+
+        verify(membershipTierService).create(any(MembershipTierRequest.class));
+    }
+
+    @Test
+    void updatesTierFromJson() throws Exception {
+        MembershipTier tier = new MembershipTier();
+        tier.setId(100);
+        tier.setName("Mensual actualizado");
+        tier.setPrice(new BigDecimal("50.00"));
+        tier.setDurationDays(30);
+        tier.setAllowedServices(Set.of(ServiceType.WEIGHT_ROOM));
+        tier.setTimeBand(TimeBand.FULL_DAY);
+
+        when(membershipTierService.update(
+                eq(100),
+                any(MembershipTierRequest.class)
+        )).thenReturn(tier);
+
+        mockMvc.perform(put("/api/v1/membership-tiers/100")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                      "name": "Mensual actualizado",
+                      "price": 50.00,
+                      "durationDays": 30,
+                      "entryQuota": null,
+                      "allowedServices": ["WEIGHT_ROOM"],
+                      "timeBand": "FULL_DAY"
+                    }
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(100))
+            .andExpect(jsonPath("$.name").value("Mensual actualizado"));
+
+        verify(membershipTierService).update(
+            eq(100),
+            any(MembershipTierRequest.class)
+        );
     }
 }
