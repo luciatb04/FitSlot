@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.samples.fitslot.membership.TimeBandConfiguration.TimeBand;
 import org.springframework.samples.fitslot.model.BaseEntity;
 
 import jakarta.persistence.CollectionTable;

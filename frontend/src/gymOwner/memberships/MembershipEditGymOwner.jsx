@@ -3,6 +3,7 @@ import tokenService from "../../services/token.service";
 import "./membershipService.css";
 
 const API_URL = "/api/membership-tiers";
+const TIME_BANDS_URL = "/api/time-bands";
 
 const AVAILABLE_SERVICES = [
   { value: "WEIGHT_ROOM", label: "Weight Room" },
@@ -54,6 +55,10 @@ function MembershipServices() {
   const [loadingConfiguration, setLoadingConfiguration] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [bandConfigurations, setBandConfigurations] = useState({});
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+
 
   const getHeaders = useCallback(() => {
     const token = tokenService.getLocalAccessToken();
@@ -63,31 +68,63 @@ function MembershipServices() {
     };
   }, []);
 
+
   const loadTiers = useCallback(async () => {
     setLoadingTiers(true);
     setError("");
 
     try {
-      const response = await fetch(API_URL, { headers: getHeaders() });
-      if (!response.ok) {
-        throw new Error(await getErrorMessage(response, "Could not load membership types"));
+      const [tiersResponse, bandsResponse] = await Promise.all([
+        fetch(API_URL, { headers: getHeaders() }),
+        fetch(TIME_BANDS_URL, { headers: getHeaders() })
+      ]);
+
+      if (!tiersResponse.ok || !bandsResponse.ok) {
+        throw new Error("Could not load membership information");
       }
 
-      const data = await response.json();
-      if (!Array.isArray(data)) {
-        throw new Error("The server returned an invalid membership list");
+      const [tiersData, bandsData] = await Promise.all([
+        tiersResponse.json(),
+        bandsResponse.json()
+      ]);
+
+      if (!Array.isArray(tiersData) || !Array.isArray(bandsData)) {
+        throw new Error("Invalid membership information");
       }
-      setTiers(data);
+
+      setTiers(tiersData);
+
+      const configurations = {};
+
+      bandsData.forEach((band) => {
+        configurations[band.timeBand] = band;
+      });
+
+      setBandConfigurations(configurations);
+
     } catch (requestError) {
-      setError(requestError.message || "Could not load membership types");
+      setError(requestError.message);
     } finally {
       setLoadingTiers(false);
     }
   }, [getHeaders]);
 
+
   useEffect(() => {
     loadTiers();
   }, [loadTiers]);
+
+  useEffect(() => {
+    const configuration = bandConfigurations[timeBand];
+
+    if (configuration) {
+      setStartTime(configuration.startTime.slice(0, 5));
+      setEndTime(configuration.endTime.slice(0, 5));
+    } else {
+      setStartTime("");
+      setEndTime("");
+    }
+  }, [timeBand, bandConfigurations]);
 
   useEffect(() => {
     if (!selectedTier) {
@@ -184,7 +221,6 @@ function MembershipServices() {
     const request = {
       name: form.name.trim(),
       price: Number(form.price),
-      // The API contract accepts only one limit at a time.
       durationDays: form.planType === "duration" ? Number(form.durationDays) : null,
       entryQuota: form.planType === "entries" ? Number(form.entryQuota) : null,
       allowedServices: form.allowedServices,
@@ -222,55 +258,75 @@ function MembershipServices() {
     ));
   }
 
+
   async function handleSaveConfiguration() {
     if (!selectedTier || services.length === 0 || !timeBand) {
-      setError("Select at least one service and an access time band.");
+      setError("Select at least one service and a time band.");
+      return;
+    }
+
+    if (!startTime || !endTime || startTime >= endTime) {
+      setError("Start time must be earlier than end time.");
       return;
     }
 
     setSaving(true);
     setError("");
     setMessage("");
-    let servicesSaved = false;
 
     try {
-      const servicesResponse = await fetch(`${API_URL}/${selectedTier}/services`, {
-        method: "PUT",
-        headers: getHeaders(),
-        body: JSON.stringify(services)
-      });
-      if (!servicesResponse.ok) {
-        throw new Error(await getErrorMessage(servicesResponse, "Could not update services"));
-      }
-      const updatedServices = await servicesResponse.json();
-      servicesSaved = true;
-      setTiers((current) => current.map((tier) => (
-        String(tier.id) === selectedTier
-          ? { ...tier, allowedServices: updatedServices }
-          : tier
-      )));
+      const response = await fetch(
+        `${API_URL}/${selectedTier}/configuration`,
+        {
+          method: "PUT",
+          headers: getHeaders(),
+          body: JSON.stringify({
+            allowedServices: services,
+            timeBand: timeBand,
+            startTime: startTime,
+            endTime: endTime
+          })
+        }
+      );
 
-      const timeBandResponse = await fetch(`${API_URL}/${selectedTier}/time-band`, {
-        method: "PUT",
-        headers: getHeaders(),
-        body: JSON.stringify(timeBand)
-      });
-      if (!timeBandResponse.ok) {
-        throw new Error(await getErrorMessage(timeBandResponse, "Could not update access time band"));
+      if (!response.ok) {
+        throw new Error(
+          await getErrorMessage(response, "Could not save membership")
+        );
       }
-      const updatedTimeBand = await timeBandResponse.json();
 
-      setTimeBand(updatedTimeBand);
-      setTiers((current) => current.map((tier) => (
-        String(tier.id) === selectedTier
-          ? { ...tier, allowedServices: updatedServices, timeBand: updatedTimeBand }
-          : tier
-      )));
+      const updatedTier = await response.json();
+
+      // Update the edited membership card
+      setTiers((current) =>
+        current.map((tier) =>
+          String(tier.id) === String(updatedTier.id)
+            ? updatedTier
+            : tier
+        )
+      );
+
+      // Update the schedule for all memberships using this band
+      setBandConfigurations((current) => ({
+        ...current,
+        [timeBand]: {
+          ...current[timeBand],
+          timeBand: timeBand,
+          startTime: startTime,
+          endTime: endTime
+        }
+      }));
+
+      // Close the editing and creation forms
+      setSelectedTier("");
+      setShowCreateForm(false);
+
       setMessage("Membership configuration saved successfully.");
+
     } catch (requestError) {
-      const failure = requestError.message || "Could not save membership configuration";
-      // These settings use separate endpoints, so a failed second request can leave a partial save.
-      setError(servicesSaved ? `Services were saved, but the access time was not: ${failure}` : failure);
+      setError(
+        requestError.message || "Could not save membership configuration"
+      );
     } finally {
       setSaving(false);
     }
@@ -419,11 +475,45 @@ function MembershipServices() {
             </select>
           </label>
 
+          <label className="membership-field" htmlFor="tier-time-band">
+            Access time
+            <select
+              id="tier-time-band"
+              name="timeBand"
+              value={form.timeBand}
+              onChange={updateForm}
+              required
+            >
+              {TIME_BANDS.map((band) => (
+                <option key={band.value} value={band.value}>
+                  {band.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          {bandConfigurations[form.timeBand] && (
+            <p className="membership-time-note">
+              Schedule:{" "}
+              {bandConfigurations[form.timeBand].startTime.slice(0, 5)}
+              {" - "}
+              {bandConfigurations[form.timeBand].endTime.slice(0, 5)}
+            </p>
+          )}
+
+
           <div className="membership-form-actions">
             <button
               className="membership-primary-button"
               type="submit"
-              disabled={saving || form.allowedServices.length === 0}
+              disabled={
+                saving ||
+                loadingConfiguration ||
+                services.length === 0 ||
+                !timeBand ||
+                !startTime ||
+                !endTime
+              }
             >
               {saving ? "Creating..." : "Save membership"}
             </button>
@@ -457,15 +547,42 @@ function MembershipServices() {
                     <dt>Services</dt>
                     <dd>{(tier.allowedServices || []).join(", ") || "None"}</dd>
                   </div>
-                  <div><dt>Access time</dt><dd>{tier.timeBand}</dd></div>
+
+                  <div>
+                    <dt>Access time</dt>
+                    <dd>
+                      {TIME_BANDS.find(
+                        (band) => band.value === tier.timeBand
+                      )?.label || tier.timeBand}
+
+                      {bandConfigurations[tier.timeBand] && (
+                        <span>
+                          {" "}(
+                          {bandConfigurations[tier.timeBand].startTime.slice(0, 5)}
+                          {" - "}
+                          {bandConfigurations[tier.timeBand].endTime.slice(0, 5)}
+                          )
+                        </span>
+                      )}
+                    </dd>
+                  </div>
                 </dl>
                 <button
                   className="membership-secondary-button"
                   type="button"
                   aria-pressed={selectedTier === String(tier.id)}
-                  onClick={() => setSelectedTier(String(tier.id))}
+
+                  onClick={() => {
+                    setSelectedTier((current) =>
+                      current === String(tier.id) ? "" : String(tier.id)
+                    );
+                    setError("");
+                    setMessage("");
+                  }}
                 >
-                  {selectedTier === String(tier.id) ? "Selected" : "Edit services and time"}
+                  {selectedTier === String(tier.id)
+                    ? "Cancel editing"
+                    : "Edit membership"}
                 </button>
               </article>
             ))}
@@ -509,6 +626,34 @@ function MembershipServices() {
                   </label>
                 ))}
               </fieldset>
+
+              <div className="membership-time-fields">
+                <label className="membership-field">
+                  Start time
+                  <input
+                    type="time"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    required
+                  />
+                </label>
+
+                <label className="membership-field">
+                  End time
+                  <input
+                    type="time"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    required
+                  />
+                </label>
+              </div>
+
+              <p className="membership-time-note">
+                Changes to these hours will affect all memberships
+                using the selected time band.
+              </p>
+
               <button
                 className="membership-primary-button"
                 type="button"
@@ -516,6 +661,14 @@ function MembershipServices() {
                 disabled={saving || loadingConfiguration || services.length === 0 || !timeBand}
               >
                 {saving ? "Saving..." : "Save changes"}
+              </button>
+              <button
+                className="membership-secondary-button"
+                type="button"
+                onClick={() => setSelectedTier("")}
+                disabled={saving}
+              >
+                Cancel
               </button>
             </>
           )}

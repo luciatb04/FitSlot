@@ -21,6 +21,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.samples.fitslot.membership.TimeBandConfiguration.TimeBand;
+import org.springframework.samples.fitslot.membership.TimeBandConfiguration.TimeBandConfigurationRepository;
 import org.springframework.web.server.ResponseStatusException;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,12 +33,15 @@ class MembershipTierServiceTests {
     @Mock
     private MembershipTierRepository repository;
 
+    @Mock
+    private TimeBandConfigurationRepository timeBandRepository;
+
     private MembershipTierService service;
     private MembershipTier tier;
 
     @BeforeEach
     void setUp() {
-        service = new MembershipTierService(repository);
+        service = new MembershipTierService(repository, timeBandRepository);
         tier = new MembershipTier();
         tier.setId(TIER_ID);
         tier.setAllowedServices(new HashSet<>(Set.of(ServiceType.WEIGHT_ROOM)));

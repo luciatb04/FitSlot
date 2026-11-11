@@ -64,3 +64,12 @@ VALUES
 INSERT INTO tier_services (tier_id, service_type)
 VALUES
 (4, 'WEIGHT_ROOM');
+
+
+INSERT INTO time_band_configurations
+    (id, time_band, start_time, end_time)
+VALUES
+    (1, 'FULL_DAY', '08:00:00', '20:00:00'),
+    (2, 'MORNINGS_ONLY', '08:00:00', '12:00:00'),
+    (3, 'EVENINGS_ONLY', '12:00:00', '16:00:00'),
+    (4, 'AFTERNOONS_ONLY', '16:00:00', '20:00:00');

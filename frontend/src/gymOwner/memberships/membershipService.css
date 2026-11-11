@@ -18,6 +18,30 @@
   margin: 0 0 10px;
 }
 
+.membership-time-fields {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.membership-time-fields .membership-field {
+  flex: 1;
+}
+
+.membership-time-note {
+  color: #666;
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+@media (max-width: 600px) {
+  .membership-time-fields {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+
 .membership-page-header p {
   margin: 0;
   color: #666;

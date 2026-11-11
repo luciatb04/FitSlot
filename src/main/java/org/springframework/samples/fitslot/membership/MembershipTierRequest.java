@@ -3,6 +3,8 @@ package org.springframework.samples.fitslot.membership;
 import java.math.BigDecimal;
 import java.util.Set;
 
+import org.springframework.samples.fitslot.membership.TimeBandConfiguration.TimeBand;
+
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.AssertTrue;
