@@ -27,6 +27,7 @@ import GymListAdmin from "./admin/gyms/GymListAdmin";
 import GymEditAdmin from "./admin/gyms/GymEditAdmin";
 import InstructorListGymOwner from "./gymOwner/instructors/InstructorListGymOwner";
 import InstructorEditGymOwner from "./gymOwner/instructors/InstructorEditGymOwner";
+import MemberRegistration from "./receptionist/members/MemberRegistration";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -55,6 +56,7 @@ function App() {
   let instructorRoutes = <></>;
   let publicRoutes = <></>;
   let gymOwnerRoutes = <></>;
+  let receptionistRoutes = <></>;
 
   roles.forEach((role) => {
     if (role === "ADMIN") {
@@ -86,6 +88,14 @@ function App() {
           <Route path="/instructors/:id" exact={true} element={<PrivateRoute><InstructorEditGymOwner /></PrivateRoute>} />
           <Route path="/membership-services" element={<PrivateRoute><MembershipServices /></PrivateRoute>}/>
         </>)
+    }
+    if (role === "RECEPTIONIST") {
+      receptionistRoutes = (
+        <Route
+          path="/members"
+          element={<PrivateRoute><MemberRegistration /></PrivateRoute>}
+        />
+      );
     }
   })
   if (!jwt) {
@@ -119,6 +129,7 @@ function App() {
           {ownerRoutes}
           {instructorRoutes}
           {gymOwnerRoutes}
+          {receptionistRoutes}
         </Routes>
       </ErrorBoundary>
     </div>
