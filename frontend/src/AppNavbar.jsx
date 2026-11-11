@@ -137,6 +137,16 @@ function AppNavbar() {
                 <NavLink
                     className="navbar-link-custom"
                     tag={Link}
+                    to="/medical-certificates"
+                >
+                    Medical certificates
+                </NavLink>
+            </NavItem>
+
+            <NavItem>
+                <NavLink
+                    className="navbar-link-custom"
+                    tag={Link}
                     to="/reception-memberships"
                 >
                     Memberships
