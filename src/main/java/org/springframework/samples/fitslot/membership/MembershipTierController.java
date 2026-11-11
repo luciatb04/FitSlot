@@ -6,6 +6,8 @@ import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.samples.fitslot.membership.TimeBandConfiguration.MembershipConfigurationDTO;
+import org.springframework.samples.fitslot.membership.TimeBandConfiguration.TimeBand;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -52,32 +54,38 @@ public class MembershipTierController {
         return service.updateServices(id, services);
     }
 
-
     @GetMapping("/{id}/time-band")
     public TimeBand getTimeBandById(
-        @PathVariable Integer id) {
+            @PathVariable Integer id) {
 
-         return service.getTimeBand(id);
+        return service.getTimeBand(id);
     }
 
     @PutMapping("/{id}/time-band")
     public TimeBand updateTimeBand(
-        @PathVariable Integer id,
-        @RequestBody TimeBand timeBand) {
+            @PathVariable Integer id,
+            @RequestBody TimeBand timeBand) {
 
         return service.updateTimeBand(id, timeBand);
     }
 
     private MembershipTierResponse toResponse(MembershipTier tier) {
         return new MembershipTierResponse(
-            tier.getId(),
-            tier.getName(),
-            tier.getPrice(),
-            tier.getDurationDays(),
-            tier.getEntryQuota(),
-            Set.copyOf(tier.getAllowedServices()),
-            tier.getTimeBand()
-        );
+                tier.getId(),
+                tier.getName(),
+                tier.getPrice(),
+                tier.getDurationDays(),
+                tier.getEntryQuota(),
+                Set.copyOf(tier.getAllowedServices()),
+                tier.getTimeBand());
+    }
+
+    @PutMapping("/{id}/configuration")
+    public MembershipTier updateConfiguration(
+            @PathVariable Integer id,
+            @RequestBody MembershipConfigurationDTO request) {
+
+        return service.updateConfiguration(id, request);
     }
 
 }
