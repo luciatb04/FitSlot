@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,10 +26,27 @@ public class MemberRestController {
     }
 
     @GetMapping
-    public List<MemberResponse> getAll() {
+    public List<MemberResponse> findAll() {
         return memberService.findAll().stream()
-                .map(this::toResponse)
-                .toList();
+            .map(this::toResponse)
+            .toList();
+    }
+
+    @PostMapping
+    public ResponseEntity<MemberResponse> create(@Valid @RequestBody MemberRequest request) {
+        Member member = memberService.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(member));
+    }
+
+    private MemberResponse toResponse(Member member) {
+        return new MemberResponse(
+            member.getId(),
+            member.getFirstName(),
+            member.getLastName(),
+            member.getEmail(),
+            member.getTelephone(),
+            member.getStatus()
+        );
     }
 
     @GetMapping("/{id}")
@@ -37,12 +54,7 @@ public class MemberRestController {
         return toResponse(memberService.findById(id));
     }
 
-    @PostMapping
-    public ResponseEntity<MemberResponse> create(
-            @Valid @RequestBody MemberRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(toResponse(memberService.create(request)));
-    }
+    
 
     @PutMapping("/{id}")
     public MemberResponse update(
@@ -57,12 +69,5 @@ public class MemberRestController {
         return ResponseEntity.noContent().build();
     }
 
-    private MemberResponse toResponse(Member member) {
-        return new MemberResponse(
-                member.getId(),
-                member.getFirstName(),
-                member.getLastName(),
-                member.getEmail(),
-                member.getTelephone());
-    }
+    
 }

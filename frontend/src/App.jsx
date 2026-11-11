@@ -30,6 +30,8 @@ import GymEditAdmin from "./admin/gyms/GymEditAdmin";
 import InstructorListGymOwner from "./gymOwner/instructors/InstructorListGymOwner";
 import InstructorEditGymOwner from "./gymOwner/instructors/InstructorEditGymOwner";
 import MemberRegistration from "./receptionist/members/MemberRegistration";
+import MedicalCertificateManagement from "./receptionist/medicalCertificates/MedicalCertificateManagement";
+import CheckIn from "./receptionist/checkIn/CheckIn";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -74,6 +76,7 @@ function App() {
           <Route path="/classes/:id" exact={true} element={<PrivateRoute><ClassEditAdmin /></PrivateRoute>} />
           <Route path="/instructors" exact={true} element={<PrivateRoute><InstructorListAdmin /></PrivateRoute>} />
           <Route path="/instructors/:id" exact={true} element={<PrivateRoute><InstructorEditAdmin /></PrivateRoute>} />
+          <Route path="/medical-certificates" element={<PrivateRoute><MedicalCertificateManagement /></PrivateRoute>} />
         </>)
     }
     if (role === "INSTRUCTOR") {

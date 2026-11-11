@@ -45,6 +45,7 @@ class MembershipTierServiceTests {
     @BeforeEach
     void setUp() {
         service = new MembershipTierService(repository, timeBandRepository);
+        service = new MembershipTierService(repository, timeBandRepository);
         tier = new MembershipTier();
         tier.setId(TIER_ID);
         tier.setAllowedServices(new HashSet<>(Set.of(ServiceType.WEIGHT_ROOM)));

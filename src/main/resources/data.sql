@@ -13,36 +13,36 @@ INSERT INTO gyms(id, name, address, telephone, plan, gym_owner) VALUES (2, 'Gym 
 INSERT INTO gyms(id, name, address, telephone, plan, gym_owner) VALUES (3, 'Gym 3', 'Av. Reina Mercedes, 70', '955382238', 'BASIC', 2);
 
 INSERT INTO authorities(id,authority) VALUES (4,'INSTRUCTOR');
+INSERT INTO authorities(id,authority) VALUES (6,'RECEPTIONIST');
 INSERT INTO appusers(id,username,password,authority) VALUES (14,'instructor1','$2a$10$aeypcHWSf4YEkDAF0d.vjOLu94aS40MBUb4rOtDncFxZdo2wpkt8.',4);
 INSERT INTO appusers(id,username,password,authority) VALUES (15,'instructor2','$2a$10$aeypcHWSf4YEkDAF0d.vjOLu94aS40MBUb4rOtDncFxZdo2wpkt8.',4);
 INSERT INTO appusers(id,username,password,authority) VALUES (16,'instructor3','$2a$10$aeypcHWSf4YEkDAF0d.vjOLu94aS40MBUb4rOtDncFxZdo2wpkt8.',4);
 INSERT INTO appusers(id,username,password,authority) VALUES (17,'instructor4','$2a$10$aeypcHWSf4YEkDAF0d.vjOLu94aS40MBUb4rOtDncFxZdo2wpkt8.',4);
 INSERT INTO appusers(id,username,password,authority) VALUES (18,'instructor5','$2a$10$aeypcHWSf4YEkDAF0d.vjOLu94aS40MBUb4rOtDncFxZdo2wpkt8.',4);
-INSERT INTO appusers(id,username,password,authority) VALUES (19,'instructor6','$2a$10$aeypcHWSf4YEkDAF0d.vjOLu94aS40MBUb4rOtDncFxZdo2wpkt8.',4);
+
+
+INSERT INTO appusers(id,username,password,authority) VALUES (19,'receptionist1','$2a$10$FlNJmecQJFCTHfmAtIjxauN94mMeRacVEamMxw6M52bHqWDyJdT9S',6);
 
 INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (1, 'James', 'Carter','Sevilla', 1, 14);
 INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (2, 'Helen', 'Leary','Sevilla', 1, 15);
 INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (3, 'Linda', 'Douglas','Sevilla', 2, 16);
 INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (4, 'Rafael', 'Ortega','Badajoz', 2, 17);
 INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (5, 'Henry', 'Stevens','Badajoz', 3, 18);
-INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (6, 'Sharon', 'Jenkins','Cádiz', 3, 19);
 
 INSERT INTO authorities(id,authority) VALUES (5,'MEMBER');
-INSERT INTO authorities(id,authority) VALUES (6,'RECEPTIONIST');
-INSERT INTO appusers(id,username,password,authority) VALUES (20,'receptionist1','$2a$10$FlNJmecQJFCTHfmAtIjxauN94mMeRacVEamMxw6M52bHqWDyJdT9S',6);
 
-INSERT INTO members (id, first_name, last_name, email, telephone)
+INSERT INTO members (id, first_name, last_name, email, telephone, status)
 VALUES
-(1, 'James', 'Smith', 'james.smith@example.com', '2025550101'),
-(2, 'Emily', 'Johnson', 'emily.johnson@example.com', '2025550102'),
-(3, 'Michael', 'Brown', 'michael.brown@example.com', '2025550103'),
-(4, 'Olivia', 'Williams', 'olivia.williams@example.com', '2025550104'),
-(5, 'William', 'Jones', 'william.jones@example.com', '2025550105'),
-(6, 'Sophia', 'Taylor', 'sophia.taylor@example.com', '2025550106'),
-(7, 'Daniel', 'Anderson', 'daniel.anderson@example.com', '2025550107'),
-(8, 'Charlotte', 'Wilson', 'charlotte.wilson@example.com', '2025550108'),
-(9, 'Benjamin', 'Thomas', 'benjamin.thomas@example.com', '2025550109'),
-(10, 'Isabella', 'Martin', 'isabella.martin@example.com', '2025550110');
+(1, 'James', 'Smith', 'james.smith@example.com', '2025550101', 'ACTIVE'),
+(2, 'Emily', 'Johnson', 'emily.johnson@example.com', '2025550102', 'ACTIVE'),
+(3, 'Michael', 'Brown', 'michael.brown@example.com', '2025550103', 'ACTIVE'),
+(4, 'Olivia', 'Williams', 'olivia.williams@example.com', '2025550104', 'ACTIVE'),
+(5, 'William', 'Jones', 'william.jones@example.com', '2025550105', 'ACTIVE'),
+(6, 'Sophia', 'Taylor', 'sophia.taylor@example.com', '2025550106', 'ACTIVE'),
+(7, 'Daniel', 'Anderson', 'daniel.anderson@example.com', '2025550107', 'ACTIVE'),
+(8, 'Charlotte', 'Wilson', 'charlotte.wilson@example.com', '2025550108', 'ACTIVE'),
+(9, 'Benjamin', 'Thomas', 'benjamin.thomas@example.com', '2025550109', 'ACTIVE'),
+(10, 'Isabella', 'Martin', 'isabella.martin@example.com', '2025550110', 'ACTIVE');
 
 
 INSERT INTO membership_tiers

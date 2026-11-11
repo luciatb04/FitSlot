@@ -1,11 +1,12 @@
 package org.springframework.samples.fitslot.member;
 
-import org.springframework.samples.fitslot.membership.MembershipTier;
 import org.springframework.samples.fitslot.model.Person;
 import org.springframework.samples.fitslot.user.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -28,6 +29,10 @@ public class Member extends Person {
     private String email;
 
     private String telephone;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MemberStatus status = MemberStatus.ACTIVE;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", unique = true)
