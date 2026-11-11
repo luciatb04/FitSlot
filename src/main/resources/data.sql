@@ -29,14 +29,21 @@ INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (6, 
 
 INSERT INTO authorities(id,authority) VALUES (5,'MEMBER');
 INSERT INTO authorities(id,authority) VALUES (6,'RECEPTIONIST');
-
--- receptionist1 
--- password: Receptionist123!
 INSERT INTO appusers(id,username,password,authority) VALUES (20,'receptionist1','$2a$10$FlNJmecQJFCTHfmAtIjxauN94mMeRacVEamMxw6M52bHqWDyJdT9S',6);
 
-INSERT INTO classes(id,name,birth_date) VALUES (1, 'Morning Strength', '2026-01-15');
-INSERT INTO classes(id,name,birth_date) VALUES (2, 'Yoga', '2026-02-10');
-INSERT INTO classes(id,name,birth_date) VALUES (3, 'Spinning', '2026-03-05');
+INSERT INTO members (id, first_name, last_name, email, telephone)
+VALUES
+(1, 'James', 'Smith', 'james.smith@example.com', '2025550101'),
+(2, 'Emily', 'Johnson', 'emily.johnson@example.com', '2025550102'),
+(3, 'Michael', 'Brown', 'michael.brown@example.com', '2025550103'),
+(4, 'Olivia', 'Williams', 'olivia.williams@example.com', '2025550104'),
+(5, 'William', 'Jones', 'william.jones@example.com', '2025550105'),
+(6, 'Sophia', 'Taylor', 'sophia.taylor@example.com', '2025550106'),
+(7, 'Daniel', 'Anderson', 'daniel.anderson@example.com', '2025550107'),
+(8, 'Charlotte', 'Wilson', 'charlotte.wilson@example.com', '2025550108'),
+(9, 'Benjamin', 'Thomas', 'benjamin.thomas@example.com', '2025550109'),
+(10, 'Isabella', 'Martin', 'isabella.martin@example.com', '2025550110');
+
 
 INSERT INTO membership_tiers
 (id, name, price, duration_days, entry_quota, time_band)

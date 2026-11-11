@@ -59,112 +59,115 @@ function AppNavbar() {
             );
         }
 
-      if (role === "INSTRUCTOR") {
-        instructorLinks = (
-            <>
-                <NavItem>
-                    <NavLink
-                        className="navbar-link-custom"
-                        tag={Link}
-                        to="/myClasses"
-                    >
-                        Classes
-                    </NavLink>
-                </NavItem>
+        if (role === "INSTRUCTOR") {
+            instructorLinks = (
+                <>
+                    <NavItem>
+                        <NavLink
+                            className="navbar-link-custom"
+                            tag={Link}
+                            to="/myClasses"
+                        >
+                            Classes
+                        </NavLink>
+                    </NavItem>
 
-                <NavItem>
-                <NavLink
-                    className="navbar-link-custom"
-                    tag={Link}
-                    to="/availability"
-                >
-                    Availability
-                </NavLink>
-            </NavItem>
-        </>
-    );
-}
+                    <NavItem>
+                        <NavLink
+                            className="navbar-link-custom"
+                            tag={Link}
+                            to="/availability"
+                        >
+                            Availability
+                        </NavLink>
+                    </NavItem>
+                </>
+            );
+        }
 
         if (role === "MEMBER") {
             userLinks = (
                 <>
                     <NavItem>
                         <NavLink
-                         className="navbar-link-custom"
-                        tag={Link}
-                        to="/classes"
-                    >
-                        Classes
-                </NavLink>
-            </NavItem>
+                            className="navbar-link-custom"
+                            tag={Link}
+                            to="/classes"
+                        >
+                            Classes
+                        </NavLink>
+                    </NavItem>
 
-            <NavItem>
-                <NavLink
-                    className="navbar-link-custom"
-                    tag={Link}
-                    to="/my-bookings"
-                >
-                    My Bookings
-                </NavLink>
-            </NavItem>
+                    <NavItem>
+                        <NavLink
+                            className="navbar-link-custom"
+                            tag={Link}
+                            to="/my-bookings"
+                        >
+                            My Bookings
+                        </NavLink>
+                    </NavItem>
 
-            <NavItem>
-                <NavLink
-                    className="navbar-link-custom"
-                    tag={Link}
-                    to="/my-membership"
-                >
-                    My Membership
-                </NavLink>
-            </NavItem>
-        </>
-    );
-}
-    if (role === "RECEPTIONIST") {
-        receptionistLinks = (
-            <>
-                <NavItem>
-                    <NavLink
-                    className="navbar-link-custom"
-                    tag={Link}
-                    to="/members"
-                >
-                    Members
-                </NavLink>
-            </NavItem>
+                    <NavItem>
+                        <NavLink
+                            className="navbar-link-custom"
+                            tag={Link}
+                            to="/my-membership"
+                        >
+                            My Membership
+                        </NavLink>
+                    </NavItem>
+                </>
+            );
+        }
+        if (role === "RECEPTIONIST") {
+            receptionistLinks = (
+                <>
+                    <UncontrolledDropdown nav inNavbar>
+                        <DropdownToggle nav caret className="navbar-link-custom">
+                            Members
+                        </DropdownToggle>
+                        <DropdownMenu>
+                            <DropdownItem tag={Link} to="/NewMember">
+                                Create a Member
+                            </DropdownItem>
+                            <DropdownItem tag={Link} to="/members">
+                                Edit Member information
+                            </DropdownItem>
+                        </DropdownMenu>
+                    </UncontrolledDropdown>
+                    <NavItem>
+                        <NavLink
+                            className="navbar-link-custom"
+                            tag={Link}
+                            to="/reception-memberships"
+                        >
+                            Memberships
+                        </NavLink>
+                    </NavItem>
 
-            <NavItem>
-                <NavLink
-                    className="navbar-link-custom"
-                    tag={Link}
-                    to="/reception-memberships"
-                >
-                    Memberships
-                </NavLink>
-            </NavItem>
+                    <NavItem>
+                        <NavLink
+                            className="navbar-link-custom"
+                            tag={Link}
+                            to="/check-in"
+                        >
+                            Check-in
+                        </NavLink>
+                    </NavItem>
 
-            <NavItem>
-                <NavLink
-                    className="navbar-link-custom"
-                    tag={Link}
-                    to="/check-in"
-                >
-                    Check-in
-                </NavLink>
-            </NavItem>
-
-            <NavItem>
-                <NavLink
-                    className="navbar-link-custom"
-                    tag={Link}
-                    to="/payments"
-                >
-                    Payments
-                </NavLink>
-            </NavItem>
-        </>
-    );
-}
+                    <NavItem>
+                        <NavLink
+                            className="navbar-link-custom"
+                            tag={Link}
+                            to="/payments"
+                        >
+                            Payments
+                        </NavLink>
+                    </NavItem>
+                </>
+            );
+        }
         if (role === "GYM_OWNER") {
             ownerLinks = (
                 <>
