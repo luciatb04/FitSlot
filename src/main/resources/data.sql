@@ -13,22 +13,23 @@ INSERT INTO gyms(id, name, address, telephone, plan, gym_owner) VALUES (2, 'Gym 
 INSERT INTO gyms(id, name, address, telephone, plan, gym_owner) VALUES (3, 'Gym 3', 'Av. Reina Mercedes, 70', '955382238', 'BASIC', 2);
 
 INSERT INTO authorities(id,authority) VALUES (4,'INSTRUCTOR');
+INSERT INTO authorities(id,authority) VALUES (6,'RECEPTIONIST');
 INSERT INTO appusers(id,username,password,authority) VALUES (14,'instructor1','$2a$10$aeypcHWSf4YEkDAF0d.vjOLu94aS40MBUb4rOtDncFxZdo2wpkt8.',4);
 INSERT INTO appusers(id,username,password,authority) VALUES (15,'instructor2','$2a$10$aeypcHWSf4YEkDAF0d.vjOLu94aS40MBUb4rOtDncFxZdo2wpkt8.',4);
 INSERT INTO appusers(id,username,password,authority) VALUES (16,'instructor3','$2a$10$aeypcHWSf4YEkDAF0d.vjOLu94aS40MBUb4rOtDncFxZdo2wpkt8.',4);
 INSERT INTO appusers(id,username,password,authority) VALUES (17,'instructor4','$2a$10$aeypcHWSf4YEkDAF0d.vjOLu94aS40MBUb4rOtDncFxZdo2wpkt8.',4);
 INSERT INTO appusers(id,username,password,authority) VALUES (18,'instructor5','$2a$10$aeypcHWSf4YEkDAF0d.vjOLu94aS40MBUb4rOtDncFxZdo2wpkt8.',4);
-INSERT INTO appusers(id,username,password,authority) VALUES (19,'instructor6','$2a$10$aeypcHWSf4YEkDAF0d.vjOLu94aS40MBUb4rOtDncFxZdo2wpkt8.',4);
+
+
+INSERT INTO appusers(id,username,password,authority) VALUES (19,'receptionist1','$2a$10$d8/.gd9c7QddILjFY1WvDuFB7lhxXySZg33bYOD.VigG243thAaoy',6);
 
 INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (1, 'James', 'Carter','Sevilla', 1, 14);
 INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (2, 'Helen', 'Leary','Sevilla', 1, 15);
 INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (3, 'Linda', 'Douglas','Sevilla', 2, 16);
 INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (4, 'Rafael', 'Ortega','Badajoz', 2, 17);
 INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (5, 'Henry', 'Stevens','Badajoz', 3, 18);
-INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (6, 'Sharon', 'Jenkins','Cádiz', 3, 19);
 
 INSERT INTO authorities(id,authority) VALUES (5,'MEMBER');
-INSERT INTO authorities(id,authority) VALUES (6,'RECEPTIONIST');
 
 INSERT INTO classes(id,name,birth_date) VALUES (1, 'Morning Strength', '2026-01-15');
 INSERT INTO classes(id,name,birth_date) VALUES (2, 'Yoga', '2026-02-10');

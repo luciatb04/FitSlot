@@ -2,6 +2,7 @@ package org.springframework.samples.fitslot.member;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.samples.fitslot.exceptions.ResourceNotFoundException;
@@ -20,9 +21,7 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public List<Member> findAll() {
-        List<Member> members = new ArrayList<>();
-        memberRepository.findAll().forEach(members::add);
-        return members;
+        return memberRepository.findAllByOrderByLastNameAscFirstNameAsc();
     }
 
     @Transactional(readOnly = true)
@@ -33,9 +32,8 @@ public class MemberService {
 
     @Transactional
     public Member create(MemberRequest request) {
-        if (memberRepository.existsByEmailIgnoreCase(request.email())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already registered");
-        }
+        String email = normalizeEmail(request.email());
+        ensureEmailAvailable(email, null);
 
         Member member = new Member();
         applyRequest(member, request);
@@ -44,6 +42,11 @@ public class MemberService {
 
     @Transactional
     public Member saveMember(Member member) {
+        if (member.getEmail() != null) {
+            String email = normalizeEmail(member.getEmail());
+            ensureEmailAvailable(email, member.getId());
+            member.setEmail(email);
+        }
         return memberRepository.save(member);
     }
 
@@ -51,9 +54,7 @@ public class MemberService {
     public Member update(Integer id, MemberRequest request) {
         Member member = findById(id);
 
-        if (memberRepository.existsByEmailIgnoreCaseAndIdNot(request.email(), id)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already registered");
-        }
+        ensureEmailAvailable(normalizeEmail(request.email()), id);
 
         applyRequest(member, request);
         return memberRepository.save(member);
@@ -68,7 +69,20 @@ public class MemberService {
     private void applyRequest(Member member, MemberRequest request) {
         member.setFirstName(request.firstName());
         member.setLastName(request.lastName());
-        member.setEmail(request.email());
+        member.setEmail(normalizeEmail(request.email()));
         member.setTelephone(request.telephone());
+    }
+
+    private String normalizeEmail(String email) {
+        return email.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private void ensureEmailAvailable(String email, Integer memberId) {
+        boolean alreadyRegistered = memberId == null
+            ? memberRepository.existsByEmailIgnoreCase(email)
+            : memberRepository.existsByEmailIgnoreCaseAndIdNot(email, memberId);
+        if (alreadyRegistered) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already registered");
+        }
     }
 }
