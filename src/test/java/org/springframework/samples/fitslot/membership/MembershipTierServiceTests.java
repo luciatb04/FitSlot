@@ -1,5 +1,6 @@
 package org.springframework.samples.fitslot.membership;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
@@ -10,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.math.BigDecimal;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,6 +65,82 @@ class MembershipTierServiceTests {
     }
 
     @Test
+    void shouldCreateTierFromRequestAndCopyServices() {
+        Set<ServiceType> services = new HashSet<>(Set.of(ServiceType.WEIGHT_ROOM, ServiceType.POOL));
+        MembershipTierRequest request = new MembershipTierRequest(
+                "  Premium  ",
+                new BigDecimal("49.99"),
+                30,
+                null,
+                services,
+                TimeBand.FULL_DAY);
+        when(repository.findByNameIgnoreCase("Premium")).thenReturn(Optional.empty());
+        when(repository.save(any(MembershipTier.class))).thenAnswer(invocation -> {
+            MembershipTier created = invocation.getArgument(0);
+            created.setId(2);
+            return created;
+        });
+
+        MembershipTier created = service.createTier(request);
+
+        assertThat(created.getId()).isEqualTo(2);
+        assertThat(created.getName()).isEqualTo("Premium");
+        assertThat(created.getPrice()).isEqualByComparingTo("49.99");
+        assertThat(created.getDurationDays()).isEqualTo(30);
+        assertThat(created.getEntryQuota()).isNull();
+        assertThat(created.getAllowedServices()).containsExactlyInAnyOrder(
+                ServiceType.WEIGHT_ROOM, ServiceType.POOL);
+        assertThat(created.getAllowedServices()).isNotSameAs(services);
+        assertThat(created.getTimeBand()).isEqualTo(TimeBand.FULL_DAY);
+        verify(repository).findByNameIgnoreCase("Premium");
+        verify(repository).save(created);
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void shouldCreateEntryBasedTierWithoutDuration() {
+        MembershipTierRequest request = new MembershipTierRequest(
+                "Ten entries",
+                new BigDecimal("25.00"),
+                null,
+                10,
+                Set.of(ServiceType.CLASSES),
+                TimeBand.MORNINGS_ONLY);
+        when(repository.findByNameIgnoreCase("Ten entries")).thenReturn(Optional.empty());
+        when(repository.save(any(MembershipTier.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        MembershipTier created = service.createTier(request);
+
+        assertThat(created.getDurationDays()).isNull();
+        assertThat(created.getEntryQuota()).isEqualTo(10);
+        assertThat(created.getAllowedServices()).containsExactly(ServiceType.CLASSES);
+        verify(repository).findByNameIgnoreCase("Ten entries");
+        verify(repository).save(created);
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void shouldRejectDuplicateTierName() {
+        MembershipTierRequest request = new MembershipTierRequest(
+                "Premium",
+                new BigDecimal("49.99"),
+                30,
+                null,
+                Set.of(ServiceType.POOL),
+                TimeBand.FULL_DAY);
+        when(repository.findByNameIgnoreCase("Premium")).thenReturn(Optional.of(tier));
+
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> service.createTier(request));
+
+        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(exception.getReason()).contains("already exists");
+        verify(repository).findByNameIgnoreCase("Premium");
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
     void shouldReplaceServicesAndSaveTier() {
         Set<ServiceType> newServices = Set.of(ServiceType.CLASSES, ServiceType.POOL);
         when(repository.findById(TIER_ID)).thenReturn(Optional.of(tier));
@@ -101,6 +179,29 @@ class MembershipTierServiceTests {
         assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(exception.getReason()).isEqualTo("Membership tier not found");
         verify(repository).findById(TIER_ID);
+    }
+
+    @Test
+    void shouldRejectEmptyServicesWithoutChangingTier() {
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> service.updateServices(TIER_ID, Set.of()));
+
+        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(exception.getReason()).isEqualTo("At least one service is required");
+        assertThat(tier.getAllowedServices()).containsExactly(ServiceType.WEIGHT_ROOM);
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void shouldRejectNullServicesWithoutAccessingRepository() {
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> service.updateServices(TIER_ID, null));
+
+        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(exception.getReason()).isEqualTo("At least one service is required");
+        verifyNoMoreInteractions(repository);
     }
 
     @ParameterizedTest
