@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.samples.fitslot.classes.exceptions.DuplicatedClassesNameException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -106,6 +107,19 @@ public class ExceptionHandlerController {
 			WebRequest request) {
 		ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(),
 				"Invalid request body", request.getDescription(false));
+
+		return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(value = MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<ErrorMessage> handleArgumentTypeMismatch(
+			MethodArgumentTypeMismatchException ex, WebRequest request) {
+		ErrorMessage message = new ErrorMessage(
+			HttpStatus.BAD_REQUEST.value(),
+			new Date(),
+			"Invalid request parameter",
+			request.getDescription(false)
+		);
 
 		return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
 	}
