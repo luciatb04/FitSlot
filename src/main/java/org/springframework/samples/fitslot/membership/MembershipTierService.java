@@ -40,6 +40,13 @@ public class MembershipTierService {
     public Set<ServiceType> updateServices(
             Integer tierId, Set<ServiceType> services) {
 
+        if (services == null || services.isEmpty()) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "At least one service is required"
+            );
+        }
+
         MembershipTier tier = repository.findById(tierId)
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND,
@@ -88,6 +95,31 @@ public class MembershipTierService {
     repository.save(tier);
 
     return tier.getTimeBand();
+    }
+
+    @Transactional
+    public MembershipTier createTier(MembershipTierRequest request) {
+        if (request == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is required");
+        }
+
+        String name = request.name().trim();
+        if (repository.findByNameIgnoreCase(name).isPresent()) {
+            throw new ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "A membership tier with this name already exists"
+            );
+        }
+
+        MembershipTier tier = new MembershipTier();
+        tier.setName(name);
+        tier.setPrice(request.price());
+        tier.setDurationDays(request.durationDays());
+        tier.setEntryQuota(request.entryQuota());
+        tier.setAllowedServices(new HashSet<>(request.allowedServices()));
+        tier.setTimeBand(request.timeBand());
+
+        return repository.save(tier);
     }
 
 }

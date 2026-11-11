@@ -15,9 +15,12 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,14 +35,17 @@ public class MembershipTier extends BaseEntity {
     private String name;
 
     @NotNull
-    @DecimalMin("0.00")
+    @DecimalMin(value = "0.00", inclusive = false)
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
+    @Positive
     private Integer durationDays;
 
+    @Positive
     private Integer entryQuota;
 
+    @NotEmpty
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
         name = "tier_services",
@@ -53,4 +59,9 @@ public class MembershipTier extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TimeBand timeBand;
+
+    @AssertTrue(message = "A membership tier must define either durationDays or entryQuota, but not both")
+    public boolean isPlanTypeExclusive() {
+        return (durationDays == null) != (entryQuota == null);
+    }
 }

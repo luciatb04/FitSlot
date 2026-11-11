@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Set;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -12,7 +13,9 @@ import jakarta.validation.constraints.Positive;
 
 public record MembershipTierRequest(
     @NotBlank String name,
-    @NotNull @DecimalMin(value = "0.00", inclusive = false) BigDecimal price,
+    @NotNull @DecimalMin(value = "0.00", inclusive = false)
+    @Digits(integer = 8, fraction = 2)
+    BigDecimal price,
     @Positive Integer durationDays,
     @Positive Integer entryQuota,
     @NotEmpty Set<@NotNull ServiceType> allowedServices,
