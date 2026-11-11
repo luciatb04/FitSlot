@@ -5,7 +5,10 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,4 +48,26 @@ public class MemberRestController {
             member.getStatus()
         );
     }
+
+    @GetMapping("/{id}")
+    public MemberResponse getById(@PathVariable Integer id) {
+        return toResponse(memberService.findById(id));
+    }
+
+    
+
+    @PutMapping("/{id}")
+    public MemberResponse update(
+            @PathVariable Integer id,
+            @Valid @RequestBody MemberRequest request) {
+        return toResponse(memberService.update(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+        memberService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    
 }

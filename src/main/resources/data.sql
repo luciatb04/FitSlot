@@ -21,7 +21,7 @@ INSERT INTO appusers(id,username,password,authority) VALUES (17,'instructor4','$
 INSERT INTO appusers(id,username,password,authority) VALUES (18,'instructor5','$2a$10$aeypcHWSf4YEkDAF0d.vjOLu94aS40MBUb4rOtDncFxZdo2wpkt8.',4);
 
 
-INSERT INTO appusers(id,username,password,authority) VALUES (19,'receptionist1','$2a$10$d8/.gd9c7QddILjFY1WvDuFB7lhxXySZg33bYOD.VigG243thAaoy',6);
+INSERT INTO appusers(id,username,password,authority) VALUES (19,'receptionist1','$2a$10$FlNJmecQJFCTHfmAtIjxauN94mMeRacVEamMxw6M52bHqWDyJdT9S',6);
 
 INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (1, 'James', 'Carter','Sevilla', 1, 14);
 INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (2, 'Helen', 'Leary','Sevilla', 1, 15);
@@ -31,9 +31,19 @@ INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (5, 
 
 INSERT INTO authorities(id,authority) VALUES (5,'MEMBER');
 
-INSERT INTO classes(id,name,birth_date) VALUES (1, 'Morning Strength', '2026-01-15');
-INSERT INTO classes(id,name,birth_date) VALUES (2, 'Yoga', '2026-02-10');
-INSERT INTO classes(id,name,birth_date) VALUES (3, 'Spinning', '2026-03-05');
+INSERT INTO members (id, first_name, last_name, email, telephone, status)
+VALUES
+(1, 'James', 'Smith', 'james.smith@example.com', '2025550101', 'ACTIVE'),
+(2, 'Emily', 'Johnson', 'emily.johnson@example.com', '2025550102', 'ACTIVE'),
+(3, 'Michael', 'Brown', 'michael.brown@example.com', '2025550103', 'ACTIVE'),
+(4, 'Olivia', 'Williams', 'olivia.williams@example.com', '2025550104', 'ACTIVE'),
+(5, 'William', 'Jones', 'william.jones@example.com', '2025550105', 'ACTIVE'),
+(6, 'Sophia', 'Taylor', 'sophia.taylor@example.com', '2025550106', 'ACTIVE'),
+(7, 'Daniel', 'Anderson', 'daniel.anderson@example.com', '2025550107', 'ACTIVE'),
+(8, 'Charlotte', 'Wilson', 'charlotte.wilson@example.com', '2025550108', 'ACTIVE'),
+(9, 'Benjamin', 'Thomas', 'benjamin.thomas@example.com', '2025550109', 'ACTIVE'),
+(10, 'Isabella', 'Martin', 'isabella.martin@example.com', '2025550110', 'ACTIVE');
+
 
 INSERT INTO membership_tiers
 (id, name, price, duration_days, entry_quota, time_band)

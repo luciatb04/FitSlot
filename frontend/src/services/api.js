@@ -28,22 +28,34 @@ instance.interceptors.response.use(
     async (err) => {
         const originalConfig = err.config;
 
-        if (originalConfig.url !== "/auth/signin" && err.response) {
+        if (
+            originalConfig &&
+            originalConfig.url !== "/auth/signin" &&
+            originalConfig.url !== "/auth/refreshtoken" &&
+            err.response
+        ) {
             // Access Token was expired
             if (err.response.status === 401 && !originalConfig._retry) {
                 originalConfig._retry = true;
+                const refreshToken = TokenService.getLocalRefreshToken();
+
+                if (!refreshToken) {
+                    TokenService.removeUser();
+                    return Promise.reject(err);
+                }
 
                 try {
                     const rs = await instance.post("/auth/refreshtoken", {
-                        refreshToken: TokenService.getLocalRefreshToken(),
+                        refreshToken,
                     });
 
                     const { accessToken } = rs.data;
                     TokenService.updateLocalAccessToken(accessToken);
 
                     return instance(originalConfig);
-                } catch (_error) {
-                    return Promise.reject(_error);
+                } catch (refreshError) {
+                    TokenService.removeUser();
+                    return Promise.reject(refreshError);
                 }
             }
         }

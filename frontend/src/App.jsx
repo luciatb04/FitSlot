@@ -1,10 +1,12 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { ErrorBoundary } from "react-error-boundary";
 import AppNavbar from "./AppNavbar";
 import Home from "./home";
+import MemberList from "./receptionist/members/MemberList";
 import PrivateRoute from "./privateRoute";
+import EditMember from "./receptionist/members/EditMember";
 import Register from "./auth/register";
 import Login from "./auth/login";
 import Logout from "./auth/logout";
@@ -89,31 +91,49 @@ function App() {
           <Route path="/gyms/:id" exact={true} element={<PrivateRoute><EditGym /></PrivateRoute>} />
           <Route path="/instructors" exact={true} element={<PrivateRoute><InstructorListGymOwner /></PrivateRoute>} />
           <Route path="/instructors/:id" exact={true} element={<PrivateRoute><InstructorEditGymOwner /></PrivateRoute>} />
-          <Route path="/membership-services" element={<PrivateRoute><MembershipServices /></PrivateRoute>}/>
+          <Route path="/membership-services" element={<PrivateRoute><MembershipServices /></PrivateRoute>} />
         </>)
     }
+
     if (role === "RECEPTIONIST") {
       receptionistRoutes = (
         <>
           <Route
+            path="/NewMember"
+            element={
+              <PrivateRoute>
+                <MemberRegistration />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
             path="/members"
-            element={<PrivateRoute><MemberRegistration /></PrivateRoute>}
+            element={
+              <PrivateRoute>
+                <MemberList />
+              </PrivateRoute>
+            }
           />
+
+          <Route path="/editMember" element={<Navigate to="/members" replace />} />
+
           <Route
-            path="/medical-certificates"
-            element={<PrivateRoute><MedicalCertificateManagement /></PrivateRoute>}
-          />
-          <Route
-            path="/check-in"
-            element={<PrivateRoute><CheckIn /></PrivateRoute>}
+            path="/members/:id/edit"
+            element={
+              <PrivateRoute>
+                <EditMember />
+              </PrivateRoute>
+            }
           />
         </>
       );
     }
+
   })
   if (!jwt) {
     publicRoutes = (
-      <>        
+      <>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
       </>
@@ -121,7 +141,7 @@ function App() {
   } else {
     userRoutes = (
       <>
-        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />      
+        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/login" element={<Login />} />
       </>

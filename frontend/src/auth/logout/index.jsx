@@ -6,13 +6,8 @@ import tokenService from "../../services/token.service";
 
 const Logout = () => {
   function sendLogoutRequest() {
-    const jwt = window.localStorage.getItem("jwt");
-    if (jwt || typeof jwt === "undefined") {
-      tokenService.removeUser();
-      window.location.href = "/";
-    } else {
-      alert("There is no user logged in");
-    }
+    tokenService.removeUser();
+    window.location.href = "/";
   }
 
   return (
