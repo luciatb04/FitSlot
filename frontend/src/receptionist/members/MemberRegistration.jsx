@@ -46,7 +46,7 @@ export default function MemberRegistration() {
           : status === 401
             ? "Your session has expired. Sign in again to register members."
             : responseMessage ||
-              "The member could not be registered. Please check the information and try again."
+            "The member could not be registered. Please check the information and try again."
       );
     } finally {
       setIsSubmitting(false);

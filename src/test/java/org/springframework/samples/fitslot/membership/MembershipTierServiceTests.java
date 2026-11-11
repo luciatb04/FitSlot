@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.math.BigDecimal;
+import java.time.LocalTime;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.samples.fitslot.membership.TimeBandConfiguration.MembershipConfigurationDTO;
 import org.springframework.samples.fitslot.membership.TimeBandConfiguration.TimeBand;
+import org.springframework.samples.fitslot.membership.TimeBandConfiguration.TimeBandConfiguration;
 import org.springframework.samples.fitslot.membership.TimeBandConfiguration.TimeBandConfigurationRepository;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -41,6 +44,7 @@ class MembershipTierServiceTests {
 
     @BeforeEach
     void setUp() {
+        service = new MembershipTierService(repository, timeBandRepository);
         service = new MembershipTierService(repository, timeBandRepository);
         tier = new MembershipTier();
         tier.setId(TIER_ID);
@@ -244,5 +248,76 @@ class MembershipTierServiceTests {
         assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(exception.getReason()).isEqualTo("Time band cannot be null");
         verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void shouldUpdateTierAndTimeBandConfiguration() {
+        TimeBandConfiguration band = new TimeBandConfiguration();
+        band.setTimeBand(TimeBand.MORNINGS_ONLY);
+        band.setStartTime(LocalTime.of(8, 0));
+        band.setEndTime(LocalTime.of(12, 0));
+        MembershipConfigurationDTO request = new MembershipConfigurationDTO(
+                Set.of(ServiceType.POOL, ServiceType.CLASSES),
+                TimeBand.MORNINGS_ONLY,
+                LocalTime.of(9, 0),
+                LocalTime.of(13, 30));
+
+        when(repository.findById(TIER_ID)).thenReturn(Optional.of(tier));
+        when(timeBandRepository.findByTimeBand(TimeBand.MORNINGS_ONLY))
+                .thenReturn(Optional.of(band));
+        when(timeBandRepository.save(band)).thenReturn(band);
+        when(repository.save(tier)).thenReturn(tier);
+
+        MembershipTier result = service.updateConfiguration(TIER_ID, request);
+
+        assertThat(result).isSameAs(tier);
+        assertThat(tier.getAllowedServices())
+                .containsExactlyInAnyOrder(ServiceType.POOL, ServiceType.CLASSES);
+        assertThat(tier.getTimeBand()).isEqualTo(TimeBand.MORNINGS_ONLY);
+        assertThat(band.getStartTime()).isEqualTo(LocalTime.of(9, 0));
+        assertThat(band.getEndTime()).isEqualTo(LocalTime.of(13, 30));
+        verify(repository).findById(TIER_ID);
+        verify(timeBandRepository).findByTimeBand(TimeBand.MORNINGS_ONLY);
+        verify(timeBandRepository).save(band);
+        verify(repository).save(tier);
+    }
+
+    @Test
+    void shouldRejectInvalidMembershipConfigurationBeforeAccessingRepositories() {
+        MembershipConfigurationDTO request = new MembershipConfigurationDTO(
+                Set.of(ServiceType.POOL),
+                TimeBand.FULL_DAY,
+                LocalTime.of(18, 0),
+                LocalTime.of(8, 0));
+
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> service.updateConfiguration(TIER_ID, request));
+
+        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(exception.getReason()).isEqualTo("Invalid membership configuration");
+        verifyNoMoreInteractions(repository, timeBandRepository);
+    }
+
+    @Test
+    void shouldRejectConfigurationWhenTimeBandDoesNotExist() {
+        MembershipConfigurationDTO request = new MembershipConfigurationDTO(
+                Set.of(ServiceType.POOL),
+                TimeBand.FULL_DAY,
+                LocalTime.of(8, 0),
+                LocalTime.of(18, 0));
+        when(repository.findById(TIER_ID)).thenReturn(Optional.of(tier));
+        when(timeBandRepository.findByTimeBand(TimeBand.FULL_DAY))
+                .thenReturn(Optional.empty());
+
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> service.updateConfiguration(TIER_ID, request));
+
+        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(exception.getReason()).isEqualTo("Time band configuration not found");
+        verify(repository).findById(TIER_ID);
+        verify(timeBandRepository).findByTimeBand(TimeBand.FULL_DAY);
+        verifyNoMoreInteractions(repository, timeBandRepository);
     }
 }

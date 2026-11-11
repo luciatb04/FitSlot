@@ -1,6 +1,7 @@
 package org.springframework.samples.fitslot.membership;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -127,7 +128,7 @@ public class MembershipTierService {
         if (request == null ||
                 request.allowedServices() == null ||
                 request.allowedServices().isEmpty() ||
-                request.allowedServices().contains(null) ||
+                request.allowedServices().stream().anyMatch(Objects::isNull) ||
                 request.timeBand() == null ||
                 request.startTime() == null ||
                 request.endTime() == null ||
