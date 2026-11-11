@@ -14,6 +14,17 @@ const initialTier = {
   timeBand: "FULL_DAY"
 };
 
+beforeEach(() => {
+  server.use(
+    http.get("*/api/time-bands", () => HttpResponse.json([
+      { timeBand: "FULL_DAY", startTime: "00:00:00", endTime: "23:59:00" },
+      { timeBand: "MORNINGS_ONLY", startTime: "06:00:00", endTime: "12:00:00" },
+      { timeBand: "AFTERNOONS_ONLY", startTime: "12:00:00", endTime: "18:00:00" },
+      { timeBand: "EVENINGS_ONLY", startTime: "18:00:00", endTime: "23:59:00" }
+    ]))
+  );
+});
+
 function mockMembershipApi(tiers = [initialTier]) {
   server.use(
     http.get("*/api/membership-tiers", () => HttpResponse.json(tiers)),
@@ -122,54 +133,58 @@ describe("MembershipServices", () => {
     expect(screen.getByLabelText("Name")).toHaveValue("Existing plan");
   });
 
-  test("saves selected services and access time through their separate API routes", async () => {
-    const updates = [];
+  test("saves selected services and access time through the configuration API", async () => {
+    let updateRequest;
     server.use(
       http.get("*/api/membership-tiers", () => HttpResponse.json([initialTier])),
-      http.get("*/api/membership-tiers/1/services", () => HttpResponse.json(["WEIGHT_ROOM"])),
-      http.get("*/api/membership-tiers/1/time-band", () => HttpResponse.json("FULL_DAY")),
-      http.put("*/api/membership-tiers/1/:setting", async ({ request, params }) => {
-        updates.push({ setting: params.setting, body: await request.json() });
-        return HttpResponse.json(params.setting === "services" ? ["POOL"] : "MORNINGS_ONLY");
+      http.put("*/api/membership-tiers/1/configuration", async ({ request }) => {
+        updateRequest = await request.json();
+        return HttpResponse.json({
+          ...initialTier,
+          ...updateRequest
+        });
       })
     );
     const user = userEvent.setup();
     render(<MembershipServices />);
 
-    await user.click(await screen.findByRole("button", { name: "Edit services and time" }));
+    await screen.findByRole("heading", { name: "Standard" });
+    await user.click(screen.getByRole("button", { name: "Edit membership" }));
     const editSection = screen.getByRole("region", { name: "Edit services and access time" });
     await user.click(within(editSection).getByRole("checkbox", { name: "Swimming Pool" }));
     await user.click(within(editSection).getByRole("radio", { name: "Mornings only" }));
+    await user.clear(within(editSection).getByLabelText("Start time"));
+    await user.type(within(editSection).getByLabelText("Start time"), "07:00");
+    await user.clear(within(editSection).getByLabelText("End time"));
+    await user.type(within(editSection).getByLabelText("End time"), "11:30");
     await user.click(within(editSection).getByRole("button", { name: "Save changes" }));
 
     expect(await screen.findByRole("status")).toHaveTextContent("saved successfully");
-    expect(updates).toEqual([
-      { setting: "services", body: ["WEIGHT_ROOM", "POOL"] },
-      { setting: "time-band", body: "MORNINGS_ONLY" }
-    ]);
+    expect(updateRequest).toEqual({
+      allowedServices: ["WEIGHT_ROOM", "POOL"],
+      timeBand: "MORNINGS_ONLY",
+      startTime: "07:00",
+      endTime: "11:30"
+    });
   });
 
-  test("reports a partial save when updating the access time fails", async () => {
+  test("reports an error when saving membership configuration fails", async () => {
     server.use(
       http.get("*/api/membership-tiers", () => HttpResponse.json([initialTier])),
-      http.get("*/api/membership-tiers/1/services", () => HttpResponse.json(["WEIGHT_ROOM"])),
-      http.get("*/api/membership-tiers/1/time-band", () => HttpResponse.json("FULL_DAY")),
-      http.put("*/api/membership-tiers/1/services", () => HttpResponse.json(["POOL"])),
-      http.put("*/api/membership-tiers/1/time-band", () => HttpResponse.json(
-        { message: "Time band update failed" },
+      http.put("*/api/membership-tiers/1/configuration", () => HttpResponse.json(
+        { message: "Membership configuration update failed" },
         { status: 500 }
       ))
     );
     const user = userEvent.setup();
     render(<MembershipServices />);
 
-    await user.click(await screen.findByRole("button", { name: "Edit services and time" }));
+    await screen.findByRole("heading", { name: "Standard" });
+    await user.click(screen.getByRole("button", { name: "Edit membership" }));
     const editSection = screen.getByRole("region", { name: "Edit services and access time" });
     await user.click(within(editSection).getByRole("checkbox", { name: "Swimming Pool" }));
     await user.click(within(editSection).getByRole("button", { name: "Save changes" }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Services were saved, but the access time was not"
-    );
+    expect(await screen.findByRole("alert")).toHaveTextContent("Membership configuration update failed");
   });
 });

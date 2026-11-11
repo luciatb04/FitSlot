@@ -77,6 +77,7 @@ function App() {
           <Route path="/instructors" exact={true} element={<PrivateRoute><InstructorListAdmin /></PrivateRoute>} />
           <Route path="/instructors/:id" exact={true} element={<PrivateRoute><InstructorEditAdmin /></PrivateRoute>} />
           <Route path="/medical-certificates" element={<PrivateRoute><MedicalCertificateManagement /></PrivateRoute>} />
+          <Route path="/check-in" element={<PrivateRoute><CheckIn /></PrivateRoute>} />
         </>)
     }
     if (role === "INSTRUCTOR") {
@@ -123,6 +124,24 @@ function App() {
             element={
               <PrivateRoute>
                 <EditMember />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/medical-certificates"
+            element={
+              <PrivateRoute>
+                <MedicalCertificateManagement />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/check-in"
+            element={
+              <PrivateRoute>
+                <CheckIn />
               </PrivateRoute>
             }
           />
