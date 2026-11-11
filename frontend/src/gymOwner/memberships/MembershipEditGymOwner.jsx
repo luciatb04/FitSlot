@@ -475,23 +475,6 @@ function MembershipServices() {
             </select>
           </label>
 
-          <label className="membership-field" htmlFor="tier-time-band">
-            Access time
-            <select
-              id="tier-time-band"
-              name="timeBand"
-              value={form.timeBand}
-              onChange={updateForm}
-              required
-            >
-              {TIME_BANDS.map((band) => (
-                <option key={band.value} value={band.value}>
-                  {band.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
           {bandConfigurations[form.timeBand] && (
             <p className="membership-time-note">
               Schedule:{" "}
@@ -508,11 +491,7 @@ function MembershipServices() {
               type="submit"
               disabled={
                 saving ||
-                loadingConfiguration ||
-                services.length === 0 ||
-                !timeBand ||
-                !startTime ||
-                !endTime
+                form.allowedServices.length === 0
               }
             >
               {saving ? "Creating..." : "Save membership"}

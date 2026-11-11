@@ -55,6 +55,12 @@ function AppNavbar() {
                     <NavItem>
                         <NavLink className="navbar-link-custom" tag={Link} to="/users">Users</NavLink>
                     </NavItem>
+                    <NavItem>
+                        <NavLink className="navbar-link-custom" tag={Link} to="/medical-certificates">Medical certificates</NavLink>
+                    </NavItem>
+                    <NavItem>
+                        <NavLink className="navbar-link-custom" tag={Link} to="/check-in">Check-in</NavLink>
+                    </NavItem>
                 </>
             );
         }
@@ -150,6 +156,16 @@ function AppNavbar() {
                         <NavLink
                             className="navbar-link-custom"
                             tag={Link}
+                            to="/medical-certificates"
+                        >
+                            Medical certificates
+                        </NavLink>
+                    </NavItem>
+
+                    <NavItem>
+                        <NavLink
+                            className="navbar-link-custom"
+                            tag={Link}
                             to="/check-in"
                         >
                             Check-in
@@ -204,6 +220,9 @@ function AppNavbar() {
     if (!jwt) {
         publicLinks = (
             <>
+                <NavItem>
+                    <NavLink className="navbar-link-custom" tag={Link} to="/docs">Docs</NavLink>
+                </NavItem>
                 <NavItem>
                     <NavLink className="navbar-link-custom" id="plans" tag={Link} to="/plans">Pricing Plans</NavLink>
                 </NavItem>

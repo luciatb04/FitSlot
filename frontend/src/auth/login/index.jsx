@@ -21,8 +21,10 @@ export default function Login() {
     })
       .then(function (response) {
         if (response.status === 200) return response.json();
-        else return Promise.reject("Invalid login attempt");
-      })
+      return response.text().then((message) => {
+        throw message || "Invalid login attempt";
+      });
+    })
       .then(function (data) {
         tokenService.setUser(data);
         tokenService.updateLocalAccessToken(data.token);

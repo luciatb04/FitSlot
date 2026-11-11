@@ -11,7 +11,7 @@ describe('AppNavbar', () => {
         const linkPlansElement = screen.getByRole('link', { name: 'Pricing Plans' });
         expect(linkPlansElement).toBeInTheDocument();
 
-        const linkHomeElement = screen.getByRole('link', { name: 'logo ClassGym' });
+        const linkHomeElement = screen.getByRole('link', { name: 'logoFitSlot' });
         expect(linkHomeElement).toBeInTheDocument();
     });
 

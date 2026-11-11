@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
-import "./MemberRegistration.css";
+import "./memberRegistration.css";
 
 
 const EMPTY_FORM = { firstName: "", lastName: "", email: "", telephone: "" };
