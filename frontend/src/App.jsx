@@ -32,6 +32,7 @@ import InstructorEditGymOwner from "./gymOwner/instructors/InstructorEditGymOwne
 import MemberRegistration from "./receptionist/members/MemberRegistration";
 import MedicalCertificateManagement from "./receptionist/medicalCertificates/MedicalCertificateManagement";
 import CheckIn from "./receptionist/checkIn/CheckIn";
+import PaymentManagement from "./receptionist/payments/PaymentManagement";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -78,6 +79,7 @@ function App() {
           <Route path="/instructors/:id" exact={true} element={<PrivateRoute><InstructorEditAdmin /></PrivateRoute>} />
           <Route path="/medical-certificates" element={<PrivateRoute><MedicalCertificateManagement /></PrivateRoute>} />
           <Route path="/check-in" element={<PrivateRoute><CheckIn /></PrivateRoute>} />
+          <Route path="/payments" element={<PrivateRoute><PaymentManagement /></PrivateRoute>} />
         </>)
     }
     if (role === "INSTRUCTOR") {
@@ -142,6 +144,15 @@ function App() {
             element={
               <PrivateRoute>
                 <CheckIn />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/payments"
+            element={
+              <PrivateRoute>
+                <PaymentManagement />
               </PrivateRoute>
             }
           />
