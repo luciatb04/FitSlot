@@ -53,6 +53,13 @@ class MembershipTierSecurityTests {
     }
 
     @Test
+    @WithMockUser(authorities = "RECEPTIONIST")
+    void allowsReceptionistsToReadMembershipTiers() throws Exception {
+        mockMvc.perform(get(BASE_URL))
+            .andExpect(status().isOk());
+    }
+
+    @Test
     @WithMockUser(authorities = "GYM_OWNER")
     void allowsGymOwnerToCreateMembershipTier() throws Exception {
         MembershipTierRequest request = new MembershipTierRequest(
@@ -76,6 +83,23 @@ class MembershipTierSecurityTests {
     @Test
     @WithMockUser(authorities = "MEMBER")
     void deniesMembershipCreationFromNonGymOwner() throws Exception {
+        MembershipTierRequest request = new MembershipTierRequest(
+                "Forbidden " + UUID.randomUUID(),
+                new BigDecimal("19.99"),
+                30,
+                null,
+                Set.of(ServiceType.POOL),
+                TimeBand.FULL_DAY);
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(authorities = "RECEPTIONIST")
+    void deniesMembershipCreationFromReceptionist() throws Exception {
         MembershipTierRequest request = new MembershipTierRequest(
                 "Forbidden " + UUID.randomUUID(),
                 new BigDecimal("19.99"),

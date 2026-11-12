@@ -61,6 +61,9 @@ function AppNavbar() {
                     <NavItem>
                         <NavLink className="navbar-link-custom" tag={Link} to="/check-in">Check-in</NavLink>
                     </NavItem>
+                    <NavItem>
+                        <NavLink className="navbar-link-custom" tag={Link} to="/payments">Payments</NavLink>
+                    </NavItem>
                 </>
             );
         }

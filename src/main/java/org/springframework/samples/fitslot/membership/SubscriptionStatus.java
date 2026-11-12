@@ -1,5 +1,5 @@
 package org.springframework.samples.fitslot.membership;
 
 public enum SubscriptionStatus {
-    ACTIVE, EXPIRED, FROZEN
+    PENDING, ACTIVE, EXPIRED, FROZEN, CANCELLED
 }
