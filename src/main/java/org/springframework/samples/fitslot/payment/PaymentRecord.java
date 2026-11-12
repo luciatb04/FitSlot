@@ -9,6 +9,8 @@ import org.springframework.samples.fitslot.model.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -31,15 +33,20 @@ public class PaymentRecord extends BaseEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "subscription_id", nullable = false)
+    @JoinColumn(name = "subscription_id", nullable = false, unique = true)
     private MemberSubscription subscription;
 
     @NotNull
-    @DecimalMin("0.00")
+    @DecimalMin(value = "0.00", inclusive = false)
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
 
     @NotNull
     @Column(name = "payment_date", nullable = false)
     private LocalDateTime paymentDate;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PaymentStatus status;
 }

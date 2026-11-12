@@ -1,6 +1,7 @@
 package org.springframework.samples.fitslot.access;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
@@ -9,7 +10,12 @@ import org.springframework.samples.fitslot.member.MemberService;
 import org.springframework.samples.fitslot.medicalcertificate.CertificateValidity;
 import org.springframework.samples.fitslot.medicalcertificate.MedicalCertificate;
 import org.springframework.samples.fitslot.medicalcertificate.MedicalCertificateService;
+import org.springframework.samples.fitslot.membership.MemberSubscription;
+import org.springframework.samples.fitslot.membership.MemberSubscriptionRepository;
 import org.springframework.samples.fitslot.membership.ServiceType;
+import org.springframework.samples.fitslot.membership.SubscriptionStatus;
+import org.springframework.samples.fitslot.payment.PaymentRecordRepository;
+import org.springframework.samples.fitslot.payment.PaymentStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,16 +26,22 @@ public class AccessService {
     private final AccessRecordRepository accessRecordRepository;
     private final MemberService memberService;
     private final MedicalCertificateService certificateService;
+    private final MemberSubscriptionRepository subscriptionRepository;
+    private final PaymentRecordRepository paymentRepository;
     private final Clock clock;
 
     public AccessService(
             AccessRecordRepository accessRecordRepository,
             MemberService memberService,
             MedicalCertificateService certificateService,
+            MemberSubscriptionRepository subscriptionRepository,
+            PaymentRecordRepository paymentRepository,
             Clock clock) {
         this.accessRecordRepository = accessRecordRepository;
         this.memberService = memberService;
         this.certificateService = certificateService;
+        this.subscriptionRepository = subscriptionRepository;
+        this.paymentRepository = paymentRepository;
         this.clock = clock;
     }
 
@@ -45,6 +57,39 @@ public class AccessService {
                 ? "Access denied: latest medical certificate has expired"
                 : "Access denied: latest medical certificate is not valid yet";
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, reason);
+        }
+
+        LocalDate today = LocalDate.now(clock);
+        boolean hasCurrentSubscription = false;
+        boolean hasService = false;
+        boolean hasPaidSubscription = false;
+        for (MemberSubscription subscription : subscriptionRepository
+                .findByMember_IdAndStatusOrderByEndDateDesc(memberId, SubscriptionStatus.ACTIVE)) {
+            if (subscription.getStartDate().isAfter(today) || subscription.getEndDate().isBefore(today)) {
+                continue;
+            }
+            hasCurrentSubscription = true;
+            if (!subscription.getTier().getAllowedServices().contains(serviceAccessed)) {
+                continue;
+            }
+            hasService = true;
+            if (paymentRepository.existsBySubscription_IdAndStatus(subscription.getId(), PaymentStatus.PAID)) {
+                hasPaidSubscription = true;
+                break;
+            }
+        }
+
+        if (!hasCurrentSubscription) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: no active subscription");
+        }
+        if (!hasService) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "Access denied: active subscription does not include this service"
+            );
+        }
+        if (!hasPaidSubscription) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: subscription payment is not paid");
         }
 
         LocalDateTime accessDatetime = LocalDateTime.now(clock);
