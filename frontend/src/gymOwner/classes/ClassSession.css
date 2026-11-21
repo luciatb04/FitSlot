@@ -1,0 +1,199 @@
+.class-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    padding: 20px 0;
+}
+
+/* Center the edit class page */
+.fm-page:has(.class-info-grid) {
+    display: flex;
+    justify-content: center;
+    min-height: calc(100vh - 80px);
+    padding: 40px 24px 60px;
+    background-color: #f5f7fb;
+}
+
+/* Limit the content width */
+.fm-page:has(.class-info-grid) .fm-container {
+    width: 100%;
+    max-width: 950px;
+    margin: 0 auto;
+}
+
+/* Page header */
+.fm-page:has(.class-info-grid) .fm-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+/* Cards */
+.fm-page:has(.class-info-grid) .fm-card {
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    border-radius: 16px;
+}
+
+/* Current class details */
+.class-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+    padding: 18px 0 4px;
+}
+
+.class-info-grid>div {
+    min-width: 0;
+}
+
+/* Form fields */
+.class-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    padding: 20px 0;
+}
+
+.class-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.class-form-field input,
+.class-form-field select {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Form buttons */
+.class-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 16px;
+}
+
+@media (max-width: 768px) {
+    .fm-page:has(.class-info-grid) {
+        padding: 24px 16px;
+    }
+
+    .fm-page:has(.class-info-grid) .fm-page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .fm-page:has(.class-info-grid) .fm-card {
+        padding: 22px 20px;
+    }
+
+    .class-info-grid,
+    .class-form-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .class-form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .class-form-actions .fm-button {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+.class-info-grid strong {
+    display: block;
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.class-info-grid p {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.class-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    padding: 20px 0;
+}
+
+.class-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.class-form-field label {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.class-form-field input,
+.class-form-field select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 15px;
+    background: #fff;
+    color: #1e293b;
+}
+
+.class-form-field input:focus,
+.class-form-field select:focus {
+    outline: 2px solid #2563eb;
+    outline-offset: 1px;
+}
+
+.class-form-field input:disabled,
+.class-form-field select:disabled {
+    background: #f1f5f9;
+    cursor: not-allowed;
+}
+
+.class-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.fm-alert-success {
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    border: 1px solid #86efac;
+    border-radius: 8px;
+    background: #f0fdf4;
+    color: #166534;
+}
+
+@media (max-width: 768px) {
+
+    .class-info-grid,
+    .class-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .class-form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .class-form-actions .fm-button {
+        text-align: center;
+    }
+}

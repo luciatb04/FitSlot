@@ -28,7 +28,7 @@ function AppNavbar() {
         }
     }, [jwt]);
 
-    let adminLinks = <></>;
+    
     let instructorLinks = <></>;
     let ownerLinks = <></>;
     let userLinks = <></>;
@@ -37,37 +37,6 @@ function AppNavbar() {
     let receptionistLinks = <></>;
 
     roles.forEach((role) => {
-        if (role === "ADMIN") {
-            adminLinks = (
-                <>
-                    <NavItem>
-                        <NavLink className="navbar-link-custom" tag={Link} to="/classes">Classes</NavLink>
-                    </NavItem>
-                    <NavItem>
-                        <NavLink className="navbar-link-custom" tag={Link} to="/instructors">Instructors</NavLink>
-                    </NavItem>
-                    <NavItem>
-                        <NavLink className="navbar-link-custom" tag={Link} to="/gymOwners">Gym Owners</NavLink>
-                    </NavItem>
-                    <NavItem>
-                        <NavLink className="navbar-link-custom" tag={Link} to="/gyms">Gyms</NavLink>
-                    </NavItem>
-                    <NavItem>
-                        <NavLink className="navbar-link-custom" tag={Link} to="/users">Users</NavLink>
-                    </NavItem>
-                    <NavItem>
-                        <NavLink className="navbar-link-custom" tag={Link} to="/medical-certificates">Medical certificates</NavLink>
-                    </NavItem>
-                    <NavItem>
-                        <NavLink className="navbar-link-custom" tag={Link} to="/check-in">Check-in</NavLink>
-                    </NavItem>
-                    <NavItem>
-                        <NavLink className="navbar-link-custom" tag={Link} to="/payments">Payments</NavLink>
-                    </NavItem>
-                </>
-            );
-        }
-
         if (role === "INSTRUCTOR") {
             instructorLinks = (
                 <>
@@ -207,6 +176,9 @@ function AppNavbar() {
                             <DropdownItem tag={Link} to="/instructors">
                                 Instructors
                             </DropdownItem>
+                            <DropdownItem tag={Link} to="/manage-classes">
+                                Manage Classes
+                            </DropdownItem>
                         </DropdownMenu>
                     </UncontrolledDropdown>
 
@@ -287,7 +259,6 @@ function AppNavbar() {
                 <Collapse isOpen={!collapsed} navbar className="navbar-collapse-custom">
                     <Nav className="navbar-center-links" navbar>
                         {userLinks}
-                        {adminLinks}
                         {ownerLinks}
                         {publicLinks}
                         {instructorLinks}

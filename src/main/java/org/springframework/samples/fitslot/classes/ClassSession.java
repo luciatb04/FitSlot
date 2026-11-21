@@ -6,6 +6,8 @@ import java.time.LocalTime;
 import org.springframework.samples.fitslot.instructor.Instructor;
 import org.springframework.samples.fitslot.model.BaseEntity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -37,6 +39,7 @@ public class ClassSession extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "instructor_id")
+    @JsonIgnore
     private Instructor instructor;
 
     @NotNull
@@ -46,6 +49,10 @@ public class ClassSession extends BaseEntity {
     @NotNull
     @Column(name = "start_time", nullable = false)
     private LocalTime startTime;
+
+    @NotNull
+    @Column(name = "end_time", nullable = false)
+    private LocalTime endTime;
 
     @NotNull
     @Min(1)

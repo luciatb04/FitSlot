@@ -93,6 +93,8 @@ public class SecurityConfiguration {
 			.requestMatchers("/api/v1/visits/**").hasAnyAuthority(MEMBER, RECEPTIONIST)
 			.requestMatchers("/api/v1/classs").authenticated()
 			.requestMatchers("/api/v1/classs/**").authenticated()
+			.requestMatchers("/api/v1/class-sessions/**").hasAnyAuthority(GYM_OWNER, ADMIN)
+			.requestMatchers("/api/class-sessions/**").hasAnyAuthority(GYM_OWNER, ADMIN)
 			.requestMatchers("/api/v1/gyms/**").hasAnyAuthority(GYM_OWNER, ADMIN)
 			.requestMatchers(HttpMethod.GET, "/api/v1/instructors/**").authenticated()
 			.requestMatchers("/api/v1/instructors/**").hasAnyAuthority(ADMIN, "INSTRUCTOR", GYM_OWNER)

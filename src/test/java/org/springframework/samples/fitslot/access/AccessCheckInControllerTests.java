@@ -93,7 +93,7 @@ class AccessCheckInControllerTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson(member)))
             .andExpect(status().isForbidden())
-            .andExpect(jsonPath("$.message").value("Access denied: no medical certificate registered"));
+            .andExpect(jsonPath("$.message").value("Access denied: No medical certificate registered"));
 
         assertThat(accessRecordRepository.findByMember_IdOrderByAccessDatetimeDesc(member.getId()))
             .isEmpty();
@@ -111,7 +111,7 @@ class AccessCheckInControllerTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson(member)))
             .andExpect(status().isForbidden())
-            .andExpect(jsonPath("$.message").value("Access denied: latest medical certificate has expired"));
+            .andExpect(jsonPath("$.message").value("Access denied: Medical certificate has expired"));
 
         assertThat(accessRecordRepository.findByMember_IdOrderByAccessDatetimeDesc(member.getId()))
             .isEmpty();
@@ -141,7 +141,7 @@ class AccessCheckInControllerTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson(member)))
             .andExpect(status().isForbidden())
-            .andExpect(jsonPath("$.message").value("Access denied: no active subscription"));
+            .andExpect(jsonPath("$.message").value("Access denied: No active subscription"));
 
         assertThat(accessRecordRepository.findByMember_IdOrderByAccessDatetimeDesc(member.getId()))
             .isEmpty();
@@ -160,7 +160,7 @@ class AccessCheckInControllerTests {
                 .content(requestJson(member)))
             .andExpect(status().isForbidden())
             .andExpect(jsonPath("$.message").value(
-                "Access denied: active subscription does not include this service"));
+                "Access denied: Subscription does not include this service"));
     }
 
     private Member createMember() {
