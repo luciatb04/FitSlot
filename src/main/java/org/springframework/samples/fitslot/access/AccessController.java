@@ -1,5 +1,7 @@
 package org.springframework.samples.fitslot.access;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,5 +22,12 @@ public class AccessController {
     @PostMapping("/check-in")
     public CheckInResponse checkIn(@Valid @RequestBody CheckInRequest request) {
         return accessService.checkIn(request.memberId(), request.serviceAccessed());
+    }
+
+    @GetMapping("/members/{id}/check-in-info")
+    public CheckInInfoResponse getCheckInInfo(
+            @PathVariable Integer id) {
+
+        return accessService.getCheckInInfo(id);
     }
 }
