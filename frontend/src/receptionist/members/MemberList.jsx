@@ -81,9 +81,6 @@ export default function MemberList() {
             <h1>Members</h1>
             <p className="fm-subtitle">View and manage members' contact details.</p>
           </div>
-          <Link to="/NewMember" className="fm-button fm-button-primary">
-            <span aria-hidden="true">＋</span> Register member
-          </Link>
         </header>
 
         <section className="fm-card" aria-label="Registered members">
