@@ -36,26 +36,26 @@ public class AccessService {
     private final MedicalCertificateService certificateService;
     private final MemberSubscriptionRepository subscriptionRepository;
     private final PaymentRecordRepository paymentRepository;
-    private final TimeBandConfigurationRepository timeBandRepository;
+    private TimeBandConfigurationRepository timeBandRepository = null;
     private final Clock clock;
 
     public AccessService(
-            AccessRecordRepository accessRecordRepository,
-            MemberService memberService,
-            MedicalCertificateService certificateService,
-            MemberSubscriptionRepository subscriptionRepository,
-            PaymentRecordRepository paymentRepository,
-            TimeBandConfigurationRepository timeBandRepository,
-            Clock clock) {
+        AccessRecordRepository accessRecordRepository,
+        MemberService memberService,
+        MedicalCertificateService certificateService,
+        MemberSubscriptionRepository subscriptionRepository,
+        PaymentRecordRepository paymentRepository,
+        TimeBandConfigurationRepository timeBandRepository,
+        Clock clock) {
 
-        this.accessRecordRepository = accessRecordRepository;
-        this.memberService = memberService;
-        this.certificateService = certificateService;
-        this.subscriptionRepository = subscriptionRepository;
-        this.paymentRepository = paymentRepository;
-        this.timeBandRepository = timeBandRepository;
-        this.clock = clock;
-    }
+    this.accessRecordRepository = accessRecordRepository;
+    this.memberService = memberService;
+    this.certificateService = certificateService;
+    this.subscriptionRepository = subscriptionRepository;
+    this.paymentRepository = paymentRepository;
+    this.timeBandRepository = timeBandRepository;
+    this.clock = clock;
+}
 
     @Transactional
     public CheckInResponse checkIn(
