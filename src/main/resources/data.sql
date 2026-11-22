@@ -26,6 +26,16 @@ INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (4, 
 INSERT INTO instructors(id, first_name,last_name,city, gym, user_id) VALUES (5, 'Henry', 'Stevens','Badajoz', 1, 18);
 
 INSERT INTO authorities(id,authority) VALUES (5,'MEMBER');
+INSERT INTO appusers(id,username,password,authority) VALUES (20,'member1','$2y$10$e.H24HBrSx3nvBr28dxii.qjeiw8ar.zrLqu6FWmQXOg1fXanL8Wq',5);
+INSERT INTO appusers(id,username,password,authority) VALUES (21,'member2','$2y$10$e.H24HBrSx3nvBr28dxii.qjeiw8ar.zrLqu6FWmQXOg1fXanL8Wq',5);
+INSERT INTO appusers(id,username,password,authority) VALUES (22,'member3','$2y$10$e.H24HBrSx3nvBr28dxii.qjeiw8ar.zrLqu6FWmQXOg1fXanL8Wq',5);
+INSERT INTO appusers(id,username,password,authority) VALUES (23,'member4','$2y$10$e.H24HBrSx3nvBr28dxii.qjeiw8ar.zrLqu6FWmQXOg1fXanL8Wq',5);
+INSERT INTO appusers(id,username,password,authority) VALUES (24,'member5','$2y$10$e.H24HBrSx3nvBr28dxii.qjeiw8ar.zrLqu6FWmQXOg1fXanL8Wq',5);
+INSERT INTO appusers(id,username,password,authority) VALUES (25,'member6','$2y$10$e.H24HBrSx3nvBr28dxii.qjeiw8ar.zrLqu6FWmQXOg1fXanL8Wq',5);
+INSERT INTO appusers(id,username,password,authority) VALUES (26,'member7','$2y$10$e.H24HBrSx3nvBr28dxii.qjeiw8ar.zrLqu6FWmQXOg1fXanL8Wq',5);
+INSERT INTO appusers(id,username,password,authority) VALUES (27,'member8','$2y$10$e.H24HBrSx3nvBr28dxii.qjeiw8ar.zrLqu6FWmQXOg1fXanL8Wq',5);
+INSERT INTO appusers(id,username,password,authority) VALUES (28,'member9','$2y$10$e.H24HBrSx3nvBr28dxii.qjeiw8ar.zrLqu6FWmQXOg1fXanL8Wq',5);
+INSERT INTO appusers(id,username,password,authority) VALUES (29,'member10','$2y$10$e.H24HBrSx3nvBr28dxii.qjeiw8ar.zrLqu6FWmQXOg1fXanL8Wq',5);
 
 INSERT INTO members (id, first_name, last_name, email, telephone, status)
 VALUES
