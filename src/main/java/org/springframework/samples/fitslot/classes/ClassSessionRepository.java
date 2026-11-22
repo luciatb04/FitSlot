@@ -15,6 +15,7 @@ import jakarta.persistence.LockModeType;
 public interface ClassSessionRepository
         extends CrudRepository<ClassSession, Integer> {
 
+
     List<ClassSession> findByDateOrderByStartTimeAsc(LocalDate date);
 
     @Query("""
@@ -32,7 +33,9 @@ public interface ClassSessionRepository
             @Param("endTime") LocalTime endTime,
             @Param("sessionId") Integer sessionId);
 
-    // Lock the class session during substitution
+
+    List<ClassSession> findAllByOrderByDateAscStartTimeAsc();
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT cs FROM ClassSession cs WHERE cs.id = :id")
     Optional<ClassSession> findByIdForUpdate(

@@ -11,13 +11,12 @@ import Register from "./auth/register";
 import SubstituteInstructor from "./gymOwner/classes/SubstituteInstructor";
 import Login from "./auth/login";
 import Logout from "./auth/logout";
+import ClassSchedule from "./member/ClassSchedule";
 import ClassSessionList from "./gymOwner/classes/ClassSessionList";
 import EditClassSession from "./gymOwner/classes/EditClassSession";
 import Dashboard from "./dashboard";
-import PlanList from "./public/plan";
 import tokenService from "./services/token.service";
 import MembershipServices from "./gymOwner/memberships/MembershipEditGymOwner";
-import SwaggerDocs from "./public/swagger";
 import GymsList from "./gymOwner/gymsList"
 import EditGym from "./gymOwner/gymEdit"
 import InstructorListGymOwner from "./gymOwner/instructors/InstructorListGymOwner";
@@ -53,7 +52,7 @@ function App() {
   let ownerRoutes = <></>;
   let userRoutes = <></>;
   let instructorRoutes = <></>;
-  let memberRoutes = <></>; 
+  let memberRoutes = <></>;
   let publicRoutes = <></>;
   let gymOwnerRoutes = <></>;
   let receptionistRoutes = <></>;
@@ -82,108 +81,109 @@ function App() {
     if (role === "MEMBER") {
       memberRoutes = (
         <>
-
+        <Route path="/class-schedule" element={<PrivateRoute><ClassSchedule /></PrivateRoute>} />
         </>
       );
     }
+
 
     if (role === "RECEPTIONIST") {
-      receptionistRoutes = (
-        <>
-          <Route
-            path="/NewMember"
-            element={
-              <PrivateRoute>
-                <MemberRegistration />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/members"
-            element={
-              <PrivateRoute>
-                <MemberList />
-              </PrivateRoute>
-            }
-          />
-
-          <Route path="/editMember" element={<Navigate to="/members" replace />} />
-
-          <Route
-            path="/members/:id/edit"
-            element={
-              <PrivateRoute>
-                <EditMember />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/medical-certificates"
-            element={
-              <PrivateRoute>
-                <MedicalCertificateManagement />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/check-in"
-            element={
-              <PrivateRoute>
-                <CheckIn />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/payments"
-            element={
-              <PrivateRoute>
-                <PaymentManagement />
-              </PrivateRoute>
-            }
-          />
-        </>
-      );
-    }
-
-  })
-  if (!jwt) {
-    publicRoutes = (
+    receptionistRoutes = (
       <>
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/NewMember"
+          element={
+            <PrivateRoute>
+              <MemberRegistration />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/members"
+          element={
+            <PrivateRoute>
+              <MemberList />
+            </PrivateRoute>
+          }
+        />
+
+        <Route path="/editMember" element={<Navigate to="/members" replace />} />
+
+        <Route
+          path="/members/:id/edit"
+          element={
+            <PrivateRoute>
+              <EditMember />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/medical-certificates"
+          element={
+            <PrivateRoute>
+              <MedicalCertificateManagement />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/check-in"
+          element={
+            <PrivateRoute>
+              <CheckIn />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/payments"
+          element={
+            <PrivateRoute>
+              <PaymentManagement />
+            </PrivateRoute>
+          }
+        />
       </>
-    )
-  } else {
-    userRoutes = (
-      <>
-        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-        <Route path="/logout" element={<Logout />} />
-        <Route path="/login" element={<Login />} />
-      </>
-    )
+    );
   }
 
-  return (
-    <div>
-      <ErrorBoundary FallbackComponent={ErrorFallback} >
-        <AppNavbar />
-        <Routes>
-          <Route path="/" exact={true} element={<Home />} />
-          {publicRoutes}
-          {userRoutes}
-          {memberRoutes}
-          {ownerRoutes}
-          {instructorRoutes}
-          {gymOwnerRoutes}
-          {receptionistRoutes}
-        </Routes>
-      </ErrorBoundary>
-    </div>
-  );
+})
+if (!jwt) {
+  publicRoutes = (
+    <>
+      <Route path="/register" element={<Register />} />
+      <Route path="/login" element={<Login />} />
+    </>
+  )
+} else {
+  userRoutes = (
+    <>
+      <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+      <Route path="/logout" element={<Logout />} />
+      <Route path="/login" element={<Login />} />
+    </>
+  )
+}
+
+return (
+  <div>
+    <ErrorBoundary FallbackComponent={ErrorFallback} >
+      <AppNavbar />
+      <Routes>
+        <Route path="/" exact={true} element={<Home />} />
+        {publicRoutes}
+        {userRoutes}
+        {memberRoutes}
+        {ownerRoutes}
+        {instructorRoutes}
+        {gymOwnerRoutes}
+        {receptionistRoutes}
+      </Routes>
+    </ErrorBoundary>
+  </div>
+);
 }
 
 export default App;

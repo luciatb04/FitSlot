@@ -6,6 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -21,11 +24,18 @@ public class ClassSessionController {
         this.classSessionService = classSessionService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ClassSessionResponse>> getClassSessions() {
-        return ResponseEntity.ok(
-                classSessionService.getClassSessionResponses());
-    }
+
+@GetMapping
+public ResponseEntity<List<ClassSessionResponse>> getClassSessions(
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        LocalDate date) {
+
+    return ResponseEntity.ok(
+            classSessionService.getClassSessionResponses(date)
+    );
+}
+
 
     @GetMapping("/{id}")
     public ResponseEntity<ClassSessionResponse> getClassSession(

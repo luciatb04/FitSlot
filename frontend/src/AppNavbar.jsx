@@ -28,9 +28,10 @@ function AppNavbar() {
         }
     }, [jwt]);
 
-    
+
     let instructorLinks = <></>;
     let ownerLinks = <></>;
+    let memberLinks = <></>;
     let userLinks = <></>;
     let rightLinks = <></>;
     let publicLinks = <></>;
@@ -63,14 +64,15 @@ function AppNavbar() {
             );
         }
 
+
         if (role === "MEMBER") {
-            userLinks = (
+            memberLinks = (
                 <>
                     <NavItem>
                         <NavLink
                             className="navbar-link-custom"
                             tag={Link}
-                            to="/classes"
+                            to="/class-schedule"
                         >
                             Classes
                         </NavLink>
@@ -98,6 +100,7 @@ function AppNavbar() {
                 </>
             );
         }
+
         if (role === "RECEPTIONIST") {
             receptionistLinks = (
                 <>
@@ -262,6 +265,7 @@ function AppNavbar() {
                         {ownerLinks}
                         {publicLinks}
                         {instructorLinks}
+                        {memberLinks}
                         {receptionistLinks}
                     </Nav>
 
