@@ -92,10 +92,27 @@ public class SecurityConfiguration {
 						// Otras reglas de controal de acceso:
 						.requestMatchers("/api/v1/gymOwners/**").hasAnyAuthority(ADMIN, GYM_OWNER)
 						.requestMatchers("/api/v1/visits/**").hasAnyAuthority(MEMBER, RECEPTIONIST)
+
 						.requestMatchers("/api/v1/classs").authenticated()
 						.requestMatchers("/api/v1/classs/**").authenticated()
-						.requestMatchers("/api/v1/class-sessions/**").hasAnyAuthority(GYM_OWNER, ADMIN)
-						.requestMatchers("/api/class-sessions/**").hasAnyAuthority(GYM_OWNER, ADMIN)
+
+						// Instructor substitution - Only gym owners
+						.requestMatchers(
+								HttpMethod.GET,
+								"/api/v1/class-sessions/*/available-instructors")
+						.hasAuthority(GYM_OWNER)
+
+						.requestMatchers(
+								HttpMethod.PUT,
+								"/api/v1/class-sessions/*/instructor")
+						.hasAuthority(GYM_OWNER)
+
+						// Other class session operations
+						.requestMatchers("/api/v1/class-sessions/**")
+						.hasAnyAuthority(GYM_OWNER, ADMIN)
+
+						.requestMatchers("/api/class-sessions/**")
+						.hasAnyAuthority(GYM_OWNER, ADMIN)
 
 						.requestMatchers("/api/v1/gyms/**")
 						.hasAnyAuthority(GYM_OWNER, ADMIN)

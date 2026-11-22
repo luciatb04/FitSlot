@@ -8,6 +8,7 @@ import MemberList from "./receptionist/members/MemberList";
 import PrivateRoute from "./privateRoute";
 import EditMember from "./receptionist/members/EditMember";
 import Register from "./auth/register";
+import SubstituteInstructor from "./gymOwner/classes/SubstituteInstructor";
 import Login from "./auth/login";
 import Logout from "./auth/logout";
 import ClassSessionList from "./gymOwner/classes/ClassSessionList";
@@ -57,7 +58,7 @@ function App() {
   let receptionistRoutes = <></>;
 
   roles.forEach((role) => {
-    
+
     if (role === "INSTRUCTOR") {
       instructorRoutes = (
         <>
@@ -72,8 +73,9 @@ function App() {
           <Route path="/instructors" exact={true} element={<PrivateRoute><InstructorListGymOwner /></PrivateRoute>} />
           <Route path="/instructors/:id" exact={true} element={<PrivateRoute><InstructorEditGymOwner /></PrivateRoute>} />
           <Route path="/membership-services" element={<PrivateRoute><MembershipServices /></PrivateRoute>} />
-          <Route path="/manage-classes" element={<PrivateRoute><ClassSessionList /></PrivateRoute> } />
-          <Route path="/manage-classes/:id/edit" element={ <PrivateRoute><EditClassSession /></PrivateRoute> } />
+          <Route path="/manage-classes" element={<PrivateRoute><ClassSessionList /></PrivateRoute>} />
+          <Route path="/manage-classes/:id/edit" element={<PrivateRoute><EditClassSession /></PrivateRoute>} />
+          <Route path="/manage-classes/:id/substitute" element={<PrivateRoute><SubstituteInstructor /></PrivateRoute>} />
         </>)
     }
 
@@ -167,7 +169,7 @@ function App() {
           <Route path="/docs" element={<SwaggerDocs />} />
           {publicRoutes}
           {userRoutes}
-          
+
           {ownerRoutes}
           {instructorRoutes}
           {gymOwnerRoutes}

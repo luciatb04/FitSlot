@@ -1,3 +1,4 @@
+
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { getClassSessions } from "../../services/classSessionService";
@@ -19,6 +20,14 @@ function getErrorMessage(error) {
   return "Unable to load classes. Please try again.";
 }
 
+function formatTime(value) {
+  return value?.slice(0, 5) || "--:--";
+}
+
+function formatRoom(room) {
+  return room?.replaceAll("_", " ") || "Not specified";
+}
+
 export default function ClassSessionList() {
   const [sessions, setSessions] = useState([]);
   const [search, setSearch] = useState("");
@@ -38,11 +47,16 @@ export default function ClassSessionList() {
         const data = await getClassSessions();
 
         if (active) {
-          setSessions(Array.isArray(data) ? data : []);
+          if (!Array.isArray(data)) {
+            throw new Error("Invalid class list response");
+          }
+
+          setSessions(data);
         }
       } catch (requestError) {
         if (active) {
           setError(getErrorMessage(requestError));
+          setSessions([]);
         }
       } finally {
         if (active) {
@@ -67,7 +81,8 @@ export default function ClassSessionList() {
           session.id,
           session.name,
           session.date,
-          session.room
+          session.room,
+          session.instructorName
         ]
           .filter((value) => value != null)
           .join(" ")
@@ -106,15 +121,18 @@ export default function ClassSessionList() {
             <h1>Class Management</h1>
 
             <p className="fm-subtitle">
-              View and manage gym class schedules and rooms.
+              View class schedules, assigned instructors,
+              and manage substitutions.
             </p>
           </div>
         </header>
 
         <section className="fm-card">
+
           <div className="fm-card-top">
             <div>
               <h2>Scheduled classes</h2>
+
               <p className="fm-muted">
                 {loading
                   ? "Loading..."
@@ -133,6 +151,7 @@ export default function ClassSessionList() {
           </div>
 
           <div className="fm-toolbar">
+
             <label className="fm-search-field">
               <span className="fm-sr-only">
                 Search classes
@@ -140,7 +159,7 @@ export default function ClassSessionList() {
 
               <input
                 type="search"
-                placeholder="Search by name, date, room or ID..."
+                placeholder="Search by class, instructor, date or room..."
                 value={search}
                 onChange={(event) => {
                   setSearch(event.target.value);
@@ -155,11 +174,17 @@ export default function ClassSessionList() {
           </div>
 
           {error && (
-            <div className="fm-alert fm-alert-error" role="alert">
+            <div
+              className="fm-alert fm-alert-error"
+              role="alert"
+            >
               {error}
+
               <button
                 type="button"
-                onClick={() => setReloadKey((key) => key + 1)}
+                onClick={() =>
+                  setReloadKey((key) => key + 1)
+                }
               >
                 Retry
               </button>
@@ -167,7 +192,9 @@ export default function ClassSessionList() {
           )}
 
           {loading ? (
-            <p className="fm-empty">Loading classes...</p>
+            <p className="fm-empty">
+              Loading classes...
+            </p>
           ) : !error && filteredSessions.length === 0 ? (
             <p className="fm-empty">
               {search
@@ -185,34 +212,114 @@ export default function ClassSessionList() {
                       <th>Time</th>
                       <th>Room</th>
                       <th>Capacity</th>
+                      <th>Instructor</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
 
                   <tbody>
-                    {pagedSessions.map((session) => (
-                      <tr key={session.id}>
-                        <td>{session.name}</td>
-                        <td>{session.date}</td>
-                        <td>
-                          {session.startTime?.slice(0, 5)}
-                          {" - "}
-                          {session.endTime?.slice(0, 5)}
-                        </td>
-                        <td>
-                          {session.room?.replaceAll("_", " ")}
-                        </td>
-                        <td>{session.maxCapacity}</td>
-                        <td>
-                          <Link
-                            to={`/manage-classes/${session.id}/edit`}
-                            className="fm-button fm-button-edit"
-                          >
-                            Edit
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
+                    {pagedSessions.map((session) => {
+                      // Distinguish missing API data from
+                      // a class that has no assigned instructor.
+                      const hasInstructorInfo =
+                        Object.prototype.hasOwnProperty.call(
+                          session,
+                          "instructorId"
+                        );
+
+                      const assigned =
+                        hasInstructorInfo &&
+                        session.instructorId != null;
+
+                      return (
+                        <tr key={session.id}>
+
+                          <td>
+                            <strong>{session.name}</strong>
+                          </td>
+
+                          <td>{session.date}</td>
+
+                          <td>
+                            {formatTime(session.startTime)}
+                            {" - "}
+                            {formatTime(session.endTime)}
+                          </td>
+
+                          <td>
+                            {formatRoom(session.room)}
+                          </td>
+
+                          <td>
+                            {session.maxCapacity}
+                          </td>
+
+                          {/* Instructor column */}
+                          <td>
+                            {!hasInstructorInfo ? (
+                              <span className="class-instructor-unknown">
+                                Instructor data unavailable
+                              </span>
+                            ) : assigned ? (
+                              <div className="class-instructor-cell">
+                                <span className="class-instructor-name">
+                                  {session.instructorName ||
+                                    `Instructor #${session.instructorId}`}
+                                </span>
+
+                                <span className="class-instructor-status assigned">
+                                  Assigned
+                                </span>
+                              </div>
+                            ) : (
+                              <div className="class-instructor-cell">
+                                <span className="class-instructor-warning">
+                                  An instructor must be assigned
+                                </span>
+
+                                <span className="class-instructor-status unassigned">
+                                  Unassigned
+                                </span>
+                              </div>
+                            )}
+                          </td>
+
+                          {/* Actions */}
+                          <td>
+                            <div className="class-session-actions">
+
+                              <Link
+                                to={`/manage-classes/${session.id}/edit`}
+                                className="fm-button fm-button-edit"
+                              >
+                                Edit
+                              </Link>
+
+                              {hasInstructorInfo ? (
+                                <Link
+                                  to={`/manage-classes/${session.id}/substitute`}
+                                  className={
+                                    "fm-button " +
+                                    (assigned
+                                      ? "class-button-substitute"
+                                      : "class-button-assign")
+                                  }
+                                >
+                                  {assigned
+                                    ? "Substitute Instructor"
+                                    : "Assign Instructor"}
+                                </Link>
+                              ) : (
+                                <span className="class-instructor-unknown">
+                                  Assignment unavailable
+                                </span>
+                              )}
+
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -226,7 +333,9 @@ export default function ClassSessionList() {
                   <button
                     type="button"
                     disabled={currentPage === 1}
-                    onClick={() => setPage(currentPage - 1)}
+                    onClick={() =>
+                      setPage(currentPage - 1)
+                    }
                   >
                     Previous
                   </button>
@@ -234,7 +343,9 @@ export default function ClassSessionList() {
                   <button
                     type="button"
                     disabled={currentPage === totalPages}
-                    onClick={() => setPage(currentPage + 1)}
+                    onClick={() =>
+                      setPage(currentPage + 1)
+                    }
                   >
                     Next
                   </button>

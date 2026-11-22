@@ -79,6 +79,98 @@
     padding-top: 16px;
 }
 
+/* Instructor information */
+
+.class-instructor-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 7px;
+    min-width: 150px;
+}
+
+.class-instructor-name {
+    color: #1e293b;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.class-instructor-status {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 9px;
+    border-radius: 20px;
+}
+
+.class-instructor-status.assigned {
+    color: #166534;
+    background: #dcfce7;
+}
+
+.class-instructor-status.unassigned {
+    color: #92400e;
+    background: #fef3c7;
+}
+
+.class-instructor-warning {
+    color: #dc2626;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.class-instructor-unknown {
+    color: #64748b;
+    font-size: 13px;
+}
+
+/* Class actions */
+
+.class-session-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.class-session-actions .fm-button {
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.class-button-substitute {
+    background: #ffffff;
+    border: 1px solid #2563eb;
+    color: #2563eb;
+}
+
+.class-button-substitute:hover {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.class-button-assign {
+    background: #2563eb;
+    color: #ffffff;
+    border: 1px solid #2563eb;
+}
+
+.class-button-assign:hover {
+    background: #1d4ed8;
+    color: #ffffff;
+}
+
+@media (max-width: 768px) {
+    .class-session-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .class-session-actions .fm-button {
+        text-align: center;
+    }
+}
+
 @media (max-width: 768px) {
     .fm-page:has(.class-info-grid) {
         padding: 24px 16px;

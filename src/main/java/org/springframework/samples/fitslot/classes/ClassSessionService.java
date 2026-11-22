@@ -22,14 +22,27 @@ public class ClassSessionService {
     public List<ClassSession> getClassSessions() {
         return StreamSupport.stream(
                 classSessionRepository.findAll().spliterator(), false)
-            .toList();
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ClassSessionResponse> getClassSessionResponses() {
+        return StreamSupport.stream(
+                classSessionRepository.findAll().spliterator(), false)
+                .map(ClassSessionResponse::fromEntity)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public ClassSessionResponse getClassSessionResponse(Integer id) {
+        return ClassSessionResponse.fromEntity(getClassSession(id));
     }
 
     @Transactional(readOnly = true)
     public ClassSession getClassSession(Integer sessionId) {
         return classSessionRepository.findById(sessionId)
-            .orElseThrow(() -> new IllegalArgumentException(
-                "Class session not found: " + sessionId));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Class session not found: " + sessionId));
     }
 
     @Transactional
@@ -41,32 +54,30 @@ public class ClassSessionService {
             Room newRoom) {
 
         ClassSession session = classSessionRepository.findById(sessionId)
-            .orElseThrow(() -> new IllegalArgumentException(
-                "Class session not found: " + sessionId));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Class session not found: " + sessionId));
 
         if (newDate == null || newStartTime == null ||
                 newEndTime == null || newRoom == null) {
             throw new IllegalArgumentException(
-                "Date, start time, end time and room are required");
+                    "Date, start time, end time and room are required");
         }
 
         if (!newStartTime.isBefore(newEndTime)) {
             throw new IllegalArgumentException(
-                "Start time must be before end time");
+                    "Start time must be before end time");
         }
 
-        List<ClassSession> conflicts =
-            classSessionRepository.findConflictingSessions(
+        List<ClassSession> conflicts = classSessionRepository.findConflictingSessions(
                 newRoom,
                 newDate,
                 newStartTime,
                 newEndTime,
-                sessionId
-            );
+                sessionId);
 
         if (!conflicts.isEmpty()) {
             throw new IllegalStateException(
-                "The room is already occupied at this time");
+                    "The room is already occupied at this time");
         }
 
         session.setDate(newDate);
