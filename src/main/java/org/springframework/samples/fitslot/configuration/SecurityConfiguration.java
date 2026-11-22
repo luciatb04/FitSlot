@@ -45,71 +45,87 @@ public class SecurityConfiguration {
 	private static final String GYM_OWNER = "GYM_OWNER";
 	private static final String MEMBER = "MEMBER";
 	private static final String RECEPTIONIST = "RECEPTIONIST";
-
+	private static final String INSTRUCTOR = "INSTRUCTOR";
 
 	@Bean
 	protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
 
 		http
-			.cors(withDefaults())
-			.csrf(AbstractHttpConfigurer::disable)
-			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.headers((headers) -> headers.frameOptions((frameOptions) -> frameOptions.disable()))
-			.exceptionHandling((exepciontHandling) -> exepciontHandling.authenticationEntryPoint(unauthorizedHandler))
+				.cors(withDefaults())
+				.csrf(AbstractHttpConfigurer::disable)
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.headers((headers) -> headers.frameOptions((frameOptions) -> frameOptions.disable()))
+				.exceptionHandling((exepciontHandling) -> exepciontHandling.authenticationEntryPoint(
+						unauthorizedHandler))
 
-            .authorizeHttpRequests(auth -> auth
-            // Recursos estáticos comunes (css, js, images, webjars…) públicos
-            .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-            // H2 Console accesible
-            .requestMatchers(PathRequest.toH2Console()).permitAll()
-            .requestMatchers("/h2-console/**").permitAll()
+				.authorizeHttpRequests(auth -> auth
+						// Recursos estáticos comunes (css, js, images, webjars…) públicos
+						.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+						// H2 Console accesible
+						.requestMatchers(PathRequest.toH2Console()).permitAll()
+						.requestMatchers("/h2-console/**").permitAll()
 
-            // Raíz / páginas públicas
-            .requestMatchers("/", "/oups").permitAll()
+						// Raíz / páginas públicas
+						.requestMatchers("/", "/oups").permitAll()
 
-            // Swagger / OpenAPI accesible
-            .requestMatchers(
-                "/v3/api-docs/**",
-                "/swagger-ui.html",
-                "/swagger-ui/**",
-                "/swagger-resources/**"
-            ).permitAll()
+						// Swagger / OpenAPI accesible
+						.requestMatchers(
+								"/v3/api-docs/**",
+								"/swagger-ui.html",
+								"/swagger-ui/**",
+								"/swagger-resources/**")
+						.permitAll()
 
-            // API pública
-            .requestMatchers("/api/v1/auth/**").permitAll()
-            .requestMatchers("/api/v1/developers").permitAll()
-            .requestMatchers("/api/v1/plan").permitAll()
-            .requestMatchers("/api/v1/gyms").permitAll()
-            .requestMatchers("/api/v1/developers").permitAll()
+						// API pública
+						.requestMatchers("/api/v1/auth/**").permitAll()
+						.requestMatchers("/api/v1/developers").permitAll()
+						.requestMatchers("/api/v1/plan").permitAll()
+						.requestMatchers("/api/v1/gyms").permitAll()
+						.requestMatchers("/api/v1/developers").permitAll()
 
-            // API restringida para administradores
-            .requestMatchers("/api/v1/users/**").hasAuthority(ADMIN)
-            .requestMatchers("/api/v1/gymOwners/all").hasAuthority(ADMIN)
-            .requestMatchers("/api/v1/classs/stats").hasAuthority(ADMIN)
-            .requestMatchers("/api/v1/instructors/stats").hasAuthority(ADMIN)
+						// API restringida para administradores
+						.requestMatchers("/api/v1/users/**").hasAuthority(ADMIN)
+						.requestMatchers("/api/v1/gymOwners/all").hasAuthority(ADMIN)
+						.requestMatchers("/api/v1/classs/stats").hasAuthority(ADMIN)
+						.requestMatchers("/api/v1/instructors/stats").hasAuthority(ADMIN)
 
-			// Otras reglas de controal de acceso:
-			.requestMatchers("/api/v1/gymOwners/**").hasAnyAuthority(ADMIN, GYM_OWNER)
-			.requestMatchers("/api/v1/visits/**").hasAnyAuthority(MEMBER, RECEPTIONIST)
-			.requestMatchers("/api/v1/classs").authenticated()
-			.requestMatchers("/api/v1/classs/**").authenticated()
-			.requestMatchers("/api/v1/class-sessions/**").hasAnyAuthority(GYM_OWNER, ADMIN)
-			.requestMatchers("/api/class-sessions/**").hasAnyAuthority(GYM_OWNER, ADMIN)
-			.requestMatchers("/api/v1/gyms/**").hasAnyAuthority(GYM_OWNER, ADMIN)
-			.requestMatchers(HttpMethod.GET, "/api/v1/instructors/**").authenticated()
-			.requestMatchers("/api/v1/instructors/**").hasAnyAuthority(ADMIN, "INSTRUCTOR", GYM_OWNER)
+						// Otras reglas de controal de acceso:
+						.requestMatchers("/api/v1/gymOwners/**").hasAnyAuthority(ADMIN, GYM_OWNER)
+						.requestMatchers("/api/v1/visits/**").hasAnyAuthority(MEMBER, RECEPTIONIST)
+						.requestMatchers("/api/v1/classs").authenticated()
+						.requestMatchers("/api/v1/classs/**").authenticated()
+						.requestMatchers("/api/v1/class-sessions/**").hasAnyAuthority(GYM_OWNER, ADMIN)
+						.requestMatchers("/api/class-sessions/**").hasAnyAuthority(GYM_OWNER, ADMIN)
 
-			.requestMatchers("/api/v1/members/**").hasAnyAuthority(ADMIN, RECEPTIONIST)
-			.requestMatchers("/api/v1/access/**").hasAnyAuthority(ADMIN, RECEPTIONIST)
-			.requestMatchers("/api/v1/payments/**").hasAnyAuthority(ADMIN, RECEPTIONIST)
-			.requestMatchers("/api/v1/members/*/medical-certificates/**").hasAnyAuthority(ADMIN, RECEPTIONIST)
-			.requestMatchers(HttpMethod.GET, "/api/membership-tiers/**").hasAnyAuthority(GYM_OWNER, ADMIN, RECEPTIONIST)
-			.requestMatchers("/api/membership-tiers/**").hasAuthority(GYM_OWNER)
-			.requestMatchers("/api/time-bands/**").hasAuthority(GYM_OWNER)
-            // El resto denegado
-             .anyRequest().denyAll())
+						.requestMatchers("/api/v1/gyms/**")
+						.hasAnyAuthority(GYM_OWNER, ADMIN)
 
-			.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+						// Only instructors can manage their own availability
+						.requestMatchers(
+								"/api/v1/instructors/me/availability",
+								"/api/v1/instructors/me/availability/**")
+						.hasAuthority(INSTRUCTOR)
+
+						// Other instructor endpoints
+						.requestMatchers(HttpMethod.GET, "/api/v1/instructors/**")
+						.authenticated()
+
+						.requestMatchers("/api/v1/instructors/**")
+						.hasAnyAuthority(ADMIN, INSTRUCTOR, GYM_OWNER)
+
+						.requestMatchers("/api/v1/members/**").hasAnyAuthority(ADMIN, RECEPTIONIST)
+						.requestMatchers("/api/v1/access/**").hasAnyAuthority(ADMIN, RECEPTIONIST)
+						.requestMatchers("/api/v1/payments/**").hasAnyAuthority(ADMIN, RECEPTIONIST)
+						.requestMatchers("/api/v1/members/*/medical-certificates/**")
+						.hasAnyAuthority(ADMIN, RECEPTIONIST)
+						.requestMatchers(HttpMethod.GET, "/api/membership-tiers/**")
+						.hasAnyAuthority(GYM_OWNER, ADMIN, RECEPTIONIST)
+						.requestMatchers("/api/membership-tiers/**").hasAuthority(GYM_OWNER)
+						.requestMatchers("/api/time-bands/**").hasAuthority(GYM_OWNER)
+						// El resto denegado
+						.anyRequest().denyAll())
+
+				.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 
@@ -119,16 +135,13 @@ public class SecurityConfiguration {
 	}
 
 	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
 		return config.getAuthenticationManager();
 	}
-
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-
-
 
 }
