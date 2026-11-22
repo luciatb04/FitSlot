@@ -53,6 +53,7 @@ function App() {
   let ownerRoutes = <></>;
   let userRoutes = <></>;
   let instructorRoutes = <></>;
+  let memberRoutes = <></>; 
   let publicRoutes = <></>;
   let gymOwnerRoutes = <></>;
   let receptionistRoutes = <></>;
@@ -77,6 +78,13 @@ function App() {
           <Route path="/manage-classes/:id/edit" element={<PrivateRoute><EditClassSession /></PrivateRoute>} />
           <Route path="/manage-classes/:id/substitute" element={<PrivateRoute><SubstituteInstructor /></PrivateRoute>} />
         </>)
+    }
+    if (role === "MEMBER") {
+      memberRoutes = (
+        <>
+
+        </>
+      );
     }
 
     if (role === "RECEPTIONIST") {
@@ -165,11 +173,9 @@ function App() {
         <AppNavbar />
         <Routes>
           <Route path="/" exact={true} element={<Home />} />
-          <Route path="/plans" element={<PlanList />} />
-          <Route path="/docs" element={<SwaggerDocs />} />
           {publicRoutes}
           {userRoutes}
-
+          {memberRoutes}
           {ownerRoutes}
           {instructorRoutes}
           {gymOwnerRoutes}
