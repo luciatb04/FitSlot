@@ -1,4 +1,4 @@
-package org.springframework.samples.fitslot.classes;
+package org.springframework.samples.fitslot.classes.InstructorSubstitution;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.security.access.AccessDeniedException;
 import jakarta.validation.Valid;
 
 @RestController
@@ -23,12 +23,10 @@ public class InstructorSubstitutionController {
     }
 
     @GetMapping("/{id}/available-instructors")
-    public ResponseEntity<List<AvailableInstructorResponse>>
-            getAvailableInstructors(@PathVariable Integer id) {
+    public ResponseEntity<List<AvailableInstructorResponse>> getAvailableInstructors(@PathVariable Integer id) {
 
         return ResponseEntity.ok(
-            service.getAvailableInstructors(id)
-        );
+                service.getAvailableInstructors(id));
     }
 
     @PutMapping("/{id}/instructor")
@@ -46,7 +44,7 @@ public class InstructorSubstitutionController {
             NoSuchElementException ex) {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(new ErrorResponse(ex.getMessage()));
+                .body(new ErrorResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -54,7 +52,7 @@ public class InstructorSubstitutionController {
             IllegalArgumentException ex) {
 
         return ResponseEntity.badRequest()
-            .body(new ErrorResponse(ex.getMessage()));
+                .body(new ErrorResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(IllegalStateException.class)
@@ -62,8 +60,20 @@ public class InstructorSubstitutionController {
             IllegalStateException ex) {
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
-            .body(new ErrorResponse(ex.getMessage()));
+                .body(new ErrorResponse(ex.getMessage()));
     }
 
-    public record ErrorResponse(String message) {}
+    public record ErrorResponse(String message) {
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(
+            AccessDeniedException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse(
+                        "You are not authorized to manage this gym"));
+    }
+
 }

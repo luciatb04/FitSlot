@@ -1,9 +1,12 @@
-package org.springframework.samples.fitslot.classes;
+package org.springframework.samples.fitslot.classes.InstructorSubstitution;
 
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+
+import org.springframework.samples.fitslot.classes.ClassSession;
+import org.springframework.samples.fitslot.classes.ClassSessionRepository;
 import org.springframework.samples.fitslot.gymowner.GymOwnerRepository;
 import org.springframework.samples.fitslot.user.UserService;
 import org.springframework.security.access.AccessDeniedException;
@@ -88,9 +91,10 @@ public class InstructorSubstitutionService {
         Integer gymId = getSessionGymId(session);
         validateGymOwnership(gymId);
 
-        if (Objects.equals(
-                session.getInstructor().getId(),
-                newInstructorId)) {
+        if (session.getInstructor() != null &&
+                Objects.equals(
+                        session.getInstructor().getId(),
+                        newInstructorId)) {
 
             throw new IllegalArgumentException(
                     "The selected instructor is already assigned");
@@ -131,27 +135,24 @@ public class InstructorSubstitutionService {
     }
 
     private Integer getSessionGymId(ClassSession session) {
-
-        if (session.getInstructor() == null ||
-                session.getInstructor().getGym() == null) {
-
+        if (session.getGym() == null) {
             throw new IllegalStateException(
                     "The class has no associated gym");
         }
 
-        return session.getInstructor().getGym().getId();
+        return session.getGym().getId();
     }
 
     private boolean isCurrentInstructor(
             ClassSession session,
             Instructor candidate) {
 
-        return Objects.equals(
-                session.getInstructor().getId(),
-                candidate.getId());
+        return session.getInstructor() != null &&
+                Objects.equals(
+                        session.getInstructor().getId(),
+                        candidate.getId());
     }
 
-    // Check whether the instructor covers the entire class period
     private boolean coversClassSchedule(
             Instructor instructor,
             ClassSession session) {

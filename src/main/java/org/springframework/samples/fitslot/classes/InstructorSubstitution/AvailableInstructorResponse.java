@@ -1,5 +1,5 @@
 
-package org.springframework.samples.fitslot.classes;
+package org.springframework.samples.fitslot.classes.InstructorSubstitution;
 
 import org.springframework.samples.fitslot.instructor.Instructor;
 

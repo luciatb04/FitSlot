@@ -1,4 +1,4 @@
-package org.springframework.samples.fitslot.classes;
+package org.springframework.samples.fitslot.classes.InstructorSubstitution;
 
 import jakarta.validation.constraints.NotNull;
 

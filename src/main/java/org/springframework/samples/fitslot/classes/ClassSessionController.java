@@ -11,7 +11,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping({"/api/v1/class-sessions", "/api/class-sessions"})
+@RequestMapping({ "/api/v1/class-sessions", "/api/class-sessions" })
 public class ClassSessionController {
 
     private final ClassSessionService classSessionService;
@@ -22,20 +22,20 @@ public class ClassSessionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ClassSession>> getClassSessions() {
+    public ResponseEntity<List<ClassSessionResponse>> getClassSessions() {
         return ResponseEntity.ok(
-            classSessionService.getClassSessions());
+                classSessionService.getClassSessionResponses());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ClassSession> getClassSession(
+    public ResponseEntity<ClassSessionResponse> getClassSession(
             @PathVariable Integer id) {
         try {
             return ResponseEntity.ok(
-                classSessionService.getClassSession(id));
+                    classSessionService.getClassSessionResponse(id));
         } catch (IllegalArgumentException ex) {
             throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND, ex.getMessage());
+                    HttpStatus.NOT_FOUND, ex.getMessage());
         }
     }
 
@@ -46,22 +46,21 @@ public class ClassSessionController {
 
         try {
             classSessionService.updateClassSession(
-                id,
-                request.date(),
-                request.startTime(),
-                request.endTime(),
-                request.room()
-            );
+                    id,
+                    request.date(),
+                    request.startTime(),
+                    request.endTime(),
+                    request.room());
 
             return ResponseEntity.noContent().build();
 
         } catch (IllegalArgumentException ex) {
             throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST, ex.getMessage());
+                    HttpStatus.BAD_REQUEST, ex.getMessage());
 
         } catch (IllegalStateException ex) {
             throw new ResponseStatusException(
-                HttpStatus.CONFLICT, ex.getMessage());
+                    HttpStatus.CONFLICT, ex.getMessage());
         }
     }
 }

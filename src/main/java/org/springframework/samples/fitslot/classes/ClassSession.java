@@ -3,6 +3,7 @@ package org.springframework.samples.fitslot.classes;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import org.springframework.samples.fitslot.gym.Gym;
 import org.springframework.samples.fitslot.instructor.Instructor;
 import org.springframework.samples.fitslot.model.BaseEntity;
 
@@ -58,4 +59,8 @@ public class ClassSession extends BaseEntity {
     @Min(1)
     @Column(name = "max_capacity", nullable = false)
     private Integer maxCapacity;
+    
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "gym_id", nullable = false)
+    private Gym gym;
 }
