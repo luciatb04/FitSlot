@@ -25,6 +25,7 @@ import MemberRegistration from "./receptionist/members/MemberRegistration";
 import MedicalCertificateManagement from "./receptionist/medicalCertificates/MedicalCertificateManagement";
 import CheckIn from "./receptionist/checkIn/CheckIn";
 import PaymentManagement from "./receptionist/payments/PaymentManagement";
+import AvailabilityInstructor from "./instructor/availability/InstructorAvailability";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -60,6 +61,7 @@ function App() {
     if (role === "INSTRUCTOR") {
       instructorRoutes = (
         <>
+          <Route path="/availability" element={<PrivateRoute><AvailabilityInstructor /></PrivateRoute>} />
         </>)
     }
     if (role === "GYM_OWNER") {

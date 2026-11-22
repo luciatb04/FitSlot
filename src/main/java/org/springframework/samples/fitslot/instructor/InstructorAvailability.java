@@ -1,6 +1,7 @@
 package org.springframework.samples.fitslot.instructor;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 import org.springframework.samples.fitslot.model.BaseEntity;
@@ -28,9 +29,8 @@ public class InstructorAvailability extends BaseEntity {
     private Instructor instructor;
 
     @NotNull
-    @Column(name = "day_of_week", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private DayOfWeek dayOfWeek;
+    @Column(name = "date", nullable = false)
+    private LocalDate date;
 
     @NotNull
     @Column(name = "start_time", nullable = false)
