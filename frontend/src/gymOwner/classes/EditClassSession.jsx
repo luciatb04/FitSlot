@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import "./ClassSession.css";
 import {
   getClassSession,
+  updateClassCapacity,
   updateClassSession
 } from "../../services/classSessionService";
 import "../../receptionist/members/memberRegistration.css";
@@ -62,13 +63,17 @@ export default function EditClassSession() {
 
   const [session, setSession] = useState(null);
   const [form, setForm] = useState(INITIAL_FORM);
+  const [capacityValue, setCapacityValue] = useState("");
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [savingCapacity, setSavingCapacity] = useState(false);
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [validationError, setValidationError] = useState("");
+  const [capacityError, setCapacityError] = useState("");
+  const [capacitySuccess, setCapacitySuccess] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -91,6 +96,7 @@ export default function EditClassSession() {
           endTime: formatTime(data.endTime),
           room: data.room ?? ""
         });
+        setCapacityValue(String(data.maxCapacity ?? ""));
       } catch (requestError) {
         if (active) {
           setError(getErrorMessage(requestError));
@@ -176,6 +182,58 @@ export default function EditClassSession() {
       setError(getErrorMessage(requestError));
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleCapacitySubmit(event) {
+    event.preventDefault();
+    if (savingCapacity) return;
+
+    const newCapacity = Number(capacityValue);
+    if (!Number.isInteger(newCapacity) || newCapacity < 1) {
+      setCapacityError("Capacity must be a positive whole number.");
+      setCapacitySuccess("");
+      return;
+    }
+
+    if (newCapacity < (session.confirmedBookings ?? 0)) {
+      setCapacityError(
+        `Capacity cannot be lower than the ${session.confirmedBookings} confirmed bookings.`
+      );
+      setCapacitySuccess("");
+      return;
+    }
+
+    setSavingCapacity(true);
+    setCapacityError("");
+    setCapacitySuccess("");
+
+    try {
+      const updatedSession = await updateClassCapacity(id, {
+        maxCapacity: newCapacity
+      });
+      setSession(updatedSession);
+      setCapacityValue(String(updatedSession.maxCapacity));
+      setCapacitySuccess("Class capacity updated successfully.");
+    } catch (requestError) {
+      const status = requestError.response?.status;
+      if (status === 400) {
+        setCapacityError("Capacity must be a positive whole number.");
+      } else if (status === 401) {
+        setCapacityError("Your session has expired. Please sign in again.");
+      } else if (status === 403) {
+        setCapacityError("You do not have permission to edit this class.");
+      } else if (status === 404) {
+        setCapacityError("The selected class no longer exists.");
+      } else if (status === 409) {
+        setCapacityError(
+          "Capacity cannot be lower than the number of confirmed bookings."
+        );
+      } else {
+        setCapacityError("Unable to update capacity. Please try again.");
+      }
+    } finally {
+      setSavingCapacity(false);
     }
   }
 
@@ -282,7 +340,74 @@ export default function EditClassSession() {
               <strong>Maximum capacity</strong>
               <p>{session.maxCapacity ?? "—"}</p>
             </div>
+
+            <div>
+              <strong>Confirmed bookings</strong>
+              <p>{session.confirmedBookings ?? "—"}</p>
+            </div>
           </div>
+        </section>
+
+        <section
+          className="fm-card"
+          aria-label="Update class capacity"
+        >
+          <div className="fm-card-top">
+            <div>
+              <h2>Update maximum capacity</h2>
+              <p className="fm-muted">
+                Currently booked: {session.confirmedBookings ?? "—"} of{" "}
+                {session.maxCapacity ?? "—"} places. Capacity cannot be
+                reduced below confirmed bookings.
+              </p>
+            </div>
+          </div>
+
+          {capacitySuccess && (
+            <div className="fm-alert fm-alert-success" role="status">
+              {capacitySuccess}
+            </div>
+          )}
+
+          {capacityError && (
+            <div className="fm-alert fm-alert-error" role="alert">
+              {capacityError}
+            </div>
+          )}
+
+          <form onSubmit={handleCapacitySubmit}>
+            <div className="class-form-grid">
+              <div className="class-form-field">
+                <label htmlFor="class-capacity">
+                  New maximum capacity
+                </label>
+                <input
+                  id="class-capacity"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={capacityValue}
+                  onChange={(event) => {
+                    setCapacityValue(event.target.value);
+                    setCapacityError("");
+                    setCapacitySuccess("");
+                  }}
+                  disabled={savingCapacity}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="class-form-actions">
+              <button
+                type="submit"
+                className="fm-button fm-button-edit"
+                disabled={savingCapacity}
+              >
+                {savingCapacity ? "Updating..." : "Update capacity"}
+              </button>
+            </div>
+          </form>
         </section>
 
         <section

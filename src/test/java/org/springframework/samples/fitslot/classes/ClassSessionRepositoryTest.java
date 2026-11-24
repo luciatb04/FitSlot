@@ -79,6 +79,7 @@ class ClassSessionRepositoryTests {
                         DATE,
                         LocalTime.of(10, 30),
                         LocalTime.of(11, 30),
+                        existing.getGym().getId(),
                         -1);
 
         assertEquals(1, conflicts.size());
@@ -90,7 +91,7 @@ class ClassSessionRepositoryTests {
     @Test
     void shouldAllowAdjacentSessions() {
 
-        createSession(
+        ClassSession existing = createSession(
                 Room.CLASS_ROOM_1,
                 LocalTime.of(10, 0),
                 LocalTime.of(11, 0));
@@ -101,6 +102,7 @@ class ClassSessionRepositoryTests {
                         DATE,
                         LocalTime.of(11, 0),
                         LocalTime.of(12, 0),
+                        existing.getGym().getId(),
                         -1);
 
         assertTrue(conflicts.isEmpty());
@@ -109,7 +111,7 @@ class ClassSessionRepositoryTests {
     @Test
     void shouldAllowDifferentRoomsAtSameTime() {
 
-        createSession(
+        ClassSession existing = createSession(
                 Room.CLASS_ROOM_1,
                 LocalTime.of(10, 0),
                 LocalTime.of(11, 0));
@@ -120,6 +122,7 @@ class ClassSessionRepositoryTests {
                         DATE,
                         LocalTime.of(10, 0),
                         LocalTime.of(11, 0),
+                        existing.getGym().getId(),
                         -1);
 
         assertTrue(conflicts.isEmpty());
@@ -139,7 +142,45 @@ class ClassSessionRepositoryTests {
                         DATE,
                         LocalTime.of(10, 0),
                         LocalTime.of(11, 0),
+                        existing.getGym().getId(),
                         existing.getId());
+
+        assertTrue(conflicts.isEmpty());
+    }
+
+    @Test
+    void shouldDetectConflictsWhenCreatingNewSchedule() {
+        ClassSession existing = createSession(
+                Room.CLASS_ROOM_1,
+                LocalTime.of(10, 0),
+                LocalTime.of(11, 0));
+
+        List<ClassSession> conflicts =
+                repository.findConflictingSessionsForNewSchedule(
+                        Room.CLASS_ROOM_1,
+                        DATE,
+                        LocalTime.of(10, 30),
+                        LocalTime.of(11, 30),
+                        existing.getGym().getId());
+
+        assertEquals(1, conflicts.size());
+    }
+
+    @Test
+    void shouldAllowSameRoomAndTimeInDifferentGyms() {
+        createSession(
+                Room.CLASS_ROOM_1,
+                LocalTime.of(10, 0),
+                LocalTime.of(11, 0));
+        Gym otherGym = createGym();
+
+        List<ClassSession> conflicts =
+                repository.findConflictingSessionsForNewSchedule(
+                        Room.CLASS_ROOM_1,
+                        DATE,
+                        LocalTime.of(10, 30),
+                        LocalTime.of(11, 30),
+                        otherGym.getId());
 
         assertTrue(conflicts.isEmpty());
     }

@@ -49,6 +49,29 @@ public ResponseEntity<List<ClassSessionResponse>> getClassSessions(
         }
     }
 
+    @PostMapping
+    public ResponseEntity<ClassSessionResponse> createClassSession(
+            @Valid @RequestBody CreateClassSessionRequest request) {
+
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(
+                    classSessionService.createClassSession(
+                            request.name(),
+                            request.date(),
+                            request.startTime(),
+                            request.endTime(),
+                            request.room(),
+                            request.maxCapacity(),
+                            request.gymId()));
+        } catch (IllegalArgumentException ex) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, ex.getMessage());
+        } catch (IllegalStateException ex) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, ex.getMessage());
+        }
+    }
+
     @PutMapping("/{id}/schedule")
     public ResponseEntity<Void> updateSchedule(
             @PathVariable Integer id,
@@ -68,6 +91,40 @@ public ResponseEntity<List<ClassSessionResponse>> getClassSessions(
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, ex.getMessage());
 
+        } catch (IllegalStateException ex) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, ex.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}/capacity")
+    public ResponseEntity<ClassSessionResponse> updateCapacity(
+            @PathVariable Integer id,
+            @Valid @RequestBody UpdateClassCapacityRequest request) {
+
+        try {
+            return ResponseEntity.ok(
+                    classSessionService.updateClassCapacity(
+                            id, request.maxCapacity()));
+        } catch (IllegalArgumentException ex) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, ex.getMessage());
+        } catch (IllegalStateException ex) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, ex.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteClassSession(
+            @PathVariable Integer id) {
+
+        try {
+            classSessionService.deleteClassSession(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException ex) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, ex.getMessage());
         } catch (IllegalStateException ex) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT, ex.getMessage());

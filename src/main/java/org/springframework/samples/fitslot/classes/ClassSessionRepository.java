@@ -45,6 +45,7 @@ public interface ClassSessionRepository
             SELECT cs FROM ClassSession cs
             WHERE cs.room = :room
             AND cs.date = :date
+            AND cs.gym.id = :gymId
             AND cs.id <> :sessionId
             AND cs.startTime < :endTime
             AND cs.endTime > :startTime
@@ -54,5 +55,21 @@ public interface ClassSessionRepository
             @Param("date") LocalDate date,
             @Param("startTime") LocalTime startTime,
             @Param("endTime") LocalTime endTime,
+            @Param("gymId") Integer gymId,
             @Param("sessionId") Integer sessionId);
+
+    @Query("""
+            SELECT cs FROM ClassSession cs
+            WHERE cs.room = :room
+            AND cs.date = :date
+            AND cs.gym.id = :gymId
+            AND cs.startTime < :endTime
+            AND cs.endTime > :startTime
+            """)
+    List<ClassSession> findConflictingSessionsForNewSchedule(
+            @Param("room") Room room,
+            @Param("date") LocalDate date,
+            @Param("startTime") LocalTime startTime,
+            @Param("endTime") LocalTime endTime,
+            @Param("gymId") Integer gymId);
 }

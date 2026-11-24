@@ -160,6 +160,17 @@
     color: #ffffff;
 }
 
+.class-button-delete {
+    background: #fff;
+    border: 1px solid #dc2626;
+    color: #b91c1c;
+}
+
+.class-button-delete:hover {
+    background: #fef2f2;
+    color: #991b1b;
+}
+
 @media (max-width: 768px) {
     .class-session-actions {
         flex-direction: column;

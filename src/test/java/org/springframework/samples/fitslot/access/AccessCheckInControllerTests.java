@@ -1,6 +1,7 @@
 package org.springframework.samples.fitslot.access;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,6 +41,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 class AccessCheckInControllerTests {
 
     private static final String CHECK_IN_URL = "/api/v1/access/check-in";
+    private static final String VALIDATE_ACCESS_URL = "/api/v1/access/validate";
+    private static final String CHECK_IN_INFO_URL = "/api/v1/access/members/%d/check-in-info";
 
     @Autowired
     private MockMvc mockMvc;
@@ -118,6 +121,48 @@ class AccessCheckInControllerTests {
     }
 
     @Test
+    @WithMockUser(authorities = "RECEPTIONIST")
+    void reportsValidMedicalCertificateStatusAndExpiryDate() throws Exception {
+        Member member = createMember();
+        LocalDate today = LocalDate.now();
+        LocalDate expiryDate = today.plusDays(20);
+        createCertificate(member, today.minusDays(10), expiryDate);
+
+        mockMvc.perform(get(CHECK_IN_INFO_URL.formatted(member.getId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.medicalCertificate.validity").value("VALID"))
+            .andExpect(jsonPath("$.medicalCertificate.expiryDate").value(expiryDate.toString()))
+            .andExpect(jsonPath("$.medicalCertificate.denialReason").doesNotExist());
+    }
+
+    @Test
+    @WithMockUser(authorities = "RECEPTIONIST")
+    void reportsExpiredMedicalCertificateWithItsDenialReason() throws Exception {
+        Member member = createMember();
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        createCertificate(member, yesterday.minusDays(20), yesterday);
+
+        mockMvc.perform(get(CHECK_IN_INFO_URL.formatted(member.getId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.medicalCertificate.validity").value("EXPIRED"))
+            .andExpect(jsonPath("$.medicalCertificate.denialReason")
+                    .value("Medical certificate has expired"));
+    }
+
+    @Test
+    @WithMockUser(authorities = "RECEPTIONIST")
+    void reportsMissingMedicalCertificateWithItsDenialReason() throws Exception {
+        Member member = createMember();
+
+        mockMvc.perform(get(CHECK_IN_INFO_URL.formatted(member.getId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.medicalCertificate.validity").value("MISSING"))
+            .andExpect(jsonPath("$.medicalCertificate.expiryDate").doesNotExist())
+            .andExpect(jsonPath("$.medicalCertificate.denialReason")
+                    .value("No medical certificate registered"));
+    }
+
+    @Test
     @WithMockUser(authorities = "MEMBER")
     void deniesCheckInFromMembers() throws Exception {
         Member member = createMember();
@@ -149,6 +194,164 @@ class AccessCheckInControllerTests {
 
     @Test
     @WithMockUser(authorities = "RECEPTIONIST")
+    void deniesCheckInWithAnExplicitExpiredSubscriptionReason() throws Exception {
+        Member member = createMember();
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        createCertificate(member, yesterday.minusDays(30), yesterday.plusDays(30));
+        createPaidSubscription(
+                member, yesterday.minusDays(30), yesterday, ServiceType.WEIGHT_ROOM);
+
+        mockMvc.perform(post(CHECK_IN_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson(member)))
+            .andExpect(status().isForbidden())
+            .andExpect(jsonPath("$.message")
+                    .value("Access denied: Subscription expired on " + yesterday));
+    }
+
+    @Test
+    @WithMockUser(authorities = "RECEPTIONIST")
+    void deniesCheckInWithAnExplicitFrozenSubscriptionReason() throws Exception {
+        Member member = createMember();
+        LocalDate today = LocalDate.now();
+        createCertificate(member, today.minusDays(30), today.plusDays(30));
+        MemberSubscription subscription = createPaidSubscription(
+                member, today.minusDays(1), today.plusDays(28), ServiceType.WEIGHT_ROOM);
+        subscription.setStatus(SubscriptionStatus.FROZEN);
+        subscriptionRepository.save(subscription);
+
+        mockMvc.perform(post(CHECK_IN_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson(member)))
+            .andExpect(status().isForbidden())
+            .andExpect(jsonPath("$.message").value("Access denied: Subscription is frozen"));
+    }
+
+    @Test
+    @WithMockUser(authorities = "RECEPTIONIST")
+    void reportsAnActivePaidSubscriptionWithItsExpiryDate() throws Exception {
+        Member member = createMember();
+        LocalDate today = LocalDate.now();
+        MemberSubscription subscription = createPaidSubscription(
+                member, today.minusDays(1), today.plusDays(28), ServiceType.WEIGHT_ROOM);
+
+        mockMvc.perform(get(CHECK_IN_INFO_URL.formatted(member.getId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.checkedAt").isNotEmpty())
+            .andExpect(jsonPath("$.subscriptions[0].id").value(subscription.getId()))
+            .andExpect(jsonPath("$.subscriptions[0].status").value("ACTIVE"))
+            .andExpect(jsonPath("$.subscriptions[0].verificationStatus").value("ACTIVE"))
+            .andExpect(jsonPath("$.subscriptions[0].denialReason").doesNotExist())
+            .andExpect(jsonPath("$.subscriptions[0].endDate").value(today.plusDays(28).toString()))
+            .andExpect(jsonPath("$.subscriptions[0].startTime").isNotEmpty())
+            .andExpect(jsonPath("$.subscriptions[0].endTime").isNotEmpty())
+            .andExpect(jsonPath("$.subscriptions[0].timeSlotAllowed").exists());
+    }
+
+    @Test
+    @WithMockUser(authorities = "RECEPTIONIST")
+    void reportsAnActiveSubscriptionAsExpiredWhenItsEndDateHasPassed() throws Exception {
+        Member member = createMember();
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        createPaidSubscription(
+                member, yesterday.minusDays(30), yesterday, ServiceType.WEIGHT_ROOM);
+
+        mockMvc.perform(get(CHECK_IN_INFO_URL.formatted(member.getId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.subscriptions[0].status").value("ACTIVE"))
+            .andExpect(jsonPath("$.subscriptions[0].verificationStatus").value("EXPIRED"))
+            .andExpect(jsonPath("$.subscriptions[0].denialReason")
+                    .value("Subscription expired on " + yesterday));
+    }
+
+    @Test
+    @WithMockUser(authorities = "RECEPTIONIST")
+    void reportsFrozenSubscriptionsAsDenied() throws Exception {
+        Member member = createMember();
+        LocalDate today = LocalDate.now();
+        MemberSubscription subscription = createPaidSubscription(
+                member, today.minusDays(1), today.plusDays(28), ServiceType.WEIGHT_ROOM);
+        subscription.setStatus(SubscriptionStatus.FROZEN);
+        subscriptionRepository.save(subscription);
+
+        mockMvc.perform(get(CHECK_IN_INFO_URL.formatted(member.getId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.subscriptions[0].verificationStatus").value("FROZEN"))
+            .andExpect(jsonPath("$.subscriptions[0].denialReason")
+                    .value("Subscription is frozen"));
+    }
+
+    @Test
+    @WithMockUser(authorities = "RECEPTIONIST")
+    void validatesAnIncludedServiceWithoutRegisteringAnEntrance() throws Exception {
+        Member member = createMember();
+        LocalDate today = LocalDate.now();
+        createCertificate(member, today.minusDays(10), today.plusDays(20));
+        createPaidSubscription(
+                member, today.minusDays(1), today.plusDays(28), ServiceType.WEIGHT_ROOM);
+
+        mockMvc.perform(post(VALIDATE_ACCESS_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson(member)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.authorized").value(true))
+            .andExpect(jsonPath("$.reason").doesNotExist());
+
+        assertThat(accessRecordRepository.findByMember_IdOrderByAccessDatetimeDesc(member.getId()))
+            .isEmpty();
+    }
+
+    @Test
+    @WithMockUser(authorities = "RECEPTIONIST")
+    void returnsAReasonWhenTheRequestedServiceIsNotIncluded() throws Exception {
+        Member member = createMember();
+        LocalDate today = LocalDate.now();
+        createCertificate(member, today.minusDays(10), today.plusDays(20));
+        createPaidSubscription(
+                member, today.minusDays(1), today.plusDays(28), ServiceType.POOL);
+
+        mockMvc.perform(post(VALIDATE_ACCESS_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson(member)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.authorized").value(false))
+            .andExpect(jsonPath("$.reason").value(
+                    "Subscription does not include this service"));
+
+        assertThat(accessRecordRepository.findByMember_IdOrderByAccessDatetimeDesc(member.getId()))
+            .isEmpty();
+    }
+
+    @Test
+    @WithMockUser(authorities = "RECEPTIONIST")
+    void validatesEntryBasedMembershipWithoutConsumingAnEntryUntilCheckIn() throws Exception {
+        Member member = createMember();
+        LocalDate today = LocalDate.now();
+        createCertificate(member, today.minusDays(10), today.plusDays(20));
+        MemberSubscription subscription = createPaidEntrySubscription(
+                member, today.minusDays(1), today.plusDays(28), ServiceType.WEIGHT_ROOM, 3);
+
+        mockMvc.perform(post(VALIDATE_ACCESS_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson(member)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.authorized").value(true));
+
+        assertThat(subscriptionRepository.findById(subscription.getId()).orElseThrow()
+                .getRemainingEntries()).isEqualTo(3);
+
+        mockMvc.perform(post(CHECK_IN_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson(member)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.result").value("ALLOWED"));
+
+        assertThat(subscriptionRepository.findById(subscription.getId()).orElseThrow()
+                .getRemainingEntries()).isEqualTo(2);
+    }
+
+    @Test
+    @WithMockUser(authorities = "RECEPTIONIST")
     void deniesCheckInForAServiceNotIncludedInThePaidSubscription() throws Exception {
         Member member = createMember();
         LocalDate today = LocalDate.now();
@@ -176,7 +379,7 @@ class AccessCheckInControllerTests {
         certificateRepository.save(certificate);
     }
 
-    private void createPaidSubscription(
+    private MemberSubscription createPaidSubscription(
             Member member, LocalDate startDate, LocalDate endDate, ServiceType service) {
         MembershipTier tier = new MembershipTier();
         tier.setName("Check-in tier " + UUID.randomUUID());
@@ -202,6 +405,41 @@ class AccessCheckInControllerTests {
         payment.setPaymentDate(LocalDateTime.now());
         payment.setStatus(PaymentStatus.PAID);
         paymentRepository.save(payment);
+        return savedSubscription;
+    }
+
+    private MemberSubscription createPaidEntrySubscription(
+            Member member,
+            LocalDate startDate,
+            LocalDate endDate,
+            ServiceType service,
+            int entryQuota) {
+        MembershipTier tier = new MembershipTier();
+        tier.setName("Entry tier " + UUID.randomUUID());
+        tier.setPrice(new BigDecimal("25.00"));
+        tier.setEntryQuota(entryQuota);
+        tier.setTimeBand(TimeBand.FULL_DAY);
+        tier.setAllowedServices(java.util.Set.of(service));
+        MembershipTier savedTier = tierRepository.save(tier);
+
+        MemberSubscription subscription = new MemberSubscription();
+        subscription.setMember(member);
+        subscription.setTier(savedTier);
+        subscription.setStartDate(startDate);
+        subscription.setEndDate(endDate);
+        subscription.setRemainingEntries(entryQuota);
+        subscription.setFrozenDaysUsed(0);
+        subscription.setStatus(SubscriptionStatus.ACTIVE);
+        MemberSubscription savedSubscription = subscriptionRepository.save(subscription);
+
+        PaymentRecord payment = new PaymentRecord();
+        payment.setMember(member);
+        payment.setSubscription(savedSubscription);
+        payment.setAmount(savedTier.getPrice());
+        payment.setPaymentDate(LocalDateTime.now());
+        payment.setStatus(PaymentStatus.PAID);
+        paymentRepository.save(payment);
+        return savedSubscription;
     }
 
     private String requestJson(Member member) throws Exception {

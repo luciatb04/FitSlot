@@ -6,6 +6,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
+import org.springframework.samples.fitslot.gym.Gym;
+import org.springframework.samples.fitslot.gym.GymRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,13 +16,16 @@ public class ClassSessionService {
 
     private final ClassSessionRepository classSessionRepository;
     private final ClassReservationRepository classReservationRepository;
+    private final GymRepository gymRepository;
 
     public ClassSessionService(
             ClassSessionRepository classSessionRepository,
-            ClassReservationRepository classReservationRepository) {
+            ClassReservationRepository classReservationRepository,
+            GymRepository gymRepository) {
 
         this.classSessionRepository = classSessionRepository;
         this.classReservationRepository = classReservationRepository;
+        this.gymRepository = gymRepository;
     }
 
     @Transactional(readOnly = true)
@@ -57,28 +62,19 @@ public class ClassSessionService {
         return toResponse(getClassSession(id));
     }
 
-    // Calculate available spots based on confirmed bookings
-    private int calculateAvailableSpots(ClassSession session) {
-
-        long confirmedBookings = classReservationRepository
+    // Count confirmed bookings; waiting-list entries do not consume capacity.
+    private long calculateConfirmedBookings(ClassSession session) {
+        return classReservationRepository
                 .countByClassSession_IdAndStatus(
                         session.getId(),
                         ReservationStatus.CONFIRMED);
-
-        long availableSpots =
-                (long) session.getMaxCapacity() - confirmedBookings;
-
-        return (int) Math.max(0L, availableSpots);
     }
 
-    // Convert entity to response including available spots
+    // Convert entity to response including capacity and booking counts.
     private ClassSessionResponse toResponse(ClassSession session) {
-
-        int availableSpots = calculateAvailableSpots(session);
-
         return ClassSessionResponse.fromEntity(
                 session,
-                availableSpots);
+                calculateConfirmedBookings(session));
     }
 
     // Retrieve a class session by ID
@@ -88,6 +84,58 @@ public class ClassSessionService {
         return classSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Class session not found: " + sessionId));
+    }
+
+    @Transactional
+    public ClassSessionResponse createClassSession(
+            String name,
+            LocalDate date,
+            LocalTime startTime,
+            LocalTime endTime,
+            Room room,
+            Integer maxCapacity,
+            Integer gymId) {
+
+        if (name == null || name.isBlank()
+                || date == null
+                || startTime == null
+                || endTime == null
+                || room == null
+                || maxCapacity == null
+                || maxCapacity < 1
+                || gymId == null) {
+            throw new IllegalArgumentException(
+                    "Class name, schedule, room, capacity and gym are required");
+        }
+
+        if (!startTime.isBefore(endTime)) {
+            throw new IllegalArgumentException(
+                    "Start time must be before end time");
+        }
+
+        Gym gym = gymRepository.findById(gymId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Gym not found: " + gymId));
+
+        List<ClassSession> conflicts =
+                classSessionRepository.findConflictingSessionsForNewSchedule(
+                        room, date, startTime, endTime, gymId);
+
+        if (!conflicts.isEmpty()) {
+            throw new IllegalStateException(
+                    "The room is already occupied at this time");
+        }
+
+        ClassSession session = new ClassSession();
+        session.setName(name.trim());
+        session.setDate(date);
+        session.setStartTime(startTime);
+        session.setEndTime(endTime);
+        session.setRoom(room);
+        session.setMaxCapacity(maxCapacity);
+        session.setGym(gym);
+
+        return toResponse(classSessionRepository.save(session));
     }
 
     // Update the schedule of an existing class session
@@ -123,6 +171,7 @@ public class ClassSessionService {
                         newDate,
                         newStartTime,
                         newEndTime,
+                        session.getGym().getId(),
                         sessionId);
 
         if (!conflicts.isEmpty()) {
@@ -136,5 +185,45 @@ public class ClassSessionService {
         session.setRoom(newRoom);
 
         return classSessionRepository.save(session);
+    }
+
+    @Transactional
+    public ClassSessionResponse updateClassCapacity(
+            Integer sessionId,
+            Integer newMaxCapacity) {
+
+        if (newMaxCapacity == null || newMaxCapacity < 1) {
+            throw new IllegalArgumentException(
+                    "Maximum capacity must be a positive number");
+        }
+
+        ClassSession session = classSessionRepository
+                .findByIdForUpdate(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Class session not found: " + sessionId));
+
+        long confirmedBookings = calculateConfirmedBookings(session);
+        if (newMaxCapacity < confirmedBookings) {
+            throw new IllegalStateException(
+                    "Capacity cannot be lower than the number of confirmed bookings ("
+                            + confirmedBookings + ")");
+        }
+
+        session.setMaxCapacity(newMaxCapacity);
+        return toResponse(classSessionRepository.save(session));
+    }
+
+    @Transactional
+    public void deleteClassSession(Integer sessionId) {
+        ClassSession session = classSessionRepository.findByIdForUpdate(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Class session not found: " + sessionId));
+
+        if (classReservationRepository.existsByClassSession_Id(sessionId)) {
+            throw new IllegalStateException(
+                    "Class sessions with reservations cannot be deleted");
+        }
+
+        classSessionRepository.delete(session);
     }
 }

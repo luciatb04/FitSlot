@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import api from "../../services/api";
 import "./medicalCertificates.css";
 
 const emptyForm = { issueDate: "", expiryDate: "" };
+const MEMBER_PAGE_SIZE = 10;
 
 function getErrorMessage(error, fallback) {
   return error.response?.data?.message || fallback;
@@ -11,6 +12,8 @@ function getErrorMessage(error, fallback) {
 export default function MedicalCertificateManagement() {
   const [members, setMembers] = useState([]);
   const [memberId, setMemberId] = useState("");
+  const [memberSearch, setMemberSearch] = useState("");
+  const [memberPage, setMemberPage] = useState(1);
   const [certificates, setCertificates] = useState([]);
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
@@ -19,6 +22,46 @@ export default function MedicalCertificateManagement() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const filteredMembers = useMemo(() => {
+    const query = memberSearch.trim().toLocaleLowerCase();
+
+    return members
+      .filter((member) => {
+        if (!query) return true;
+
+        return [
+          member.id,
+          member.firstName,
+          member.lastName,
+          member.email,
+          member.telephone
+        ]
+          .filter((value) => value != null)
+          .join(" ")
+          .toLocaleLowerCase()
+          .includes(query);
+      })
+      .sort((a, b) =>
+        `${a.lastName ?? ""} ${a.firstName ?? ""}`.localeCompare(
+          `${b.lastName ?? ""} ${b.firstName ?? ""}`
+        )
+      );
+  }, [members, memberSearch]);
+
+  const totalMemberPages = Math.max(
+    1,
+    Math.ceil(filteredMembers.length / MEMBER_PAGE_SIZE)
+  );
+  const currentMemberPage = Math.min(memberPage, totalMemberPages);
+  const pagedMembers = filteredMembers.slice(
+    (currentMemberPage - 1) * MEMBER_PAGE_SIZE,
+    currentMemberPage * MEMBER_PAGE_SIZE
+  );
+
+  const selectedMember = members.find(
+    (member) => String(member.id) === memberId
+  );
 
   useEffect(() => {
     let active = true;
@@ -41,6 +84,7 @@ export default function MedicalCertificateManagement() {
   useEffect(() => {
     if (!memberId) {
       setCertificates([]);
+      setLoadingHistory(false);
       return undefined;
     }
 
@@ -66,8 +110,22 @@ export default function MedicalCertificateManagement() {
     };
   }, [memberId]);
 
-  function handleMemberChange(event) {
-    setMemberId(event.target.value);
+  function chooseMember(member) {
+    setMemberId(String(member.id));
+    setMemberSearch("");
+    setMemberPage(1);
+    setCertificates([]);
+    setForm(emptyForm);
+    setEditingId(null);
+    setError("");
+    setSuccess("");
+  }
+
+  function changeMember() {
+    setMemberId("");
+    setMemberSearch("");
+    setMemberPage(1);
+    setCertificates([]);
     setForm(emptyForm);
     setEditingId(null);
     setError("");
@@ -133,17 +191,141 @@ export default function MedicalCertificateManagement() {
         {error && <div className="certificate-alert certificate-alert-error" role="alert">{error}</div>}
         {success && <div className="certificate-alert certificate-alert-success" role="status">{success}</div>}
 
-        <label className="certificate-member-select">
-          Select member
-          <select disabled={loadingMembers} onChange={handleMemberChange} value={memberId}>
-            <option value="">{loadingMembers ? "Loading members..." : "Choose a member"}</option>
-            {members.map((member) => (
-              <option key={member.id} value={member.id}>
-                {member.firstName} {member.lastName} ({member.email})
-              </option>
-            ))}
-          </select>
-        </label>
+        {selectedMember ? (
+          <div className="certificate-selected-member">
+            <div>
+              <strong>
+                {selectedMember.firstName} {selectedMember.lastName}
+              </strong>
+              <span>{selectedMember.email}</span>
+              <span>Member #{selectedMember.id}</span>
+            </div>
+            <button
+              className="certificate-secondary-button"
+              onClick={changeMember}
+              type="button"
+            >
+              Change member
+            </button>
+          </div>
+        ) : (
+          <div className="certificate-member-picker">
+            <label htmlFor="certificate-member-search">Search members</label>
+            <div className="certificate-search-control">
+              <span aria-hidden="true">⌕</span>
+              <input
+                autoComplete="off"
+                disabled={loadingMembers}
+                id="certificate-member-search"
+                onChange={(event) => {
+                  setMemberSearch(event.target.value);
+                  setMemberPage(1);
+                }}
+                placeholder="Search by name, email, phone or ID..."
+                type="search"
+                value={memberSearch}
+              />
+            </div>
+            {loadingMembers && (
+              <p role="status">Loading members...</p>
+            )}
+            {!loadingMembers && (
+              <section
+                aria-label="Member directory"
+                className="certificate-member-directory"
+              >
+                <div className="certificate-member-directory-header">
+                  <h2>Members</h2>
+                  <span>
+                    {filteredMembers.length} result{filteredMembers.length === 1 ? "" : "s"}
+                  </span>
+                </div>
+
+                {filteredMembers.length === 0 ? (
+                  <p className="certificate-member-empty">
+                    {memberSearch.trim()
+                      ? "No members match your search."
+                      : "There are no registered members yet."}
+                  </p>
+                ) : (
+                  <>
+                    <div className="certificate-member-table-scroll">
+                      <table className="certificate-member-table">
+                        <thead>
+                          <tr>
+                            <th scope="col">Member</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Telephone</th>
+                            <th scope="col">ID</th>
+                            <th scope="col">
+                              <span className="certificate-sr-only">Actions</span>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {pagedMembers.map((member) => {
+                            const fullName = `${member.firstName ?? ""} ${member.lastName ?? ""}`.trim();
+                            const initials = `${member.firstName?.[0] ?? ""}${member.lastName?.[0] ?? ""}`.toUpperCase();
+                            return (
+                              <tr key={member.id}>
+                                <td>
+                                  <div className="certificate-member-person">
+                                    <span aria-hidden="true" className="certificate-member-avatar">
+                                      {initials || "?"}
+                                    </span>
+                                    <span>{fullName || "Unnamed member"}</span>
+                                  </div>
+                                </td>
+                                <td>{member.email || "—"}</td>
+                                <td>{member.telephone || "—"}</td>
+                                <td>#{member.id}</td>
+                                <td>
+                                  <button
+                                    aria-label={`Select ${fullName || `member ${member.id}`}`}
+                                    className="certificate-select-member-button"
+                                    onClick={() => chooseMember(member)}
+                                    type="button"
+                                  >
+                                    Select
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <footer className="certificate-member-pagination">
+                      <span>
+                        Showing {(currentMemberPage - 1) * MEMBER_PAGE_SIZE + 1}–
+                        {Math.min(currentMemberPage * MEMBER_PAGE_SIZE, filteredMembers.length)}
+                        {" "}of {filteredMembers.length}
+                      </span>
+                      <div>
+                        <button
+                          disabled={currentMemberPage === 1}
+                          onClick={() => setMemberPage(currentMemberPage - 1)}
+                          type="button"
+                        >
+                          Previous
+                        </button>
+                        <span>Page {currentMemberPage} of {totalMemberPages}</span>
+                        <button
+                          disabled={currentMemberPage === totalMemberPages}
+                          onClick={() => setMemberPage(currentMemberPage + 1)}
+                          type="button"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </footer>
+                  </>
+                )}
+              </section>
+            )}
+          </div>
+        )}
 
         {memberId && (
           <>

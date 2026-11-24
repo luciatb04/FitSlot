@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import tokenService from "../../services/token.service";
-import "./CheckIn.css";
+import "./checkIn.css";
 
 const API_BASE = "/api/v1";
 const SERVICES = {
@@ -47,38 +47,66 @@ function displayDate(value) {
 }
 
 function displayTime(value) {
-  return value ? String(value).slice(0, 5) : "--:--";
+  if (!value) return "--:--";
+  const time = String(value).split("T").pop();
+  return time.slice(0, 5);
 }
 
 function memberLabel(member) {
   return `${member.firstName || ""} ${member.lastName || ""}`.trim() || `Member #${member.id}`;
 }
 
-function membershipActive(subscription) {
-  const now = new Date();
-  const today = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, "0"), String(now.getDate()).padStart(2, "0")].join("-");
-  return subscription?.status === "ACTIVE" &&
-    (!subscription.startDate || subscription.startDate <= today) &&
-    (!subscription.endDate || subscription.endDate >= today);
+function verificationClass(status) {
+  if (status === "ACTIVE") return "checkin-pill-active";
+  if (status === "EXPIRED" || status === "FROZEN" || status === "CANCELLED") {
+    return "checkin-pill-inactive";
+  }
+  return "checkin-pill-neutral";
+}
+
+function certificateVerificationClass(status) {
+  if (status === "VALID") return "checkin-pill-active";
+  if (status === "EXPIRED" || status === "MISSING") return "checkin-pill-inactive";
+  return "checkin-pill-warning";
 }
 
 function SubscriptionCard({ subscription }) {
   const services = Array.isArray(subscription.allowedServices) ? subscription.allowedServices : [];
+  const verificationStatus = subscription.verificationStatus || subscription.status || "UNKNOWN";
+  const timeSlotAllowed = subscription.timeSlotAllowed === true;
   return (
     <div className="checkin-subscription">
       <div className="checkin-subscription-title">
         <strong>{subscription.tierName || "Membership"}</strong>
-        <span className={`checkin-pill ${subscription.status === "ACTIVE" ? "checkin-pill-active" : "checkin-pill-neutral"}`}>
-          {subscription.status || "Unknown status"}
+        <span className={`checkin-pill ${verificationClass(verificationStatus)}`}>
+          {verificationStatus}
         </span>
       </div>
+      {subscription.denialReason && (
+        <p className="checkin-subscription-reason" role="alert" aria-label="Subscription access denial reason">
+          Access denied: {subscription.denialReason}.
+        </p>
+      )}
       <dl className="checkin-facts">
         <div><dt>Membership expiry</dt><dd>{displayDate(subscription.endDate)}</dd></div>
         <div><dt>Allowed time band</dt><dd>{subscription.startTime && subscription.endTime
           ? `${displayTime(subscription.startTime)} – ${displayTime(subscription.endTime)}`
           : "Not configured"}</dd></div>
+        <div>
+          <dt>Current time-band status</dt>
+          <dd>
+            <span className={`checkin-pill ${timeSlotAllowed ? "checkin-pill-active" : "checkin-pill-inactive"}`}>
+              {timeSlotAllowed ? "ALLOWED" : "RESTRICTED"}
+            </span>
+          </dd>
+        </div>
         <div><dt>Remaining entries</dt><dd>{subscription.remainingEntries == null ? "Unlimited / not applicable" : subscription.remainingEntries}</dd></div>
       </dl>
+      {subscription.timeSlotDenialReason && (
+        <p className="checkin-subscription-reason" role="alert" aria-label="Schedule access denial reason">
+          Access restricted: {subscription.timeSlotDenialReason}.
+        </p>
+      )}
       <div className="checkin-services">
         <span className="checkin-muted">Included services:</span>
         {services.length ? services.map((service) => (
@@ -101,6 +129,9 @@ export default function CheckIn() {
   const [service, setService] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null);
+  const [accessValidation, setAccessValidation] = useState(null);
+  const [validatingAccess, setValidatingAccess] = useState(false);
+  const [validationError, setValidationError] = useState("");
 
   useEffect(() => {
     const controller = new AbortController();
@@ -155,21 +186,53 @@ export default function CheckIn() {
     return () => controller.abort();
   }, [selected]);
 
-  const eligibleSubscriptions = useMemo(() =>
-    (accessInfo?.subscriptions || []).filter(membershipActive), [accessInfo]);
-  const availableServices = useMemo(() => [...new Set(
-    eligibleSubscriptions.flatMap((subscription) => subscription.allowedServices || [])
-  )], [eligibleSubscriptions]);
+  useEffect(() => {
+    if (!selected || !service) return undefined;
+    const controller = new AbortController();
+    setValidatingAccess(true);
+    setValidationError("");
+    setAccessValidation(null);
+
+    (async () => {
+      try {
+        const data = await requestJson(`${API_BASE}/access/validate`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ memberId: selected.id, serviceAccessed: service }),
+          signal: controller.signal,
+        });
+        if (!data || typeof data.authorized !== "boolean") {
+          throw new Error("The access validation response is incomplete.");
+        }
+        setAccessValidation(data);
+      } catch (error) {
+        if (error.name !== "AbortError") setValidationError(error.message);
+      } finally {
+        if (!controller.signal.aborted) setValidatingAccess(false);
+      }
+    })();
+
+    return () => controller.abort();
+  }, [selected, service]);
+
+  const certificateStatus = accessInfo?.medicalCertificate?.validity || "MISSING";
+  const certificateDenialReason = accessInfo?.medicalCertificate?.denialReason ||
+    (certificateStatus === "MISSING" ? "No medical certificate registered" :
+      certificateStatus === "EXPIRED" ? "Medical certificate has expired" :
+        certificateStatus === "NOT_YET_VALID" ? "Medical certificate is not valid yet" : null);
+  const hasValidCertificate = certificateStatus === "VALID";
 
   function chooseMember(member) {
     setSelected(member);
     setQuery(memberLabel(member));
     setResult(null);
+    setAccessValidation(null);
+    setValidationError("");
   }
 
   async function submitCheckIn(event) {
     event.preventDefault();
-    if (!selected || !service || submitting || !availableServices.includes(service)) return;
+    if (!selected || !service || submitting || !accessValidation?.authorized) return;
     setSubmitting(true);
     setResult(null);
     try {
@@ -207,6 +270,8 @@ export default function CheckIn() {
             setSelected(null);
             setAccessInfo(null);
             setResult(null);
+            setAccessValidation(null);
+            setValidationError("");
           }}
           placeholder="Enter a name or member ID"
           autoComplete="off"
@@ -240,24 +305,84 @@ export default function CheckIn() {
               <h3>Medical certificate</h3>
               <dl className="checkin-facts">
                 <div><dt>Expiry date</dt><dd>{displayDate(accessInfo.medicalCertificate?.expiryDate)}</dd></div>
-                <div><dt>Status</dt><dd>{accessInfo.medicalCertificate?.validity || "Not available"}</dd></div>
+                <div>
+                  <dt>Status</dt>
+                  <dd>
+                    <span
+                      className={`checkin-pill ${certificateVerificationClass(certificateStatus)}`}
+                      aria-label={`Medical certificate status: ${certificateStatus}`}
+                    >
+                      {certificateStatus}
+                    </span>
+                  </dd>
+                </div>
               </dl>
+              {certificateDenialReason && (
+                <p className="checkin-alert checkin-alert-error" role="alert" aria-label="Medical certificate denial reason">
+                  Access denied: {certificateDenialReason}.
+                </p>
+              )}
+              {accessInfo.checkedAt && (
+                <p className="checkin-muted" aria-label="Schedule verification time">
+                  Schedule checked at {displayDate(accessInfo.checkedAt)} {displayTime(accessInfo.checkedAt)}.
+                </p>
+              )}
 
               <h3>Membership information</h3>
               {accessInfo.subscriptions.length ? accessInfo.subscriptions.map((subscription, index) => (
                 <SubscriptionCard key={subscription.id ?? index} subscription={subscription} />
-              )) : <p className="checkin-muted">No subscriptions found.</p>}
+              )) : (
+                <p className="checkin-alert checkin-alert-error" role="alert">
+                  Access denied: no subscription was found for this member.
+                </p>
+              )}
 
               <form onSubmit={submitCheckIn} className="checkin-form">
                 <label htmlFor="checkin-service">Service to access</label>
-                <select id="checkin-service" value={service} onChange={(event) => setService(event.target.value)} required>
-                  <option value="">Select an included service</option>
-                  {availableServices.map((item) => (
-                    <option value={item} key={item}>{SERVICES[item] || item}</option>
+                <select
+                  id="checkin-service"
+                  value={service}
+                  onChange={(event) => {
+                    setService(event.target.value);
+                    setAccessValidation(null);
+                    setValidationError("");
+                    setResult(null);
+                  }}
+                  required
+                >
+                  <option value="">Select a service to validate</option>
+                  {Object.entries(SERVICES).map(([value, label]) => (
+                    <option value={value} key={value}>{label}</option>
                   ))}
                 </select>
-                <p className="checkin-muted">Only services included in an active membership are selectable. The backend makes the final access decision.</p>
-                <button type="submit" className="checkin-submit" disabled={submitting || !service || selected.status !== "ACTIVE"}>
+                {service && (
+                  <div aria-live="polite">
+                    {validatingAccess && <p className="checkin-muted" role="status">Validating service access...</p>}
+                    {validationError && <p className="checkin-alert checkin-alert-error" role="alert">{validationError}</p>}
+                    {accessValidation && (
+                      <div
+                        className={`checkin-alert ${accessValidation.authorized ? "checkin-alert-success" : "checkin-alert-error"}`}
+                        role={accessValidation.authorized ? "status" : "alert"}
+                      >
+                        <strong>{accessValidation.authorized ? "AUTHORIZED" : "UNAUTHORIZED"}</strong>
+                        {accessValidation.reason && <span> Access denied: {accessValidation.reason}.</span>}
+                      </div>
+                    )}
+                  </div>
+                )}
+                <p className="checkin-muted">The server verifies membership, service, schedule, payment, and certificate before allowing entry.</p>
+                <button
+                  type="submit"
+                  className="checkin-submit"
+                  disabled={
+                    submitting ||
+                    validatingAccess ||
+                    !accessValidation?.authorized ||
+                    Boolean(validationError) ||
+                    selected.status !== "ACTIVE" ||
+                    !hasValidCertificate
+                  }
+                >
                   {submitting ? "Registering..." : "Register check-in"}
                 </button>
               </form>

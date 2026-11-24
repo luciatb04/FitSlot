@@ -13,6 +13,7 @@ import Login from "./auth/login";
 import Logout from "./auth/logout";
 import ClassSchedule from "./member/ClassSchedule";
 import ClassSessionList from "./gymOwner/classes/ClassSessionList";
+import CreateClassSession from "./gymOwner/classes/CreateClassSession";
 import EditClassSession from "./gymOwner/classes/EditClassSession";
 import Dashboard from "./dashboard";
 import tokenService from "./services/token.service";
@@ -74,6 +75,7 @@ function App() {
           <Route path="/instructors/:id" exact={true} element={<PrivateRoute><InstructorEditGymOwner /></PrivateRoute>} />
           <Route path="/membership-services" element={<PrivateRoute><MembershipServices /></PrivateRoute>} />
           <Route path="/manage-classes" element={<PrivateRoute><ClassSessionList /></PrivateRoute>} />
+          <Route path="/manage-classes/new" element={<PrivateRoute><CreateClassSession /></PrivateRoute>} />
           <Route path="/manage-classes/:id/edit" element={<PrivateRoute><EditClassSession /></PrivateRoute>} />
           <Route path="/manage-classes/:id/substitute" element={<PrivateRoute><SubstituteInstructor /></PrivateRoute>} />
         </>)

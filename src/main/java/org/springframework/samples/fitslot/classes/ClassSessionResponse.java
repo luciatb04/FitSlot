@@ -16,13 +16,18 @@ public record ClassSessionResponse(
     LocalTime startTime,
     LocalTime endTime,
     Integer maxCapacity,
+    long confirmedBookings,
     Integer instructorId,
     String instructorName,
     Integer availableSpots
 ) {
     public static ClassSessionResponse fromEntity(
             ClassSession session,
-            int availableSpots) {
+            long confirmedBookings) {
+
+        int availableSpots = (int) Math.max(
+                0L,
+                (long) session.getMaxCapacity() - confirmedBookings);
 
         Instructor instructor = session.getInstructor();
 
@@ -40,6 +45,7 @@ public record ClassSessionResponse(
                 session.getStartTime(),
                 session.getEndTime(),
                 session.getMaxCapacity(),
+                confirmedBookings,
                 instructor == null ? null : instructor.getId(),
                 instructorName,
                 availableSpots

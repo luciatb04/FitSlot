@@ -173,7 +173,7 @@ function AppNavbar() {
                             Classes
                         </DropdownToggle>
                         <DropdownMenu>
-                            <DropdownItem tag={Link} to="/myClasses">
+                            <DropdownItem tag={Link} to="/manage-classes/new">
                                 Create Class
                             </DropdownItem>
                             <DropdownItem tag={Link} to="/instructors">
