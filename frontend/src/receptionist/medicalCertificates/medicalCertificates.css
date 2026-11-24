@@ -28,7 +28,7 @@
   margin: 1.75rem 0 1rem;
 }
 
-.certificate-member-select,
+.certificate-member-picker,
 .certificate-form label {
   display: flex;
   flex-direction: column;
@@ -36,7 +36,27 @@
   gap: 0.4rem;
 }
 
-.certificate-member-select select,
+.certificate-search-control {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #dce3ee;
+  border-radius: 0.5rem;
+  display: flex;
+}
+
+.certificate-search-control:focus-within {
+  border-color: #6191e0;
+  box-shadow: 0 0 0 3px #e6efff;
+}
+
+.certificate-search-control span {
+  color: #8b9bb1;
+  font-size: 1.5rem;
+  line-height: 1;
+  margin-left: 0.75rem;
+}
+
+.certificate-search-control input,
 .certificate-form input {
   background: #fff;
   border: 1px solid #adb5bd;
@@ -45,6 +65,170 @@
   font-weight: 400;
   min-height: 2.75rem;
   padding: 0.5rem 0.75rem;
+}
+
+.certificate-search-control input {
+  border: 0;
+  box-sizing: border-box;
+  flex: 1;
+  min-width: 0;
+  outline: 0;
+  width: 100%;
+}
+
+.certificate-search-control input:focus {
+  outline: 0;
+}
+
+.certificate-member-directory {
+  border-top: 1px solid #dee2e6;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+}
+
+.certificate-member-directory-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.certificate-member-directory-header h2 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.certificate-member-directory-header span,
+.certificate-member-pagination {
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+.certificate-member-table-scroll {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.certificate-member-table {
+  border-collapse: collapse;
+  min-width: 42rem;
+  text-align: left;
+  width: 100%;
+}
+
+.certificate-member-table th,
+.certificate-member-table td {
+  border-bottom: 1px solid #e5eaf2;
+  padding: 0.75rem 0.65rem;
+  vertical-align: middle;
+}
+
+.certificate-member-table th {
+  color: #63738b;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.certificate-member-person {
+  align-items: center;
+  display: flex;
+  gap: 0.6rem;
+  min-width: 10rem;
+}
+
+.certificate-member-avatar {
+  align-items: center;
+  background: #edf3fb;
+  border-radius: 50%;
+  color: #355071;
+  display: inline-flex;
+  flex: 0 0 2rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  height: 2rem;
+  justify-content: center;
+  width: 2rem;
+}
+
+.certificate-select-member-button {
+  background: #eef4ff;
+  border: 1px solid #d9e6fc;
+  border-radius: 0.4rem;
+  color: #285bad;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.4rem 0.75rem;
+}
+
+.certificate-select-member-button:hover,
+.certificate-select-member-button:focus-visible {
+  background: #deebff;
+}
+
+.certificate-member-empty {
+  color: #6c757d;
+  margin: 0;
+  padding: 1rem 0;
+}
+
+.certificate-sr-only {
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.certificate-member-pagination {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding-top: 0.9rem;
+}
+
+.certificate-member-pagination > div {
+  align-items: center;
+  display: flex;
+  gap: 0.6rem;
+}
+
+.certificate-member-pagination button {
+  background: #fff;
+  border: 1px solid #d9e1ec;
+  border-radius: 0.4rem;
+  color: #355071;
+  cursor: pointer;
+  padding: 0.4rem 0.65rem;
+}
+
+.certificate-member-pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.certificate-selected-member {
+  align-items: center;
+  background: #f7f9fb;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+}
+
+.certificate-selected-member > div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.certificate-selected-member span {
+  color: #6c757d;
+  font-size: 0.9rem;
 }
 
 .certificate-form {
@@ -143,5 +327,16 @@
   .certificate-list-item {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .certificate-selected-member {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .certificate-member-pagination {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
   }
 }

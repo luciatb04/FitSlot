@@ -24,6 +24,11 @@ public class AccessController {
         return accessService.checkIn(request.memberId(), request.serviceAccessed());
     }
 
+    @PostMapping("/validate")
+    public AccessValidationResponse validate(@Valid @RequestBody CheckInRequest request) {
+        return accessService.validateAccess(request.memberId(), request.serviceAccessed());
+    }
+
     @GetMapping("/members/{id}/check-in-info")
     public CheckInInfoResponse getCheckInInfo(
             @PathVariable Integer id) {

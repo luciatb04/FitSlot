@@ -19,6 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.samples.fitslot.gym.Gym;
+import org.springframework.samples.fitslot.gym.GymRepository;
 import org.springframework.samples.fitslot.instructor.Instructor;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,6 +31,9 @@ class ClassSessionServiceTests {
 
     @Mock
     private ClassReservationRepository classReservationRepository;
+
+    @Mock
+    private GymRepository gymRepository;
 
     @InjectMocks
     private ClassSessionService classSessionService;
@@ -51,6 +56,9 @@ class ClassSessionServiceTests {
         session.setEndTime(LocalTime.of(10, 0));
         session.setRoom(Room.CLASS_ROOM_2);
         session.setMaxCapacity(20);
+        Gym gym = new Gym();
+        gym.setId(7);
+        session.setGym(gym);
     }
 
     // ==============================================
@@ -63,7 +71,7 @@ class ClassSessionServiceTests {
                 .thenReturn(Optional.of(session));
 
         when(classSessionRepository.findConflictingSessions(
-                ROOM, DATE, START, END, SESSION_ID))
+                ROOM, DATE, START, END, 7, SESSION_ID))
                 .thenReturn(List.of());
 
         when(classSessionRepository.save(session))
@@ -79,6 +87,92 @@ class ClassSessionServiceTests {
         assertEquals(ROOM, result.getRoom());
 
         verify(classSessionRepository).save(session);
+    }
+
+    @Test
+    void shouldCreateClassSessionWhenRoomIsAvailable() {
+        Gym gym = new Gym();
+        gym.setId(7);
+        when(gymRepository.findById(7)).thenReturn(Optional.of(gym));
+        when(classSessionRepository.findConflictingSessionsForNewSchedule(
+                ROOM, DATE, START, END, 7))
+                .thenReturn(List.of());
+        when(classSessionRepository.save(any(ClassSession.class)))
+                .thenAnswer(invocation -> {
+                    ClassSession saved = invocation.getArgument(0);
+                    saved.setId(110);
+                    return saved;
+                });
+
+        ClassSessionResponse response = classSessionService.createClassSession(
+                "  Yoga  ", DATE, START, END, ROOM, 18, 7);
+
+        assertAll(
+                () -> assertEquals(110, response.id()),
+                () -> assertEquals("Yoga", response.name()),
+                () -> assertEquals(DATE, response.date()),
+                () -> assertEquals(START, response.startTime()),
+                () -> assertEquals(END, response.endTime()),
+                () -> assertEquals(ROOM, response.room()),
+                () -> assertEquals(18, response.maxCapacity()));
+        verify(classSessionRepository).save(any(ClassSession.class));
+    }
+
+    @Test
+    void shouldRejectCreatingClassWithOverlappingRoomSchedule() {
+        Gym gym = new Gym();
+        when(gymRepository.findById(7)).thenReturn(Optional.of(gym));
+        when(classSessionRepository.findConflictingSessionsForNewSchedule(
+                ROOM, DATE, START, END, 7))
+                .thenReturn(List.of(new ClassSession()));
+
+        assertThrows(
+                IllegalStateException.class,
+                () -> classSessionService.createClassSession(
+                        "Yoga", DATE, START, END, ROOM, 18, 7));
+
+        verify(classSessionRepository, never()).save(any(ClassSession.class));
+    }
+
+    @Test
+    void shouldRejectCreatingClassForUnknownGym() {
+        when(gymRepository.findById(7)).thenReturn(Optional.empty());
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> classSessionService.createClassSession(
+                        "Yoga", DATE, START, END, ROOM, 18, 7));
+
+        verify(classSessionRepository, never())
+                .findConflictingSessionsForNewSchedule(
+                        any(), any(), any(), any(), any());
+        verify(classSessionRepository, never()).save(any(ClassSession.class));
+    }
+
+    @Test
+    void shouldRejectDeletingClassThatHasReservations() {
+        when(classSessionRepository.findByIdForUpdate(SESSION_ID))
+                .thenReturn(Optional.of(session));
+        when(classReservationRepository.existsByClassSession_Id(SESSION_ID))
+                .thenReturn(true);
+
+        assertThrows(
+                IllegalStateException.class,
+                () -> classSessionService.deleteClassSession(SESSION_ID));
+
+        verify(classSessionRepository, never()).delete(any(ClassSession.class));
+    }
+
+    @Test
+    void shouldDeleteClassWithoutReservations() {
+        when(classSessionRepository.findByIdForUpdate(SESSION_ID))
+                .thenReturn(Optional.of(session));
+        when(classReservationRepository.existsByClassSession_Id(SESSION_ID))
+                .thenReturn(false);
+
+        classSessionService.deleteClassSession(SESSION_ID);
+
+        verify(classSessionRepository).delete(session);
     }
 
     @Test
@@ -167,7 +261,7 @@ class ClassSessionServiceTests {
         conflictingSession.setEndTime(LocalTime.of(11, 30));
 
         when(classSessionRepository.findConflictingSessions(
-                ROOM, DATE, START, END, SESSION_ID))
+                ROOM, DATE, START, END, 7, SESSION_ID))
                 .thenReturn(List.of(conflictingSession));
 
         assertThrows(
@@ -185,7 +279,7 @@ class ClassSessionServiceTests {
                 .thenReturn(Optional.of(session));
 
         when(classSessionRepository.findConflictingSessions(
-                Room.CLASS_ROOM_2, DATE, START, END, SESSION_ID))
+                Room.CLASS_ROOM_2, DATE, START, END, 7, SESSION_ID))
                 .thenReturn(List.of());
 
         when(classSessionRepository.save(session))
@@ -214,6 +308,7 @@ class ClassSessionServiceTests {
                 originalDate,
                 originalStart,
                 originalEnd,
+                7,
                 SESSION_ID))
                 .thenReturn(List.of());
 
@@ -238,7 +333,7 @@ class ClassSessionServiceTests {
                 .thenReturn(Optional.of(session));
 
         when(classSessionRepository.findConflictingSessions(
-                ROOM, DATE, START, END, SESSION_ID))
+                ROOM, DATE, START, END, 7, SESSION_ID))
                 .thenReturn(List.of(new ClassSession()));
 
         assertThrows(
@@ -309,8 +404,54 @@ class ClassSessionServiceTests {
                         "Maria Rossi",
                         response.instructorName()),
                 () -> assertEquals(20, response.maxCapacity()),
+                () -> assertEquals(15, response.confirmedBookings()),
                 () -> assertEquals(5, response.availableSpots())
         );
+    }
+
+    @Test
+    void shouldUpdateClassCapacityWithoutDroppingConfirmedBookings()
+            throws Exception {
+        when(classSessionRepository.findByIdForUpdate(SESSION_ID))
+                .thenReturn(Optional.of(session));
+        when(classReservationRepository.countByClassSession_IdAndStatus(
+                SESSION_ID, ReservationStatus.CONFIRMED))
+                .thenReturn(8L, 8L);
+        when(classSessionRepository.save(session)).thenReturn(session);
+
+        ClassSessionResponse response =
+                classSessionService.updateClassCapacity(SESSION_ID, 12);
+
+        assertEquals(12, session.getMaxCapacity());
+        assertEquals(8, response.confirmedBookings());
+        assertEquals(4, response.availableSpots());
+        verify(classSessionRepository).findByIdForUpdate(SESSION_ID);
+    }
+
+    @Test
+    void shouldRejectCapacityBelowConfirmedBookings() {
+        when(classSessionRepository.findByIdForUpdate(SESSION_ID))
+                .thenReturn(Optional.of(session));
+        when(classReservationRepository.countByClassSession_IdAndStatus(
+                SESSION_ID, ReservationStatus.CONFIRMED))
+                .thenReturn(11L);
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> classSessionService.updateClassCapacity(SESSION_ID, 10));
+
+        assertTrue(error.getMessage().contains("11"));
+        assertEquals(20, session.getMaxCapacity());
+        verify(classSessionRepository, never()).save(any(ClassSession.class));
+    }
+
+    @Test
+    void shouldRejectNonPositiveCapacity() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> classSessionService.updateClassCapacity(SESSION_ID, 0));
+
+        verifyNoInteractions(classSessionRepository, classReservationRepository);
     }
 
     // TEST 12: No bookings means all spots available
@@ -324,6 +465,7 @@ class ClassSessionServiceTests {
                 classSessionService.getClassSessionResponse(SESSION_ID);
 
         assertEquals(20, response.availableSpots());
+        assertEquals(0, response.confirmedBookings());
 
         verify(classReservationRepository)
                 .countByClassSession_IdAndStatus(
@@ -348,6 +490,7 @@ class ClassSessionServiceTests {
                 classSessionService.getClassSessionResponse(SESSION_ID);
 
         assertEquals(0, response.availableSpots());
+        assertEquals(20, response.confirmedBookings());
     }
 
     // TEST 14: Available spots cannot be negative
@@ -367,6 +510,7 @@ class ClassSessionServiceTests {
                 classSessionService.getClassSessionResponse(SESSION_ID);
 
         assertEquals(0, response.availableSpots());
+        assertEquals(25, response.confirmedBookings());
     }
 
     // TEST 15: Availability changes after booking/cancellation

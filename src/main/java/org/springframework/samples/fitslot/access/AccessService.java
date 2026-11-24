@@ -61,112 +61,14 @@ public class AccessService {
     public CheckInResponse checkIn(
             Integer memberId,
             ServiceType serviceAccessed) {
-
-        Member member = memberService.findById(memberId);
-
-        if (member.getStatus() != MemberStatus.ACTIVE) {
-            deny("Member is inactive");
-        }
-
-        MedicalCertificate latest = certificateService.findLatest(memberId);
-
-        if (latest == null) {
-            deny("No medical certificate registered");
-        }
-
-        if (!certificateService.isValid(latest)) {
-            String reason = certificateService.getValidity(latest) == CertificateValidity.EXPIRED
-                    ? "Medical certificate has expired"
-                    : "Medical certificate is not valid yet";
-
-            deny(reason);
-        }
-
         LocalDateTime now = LocalDateTime.now(clock);
-        LocalDate today = now.toLocalDate();
+        AccessDecision decision = evaluateAccess(memberId, serviceAccessed, now, true);
 
-        List<MemberSubscription> subscriptions = subscriptionRepository.findActiveForCheckIn(
-                memberId,
-                SubscriptionStatus.ACTIVE);
-
-        boolean hasCurrentSubscription = false;
-        boolean hasService = false;
-        boolean hasPaidSubscription = false;
-        boolean hasValidTimeBand = false;
-        boolean hasRemainingEntries = false;
-
-        MemberSubscription eligibleSubscription = null;
-
-        for (MemberSubscription subscription : subscriptions) {
-
-            if (subscription.getStartDate().isAfter(today)
-                    || subscription.getEndDate().isBefore(today)) {
-                continue;
-            }
-
-            hasCurrentSubscription = true;
-
-            MembershipTier tier = subscription.getTier();
-
-            if (!tier.getAllowedServices().contains(serviceAccessed)) {
-                continue;
-            }
-
-            hasService = true;
-
-            boolean paid = paymentRepository
-                    .existsBySubscription_IdAndStatus(
-                            subscription.getId(),
-                            PaymentStatus.PAID);
-
-            if (!paid) {
-                continue;
-            }
-
-            hasPaidSubscription = true;
-
-            if (!isWithinTimeBand(tier, now.toLocalTime())) {
-                continue;
-            }
-
-            hasValidTimeBand = true;
-
-            Integer remaining = subscription.getRemainingEntries();
-
-            if (tier.getEntryQuota() != null
-                    && (remaining == null || remaining <= 0)) {
-                continue;
-            }
-
-            hasRemainingEntries = true;
-            eligibleSubscription = subscription;
-            break;
+        if (!decision.authorized()) {
+            deny(decision.denialReason());
         }
 
-        if (eligibleSubscription == null) {
-
-            if (!hasCurrentSubscription) {
-                deny("No active subscription");
-            }
-
-            if (!hasService) {
-                deny("Subscription does not include this service");
-            }
-
-            if (!hasPaidSubscription) {
-                deny("Subscription payment is not paid");
-            }
-
-            if (!hasValidTimeBand) {
-                deny("Access outside the allowed time band");
-            }
-
-            if (!hasRemainingEntries) {
-                deny("No remaining entries");
-            }
-
-            deny("Access not allowed");
-        }
+        MemberSubscription eligibleSubscription = decision.subscription();
 
         if (eligibleSubscription.getTier().getEntryQuota() != null) {
             Integer remaining = eligibleSubscription.getRemainingEntries();
@@ -176,8 +78,8 @@ public class AccessService {
         }
 
         AccessRecord record = new AccessRecord();
-        record.setMember(member);
-        record.setAccessDatetime(now);
+        record.setMember(decision.member());
+        record.setAccessDatetime(decision.checkedAt());
         record.setServiceAccessed(serviceAccessed);
 
         AccessRecord saved = accessRecordRepository.save(record);
@@ -185,9 +87,114 @@ public class AccessService {
         return new CheckInResponse(
                 saved.getId(),
                 memberId,
-                now,
+                decision.checkedAt(),
                 serviceAccessed.name(),
                 "ALLOWED");
+    }
+
+    @Transactional(readOnly = true)
+    public AccessValidationResponse validateAccess(
+            Integer memberId,
+            ServiceType serviceAccessed) {
+        AccessDecision decision = evaluateAccess(
+                memberId, serviceAccessed, LocalDateTime.now(clock), false);
+        return new AccessValidationResponse(
+                decision.authorized(),
+                decision.denialReason());
+    }
+
+    private AccessDecision evaluateAccess(
+            Integer memberId,
+            ServiceType serviceAccessed,
+            LocalDateTime now,
+            boolean lockSubscriptions) {
+        Member member = memberService.findById(memberId);
+
+        if (member.getStatus() != MemberStatus.ACTIVE) {
+            return AccessDecision.denied(member, now, "Member is inactive");
+        }
+
+        MedicalCertificate latest = certificateService.findLatest(memberId);
+        if (latest == null) {
+            return AccessDecision.denied(member, now, "No medical certificate registered");
+        }
+
+        if (!certificateService.isValid(latest)) {
+            String reason = certificateService.getValidity(latest) == CertificateValidity.EXPIRED
+                    ? "Medical certificate has expired"
+                    : "Medical certificate is not valid yet";
+            return AccessDecision.denied(member, now, reason);
+        }
+
+        LocalDate today = now.toLocalDate();
+        List<MemberSubscription> subscriptions = lockSubscriptions
+                ? subscriptionRepository.findActiveForCheckIn(
+                        memberId, SubscriptionStatus.ACTIVE)
+                : subscriptionRepository.findByMember_IdOrderByStartDateDesc(memberId);
+
+        boolean hasCurrentSubscription = false;
+        boolean hasService = false;
+        boolean hasPaidSubscription = false;
+        boolean hasValidTimeBand = false;
+        boolean hasRemainingEntries = false;
+        MemberSubscription eligibleSubscription = null;
+
+        for (MemberSubscription subscription : subscriptions) {
+            if (subscription.getStatus() != SubscriptionStatus.ACTIVE
+                    || subscription.getStartDate().isAfter(today)
+                    || subscription.getEndDate().isBefore(today)) {
+                continue;
+            }
+
+            hasCurrentSubscription = true;
+            MembershipTier tier = subscription.getTier();
+            if (!tier.getAllowedServices().contains(serviceAccessed)) {
+                continue;
+            }
+
+            hasService = true;
+            boolean paid = paymentRepository.existsBySubscription_IdAndStatus(
+                    subscription.getId(), PaymentStatus.PAID);
+            if (!paid) {
+                continue;
+            }
+
+            hasPaidSubscription = true;
+            if (!isWithinTimeBand(findTimeBandConfiguration(tier), now.toLocalTime())) {
+                continue;
+            }
+
+            hasValidTimeBand = true;
+            Integer remaining = subscription.getRemainingEntries();
+            if (tier.getEntryQuota() != null && (remaining == null || remaining <= 0)) {
+                continue;
+            }
+
+            hasRemainingEntries = true;
+            eligibleSubscription = subscription;
+            break;
+        }
+
+        if (eligibleSubscription != null) {
+            return new AccessDecision(member, eligibleSubscription, now, null);
+        }
+
+        String denialReason;
+        if (!hasCurrentSubscription) {
+            denialReason = subscriptionDenialReason(memberId, today);
+        } else if (!hasService) {
+            denialReason = "Subscription does not include this service";
+        } else if (!hasPaidSubscription) {
+            denialReason = "Subscription payment is not paid";
+        } else if (!hasValidTimeBand) {
+            denialReason = "Access outside the allowed time band";
+        } else if (!hasRemainingEntries) {
+            denialReason = "No remaining entries";
+        } else {
+            denialReason = "Access not allowed";
+        }
+
+        return AccessDecision.denied(member, now, denialReason);
     }
 
     @Transactional(readOnly = true)
@@ -197,56 +204,172 @@ public class AccessService {
 
         MedicalCertificate certificate = certificateService.findLatest(member.getId());
 
-        CheckInInfoResponse.MedicalCertificateInfo certificateInfo = null;
+        CheckInInfoResponse.MedicalCertificateInfo certificateInfo;
 
-        if (certificate != null) {
+        if (certificate == null) {
+            certificateInfo = new CheckInInfoResponse.MedicalCertificateInfo(
+                    null,
+                    "MISSING",
+                    "No medical certificate registered");
+        } else {
+            CertificateValidity validity = certificateService.getValidity(certificate);
+            String denialReason = switch (validity) {
+                case VALID -> null;
+                case EXPIRED -> "Medical certificate has expired";
+                case NOT_YET_VALID -> "Medical certificate is not valid yet";
+            };
             certificateInfo = new CheckInInfoResponse.MedicalCertificateInfo(
                     certificate.getExpiryDate(),
-                    certificateService.getValidity(certificate).name());
+                    validity.name(),
+                    denialReason);
         }
 
         List<MemberSubscription> subscriptions = subscriptionRepository.findByMember_IdOrderByStartDateDesc(memberId);
 
+        LocalDateTime checkedAt = LocalDateTime.now(clock);
+        LocalDate today = checkedAt.toLocalDate();
+        LocalTime currentTime = checkedAt.toLocalTime();
         List<CheckInInfoResponse.SubscriptionInfo> subscriptionInfo = subscriptions.stream()
                 .map(subscription -> {
 
                     MembershipTier tier = subscription.getTier();
+                    SubscriptionVerification verification =
+                            verifySubscription(subscription, today);
 
-                    TimeBandConfiguration timeBand = timeBandRepository
-                            .findByTimeBand(tier.getTimeBand())
-                            .orElse(null);
-
-                    LocalTime startTime = timeBand != null ? timeBand.getStartTime() : null;
-
-                    LocalTime endTime = timeBand != null ? timeBand.getEndTime() : null;
+                    TimeBandConfiguration timeBand = findTimeBandConfiguration(tier);
+                    boolean timeSlotAllowed =
+                            isWithinTimeBand(timeBand, currentTime);
+                    String timeSlotDenialReason = timeSlotAllowed
+                            ? null
+                            : "Access outside the allowed time band";
 
                     return new CheckInInfoResponse.SubscriptionInfo(
                             subscription.getId(),
                             tier.getName(),
                             subscription.getStatus(),
+                            verification.status(),
+                            verification.denialReason(),
                             subscription.getStartDate(),
                             subscription.getEndDate(),
-                            startTime,
-                            endTime,
+                            timeBand.getStartTime(),
+                            timeBand.getEndTime(),
+                            timeSlotAllowed,
+                            timeSlotDenialReason,
                             subscription.getRemainingEntries(),
                             Set.copyOf(tier.getAllowedServices()));
                 })
                 .toList();
 
         return new CheckInInfoResponse(
+                checkedAt,
                 certificateInfo,
                 subscriptionInfo);
     }
 
-    private boolean isWithinTimeBand(
-            MembershipTier tier,
-            LocalTime currentTime) {
+    private SubscriptionVerification verifySubscription(
+            MemberSubscription subscription,
+            LocalDate today) {
+        if (subscription.getStatus() == SubscriptionStatus.FROZEN) {
+            return new SubscriptionVerification(
+                    SubscriptionStatus.FROZEN,
+                    "Subscription is frozen");
+        }
 
-        TimeBandConfiguration config = timeBandRepository
+        if (subscription.getStatus() == SubscriptionStatus.CANCELLED) {
+            return new SubscriptionVerification(
+                    SubscriptionStatus.CANCELLED,
+                    "Subscription is cancelled");
+        }
+
+        if (subscription.getStatus() == SubscriptionStatus.EXPIRED) {
+            return new SubscriptionVerification(
+                    SubscriptionStatus.EXPIRED,
+                    "Subscription is marked as expired");
+        }
+
+        if (subscription.getEndDate().isBefore(today)) {
+            return new SubscriptionVerification(
+                    SubscriptionStatus.EXPIRED,
+                    "Subscription expired on " + subscription.getEndDate());
+        }
+
+        if (subscription.getStatus() == SubscriptionStatus.PENDING
+                || subscription.getStartDate().isAfter(today)) {
+            return new SubscriptionVerification(
+                    SubscriptionStatus.PENDING,
+                    "Subscription is not active yet");
+        }
+
+        if (!paymentRepository.existsBySubscription_IdAndStatus(
+                subscription.getId(), PaymentStatus.PAID)) {
+            return new SubscriptionVerification(
+                    SubscriptionStatus.PENDING,
+                    "Subscription payment is not paid");
+        }
+
+        return new SubscriptionVerification(SubscriptionStatus.ACTIVE, null);
+    }
+
+    private String subscriptionDenialReason(Integer memberId, LocalDate today) {
+        List<MemberSubscription> subscriptions =
+                subscriptionRepository.findByMember_IdOrderByStartDateDesc(memberId);
+
+        for (MemberSubscription subscription : subscriptions) {
+            if (subscription.getStatus() == SubscriptionStatus.FROZEN) {
+                return "Subscription is frozen";
+            }
+            if (subscription.getStatus() == SubscriptionStatus.CANCELLED) {
+                return "Subscription is cancelled";
+            }
+            if (subscription.getStatus() == SubscriptionStatus.EXPIRED) {
+                return "Subscription is marked as expired";
+            }
+            if (subscription.getStatus() == SubscriptionStatus.PENDING
+                    || subscription.getStartDate().isAfter(today)) {
+                return "Subscription is not active yet";
+            }
+            if (subscription.getEndDate().isBefore(today)) {
+                return "Subscription expired on " + subscription.getEndDate();
+            }
+        }
+
+        return "No active subscription";
+    }
+
+    private record SubscriptionVerification(
+            SubscriptionStatus status,
+            String denialReason) {
+    }
+
+    private record AccessDecision(
+            Member member,
+            MemberSubscription subscription,
+            LocalDateTime checkedAt,
+            String denialReason) {
+
+        private boolean authorized() {
+            return subscription != null;
+        }
+
+        private static AccessDecision denied(
+                Member member,
+                LocalDateTime checkedAt,
+                String reason) {
+            return new AccessDecision(member, null, checkedAt, reason);
+        }
+    }
+
+    private TimeBandConfiguration findTimeBandConfiguration(MembershipTier tier) {
+        return timeBandRepository
                 .findByTimeBand(tier.getTimeBand())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.INTERNAL_SERVER_ERROR,
                         "Time band configuration not found"));
+    }
+
+    private boolean isWithinTimeBand(
+            TimeBandConfiguration config,
+            LocalTime currentTime) {
 
         LocalTime start = config.getStartTime();
         LocalTime end = config.getEndTime();

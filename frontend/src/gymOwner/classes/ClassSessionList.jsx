@@ -1,7 +1,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { getClassSessions } from "../../services/classSessionService";
+import {
+  deleteClassSession,
+  getClassSessions
+} from "../../services/classSessionService";
 import "./ClassSession.css";
 
 const PAGE_SIZE = 10;
@@ -34,6 +37,8 @@ export default function ClassSessionList() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [actionError, setActionError] = useState("");
+  const [deletingId, setDeletingId] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
@@ -96,6 +101,33 @@ export default function ClassSessionList() {
       );
   }, [sessions, search]);
 
+  async function handleDelete(session) {
+    if (
+      !window.confirm(
+        `Delete the schedule for "${session.name}"? This cannot be undone.`
+      )
+    ) {
+      return;
+    }
+
+    setDeletingId(session.id);
+    setActionError("");
+    try {
+      await deleteClassSession(session.id);
+      setReloadKey((key) => key + 1);
+    } catch (requestError) {
+      setActionError(
+        requestError.response?.status === 409
+          ? "This class has reservations and cannot be deleted."
+          : requestError.response?.status === 404
+            ? "This class no longer exists. Refresh the schedule."
+            : "Unable to delete this class. Please try again."
+      );
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   const totalPages = Math.max(
     1,
     Math.ceil(filteredSessions.length / PAGE_SIZE)
@@ -125,6 +157,12 @@ export default function ClassSessionList() {
               and manage substitutions.
             </p>
           </div>
+          <Link
+            to="/manage-classes/new"
+            className="fm-button fm-button-edit"
+          >
+            Create class
+          </Link>
         </header>
 
         <section className="fm-card">
@@ -149,6 +187,12 @@ export default function ClassSessionList() {
               Refresh
             </button>
           </div>
+
+          {actionError && (
+            <div className="fm-alert fm-alert-error" role="alert">
+              {actionError}
+            </div>
+          )}
 
           <div className="fm-toolbar">
 
@@ -211,7 +255,7 @@ export default function ClassSessionList() {
                       <th>Date</th>
                       <th>Time</th>
                       <th>Room</th>
-                      <th>Capacity</th>
+                      <th>Bookings / capacity</th>
                       <th>Instructor</th>
                       <th>Actions</th>
                     </tr>
@@ -251,6 +295,8 @@ export default function ClassSessionList() {
                           </td>
 
                           <td>
+                            {session.confirmedBookings ?? "—"}
+                            {" / "}
                             {session.maxCapacity}
                           </td>
 
@@ -294,6 +340,18 @@ export default function ClassSessionList() {
                               >
                                 Edit
                               </Link>
+
+                              <button
+                                type="button"
+                                className="fm-button class-button-delete"
+                                onClick={() => handleDelete(session)}
+                                disabled={deletingId === session.id}
+                                aria-label={`Delete ${session.name}`}
+                              >
+                                {deletingId === session.id
+                                  ? "Deleting..."
+                                  : "Delete"}
+                              </button>
 
                               {hasInstructorInfo ? (
                                 <Link

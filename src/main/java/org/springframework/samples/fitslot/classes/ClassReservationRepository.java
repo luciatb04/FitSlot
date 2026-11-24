@@ -21,6 +21,8 @@ public interface ClassReservationRepository
             Integer sessionId,
             ReservationStatus status);
 
+    boolean existsByClassSession_Id(Integer sessionId);
+
     Optional<ClassReservation> findByMember_IdAndClassSession_Id(
             Integer memberId,
             Integer sessionId);

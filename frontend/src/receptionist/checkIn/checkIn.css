@@ -15,12 +15,15 @@
 .checkin-member-header, .checkin-subscription-title { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .checkin-pill { font-size: .8rem; font-weight: 650; border-radius: 99px; padding: 5px 10px; }
 .checkin-pill-active { background: #e4f6e9; color: #17653a; }
+.checkin-pill-inactive { background: #fff0ef; color: #9d2525; }
 .checkin-pill-neutral { background: #eef0f3; color: #4c5764; }
+.checkin-pill-warning { background: #fff5d6; color: #795b00; }
 .checkin-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 0; }
 .checkin-facts div { min-width: 0; }
 .checkin-facts dt { color: #697786; font-size: .82rem; margin-bottom: 5px; }
 .checkin-facts dd { margin: 0; font-weight: 650; overflow-wrap: anywhere; }
 .checkin-subscription { background: #f7f9fb; border: 1px solid #e2e8ee; border-radius: 10px; padding: 17px; margin-bottom: 12px; }
+.checkin-subscription-reason { color: #9d2525; font-weight: 650; margin: 12px 0 0; }
 .checkin-subscription .checkin-facts { margin-top: 14px; }
 .checkin-services { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; margin-top: 15px; }
 .checkin-service-tag { background: #e7f4eb; border: 1px solid #badfc5; color: #205f38; border-radius: 20px; padding: 4px 10px; font-size: .83rem; }
